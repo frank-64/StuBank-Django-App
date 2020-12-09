@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="studatabase@canadamonkeys.cbrra2yz2pox.eu-west-2.rds.amazonaws.com" uuid="f29b6d65-7049-4da2-abfc-60029d077878">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://canadamonkeys.cbrra2yz2pox.eu-west-2.rds.amazonaws.com:3306/studatabase</jdbc-url>
+    </data-source>
+  </component>
+</project>
