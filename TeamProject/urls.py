@@ -20,6 +20,6 @@ from StuBank import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.Index.index_page, name="Index"),
+    path('', views.Index.index_page, name="index"),
     path('', include('users.urls')),
 ]
