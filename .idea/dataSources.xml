@@ -7,5 +7,13 @@
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://canadamonkeys.cbrra2yz2pox.eu-west-2.rds.amazonaws.com:3306/studatabase</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="Django default" uuid="a2c95e4f-cc37-45fe-8605-fea121d3595c">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <imported>true</imported>
+      <remarks>$PROJECT_DIR$/TeamProject/settings.py</remarks>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://canadamonkeys.cbrra2yz2pox.eu-west-2.rds.amazonaws.com:3306/studatabase</jdbc-url>
+    </data-source>
   </component>
 </project>
