@@ -3,7 +3,7 @@ from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from .forms import UserRegisterForm
-
+from users.models import Account
 
 # Create your views here.
 

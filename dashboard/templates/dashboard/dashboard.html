@@ -1,4 +1,10 @@
 {% extends "dashboard/base.html" %}
 {% block content %}
-<h1>Frankie's Dashboard</h1>
+{% if user.is_authenticated %}
+    <h1>Authenticated</h1>
+    {{ user.username }}
+    {{ user.id }}
+{% else %}
+    <h1>Not Authenticated</h1>
+{% endif %}
 {% endblock content %}
