@@ -1,18 +1,19 @@
 from django.db import models
 from django.utils import timezone
+from accounts.models import *
 
-class Customer(models.Model):
-    FirstName = models.CharField(max_length=20)
-    LastName = models.CharField(max_length=20)
-    SortCode = models.IntegerField(blank=False)
-    AccountNumber = models.IntegerField(blank=False)
-    # customer gets £100 upon account creation
-    Balance = models.DecimalField(default=100, decimal_places=2, max_digits=10)
-    # is the customer's account frozen?
-    AccountFrozen = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"ID:{self.id}, Firstname:{self.FirstName}"
+# class Customer(models.Model):
+#     FirstName = models.CharField(max_length=20)
+#     LastName = models.CharField(max_length=20)
+#     SortCode = models.IntegerField(blank=False)
+#     AccountNumber = models.IntegerField(blank=False)
+#     # customer gets £100 upon account creation
+#     Balance = models.DecimalField(default=100, decimal_places=2, max_digits=10)
+#     # is the customer's account frozen?
+#     AccountFrozen = models.BooleanField(default=False)
+#
+#     def __str__(self):
+#         return f"ID:{self.id}, Firstname:{self.FirstName}"
 
 
 class Payee(models.Model):
@@ -33,7 +34,7 @@ class Card(models.Model):
     ExpiryDate = models.DateField(blank=False)
     CVC = models.IntegerField(blank=False)
     def __str__(self):
-        return f"ID:{self.id}, Customer Firstname:{self.Customer.FirstName}"
+        return f"ID:{self.id}, Customer Firstname:{self.Customer.user.first_name}"
 
 
 class Transaction(models.Model):
@@ -72,4 +73,4 @@ class Transaction(models.Model):
     Category = models.CharField(blank=False, choices=CATEGORY, max_length=20)
 
     def __str__(self):
-        return f"ID:{self.id}, Customer Firstname:{self.Customer.FirstName}"
+        return f"ID:{self.id}, Customer Firstname:{self.Customer.user.first_name}"
