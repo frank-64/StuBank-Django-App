@@ -9,7 +9,8 @@ from .forms import UserRegisterForm
 
 # Dashboard view. LoginRequiredMixin redirects users to login page if they are not authenticated
 class UserDashboardView(LoginRequiredMixin, TemplateView):
-    template_name = 'users/dashboard.html'
+    # linking to Frankie's dashboard app
+    template_name = 'dashboard/dashboard.html'
 
 
 class RegisterView(CreateView):

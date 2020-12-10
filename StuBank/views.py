@@ -6,4 +6,4 @@ from django.views import View
 
 class Index(View):
     def index_page(request):
-        return render(request, "index.html")
+        return render(request, "StuBank/index.html")
