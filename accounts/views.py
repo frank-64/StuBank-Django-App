@@ -3,17 +3,17 @@ from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from .forms import UserRegisterForm
-
+from .models import User
 
 # Create your views here.
 
 # Dashboard view. LoginRequiredMixin redirects users to login page if they are not authenticated
 class UserDashboardView(LoginRequiredMixin, TemplateView):
-    # linking to Frankie's dashboard app
     template_name = 'dashboard/dashboard.html'
 
 
 class RegisterView(CreateView):
-    template_name = 'users/register.html'
+    model = User
     form_class = UserRegisterForm
+    template_name = 'accounts/register.html'
     success_url = '/login/'
