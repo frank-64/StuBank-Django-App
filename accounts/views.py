@@ -1,4 +1,4 @@
-from django.contrib.auth.views import LoginView, LogoutView, TemplateView
+from django.contrib.auth.views import TemplateView
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
@@ -10,6 +10,7 @@ from .models import User
 # Dashboard view. LoginRequiredMixin redirects users to login page if they are not authenticated
 class UserDashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'dashboard/dashboard.html'
+    login_url = '/home/'
 
 
 class RegisterView(CreateView):
