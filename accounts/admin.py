@@ -4,3 +4,4 @@ from accounts.models import *
 
 admin.site.register(Customer)
 admin.site.register(Helper)
+admin.site.register(User)

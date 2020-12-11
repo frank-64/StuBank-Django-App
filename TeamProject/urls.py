@@ -23,5 +23,5 @@ urlpatterns = [
     path('', views.Index.index_page, name="index"),
     path('', include('StuBank.urls')),
     path('', include('accounts.urls')),
-    path('dashboard/', include('dashboard.urls')),
+    path('dashboard/', include('dashboard.urls'), name="dashboard_urls"),
 ]
