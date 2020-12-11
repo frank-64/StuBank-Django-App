@@ -11,8 +11,8 @@ class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     account_num = models.IntegerField(null=True, blank=True)
     sort_code = models.CharField(null=True, blank=True, max_length=20)
-    balance = models.IntegerField(null=True, blank=True)
-    account_frozen = models.BooleanField()
+    balance = models.DecimalField(null=True, blank=True, max_digits=9, decimal_places=2)
+    account_frozen = models.BooleanField(default=False)
 
 
 class Helper(models.Model):

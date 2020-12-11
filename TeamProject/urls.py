@@ -21,7 +21,7 @@ from StuBank import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.Index.index_page, name="index"),
-    path('', include('StuBank.urls')),
-    path('', include('accounts.urls')),
-    path('dashboard/', include('dashboard.urls')),
+    path('', include('StuBank.urls'), name='StuBank'),
+    path('', include('accounts.urls'), name='accounts'),
+    path('dashboard/', include('dashboard.urls'), name="dashboard"),
 ]
