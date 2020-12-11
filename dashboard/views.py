@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.views import generic
 from django.views.generic import DetailView, TemplateView, ListView
 from accounts.models import *
@@ -9,24 +10,26 @@ from dashboard.models import *
 class UserDashboardView(LoginRequiredMixin, DetailView):
     template_name = 'dashboard/dashboard.html'
     def get_object(self, queryset=None):
-        print(self.request.user.id)
+        pass
 
-class TransactionView(ListView):
+class TransactionListView(ListView):
     model = Transaction
-    context_object_name = 'transactions_list'  # your own name for the list as a template variable
-    template_name = 'dashboard/transactions.html'  # Specify your own template name/location
-    # slug_field = "emp_no"
-    # slug_url_kwarg = "emp_no"
-    #
-    # # def get_object(self, queryset=None):
-    # #     pk = self.request.user.id
-    # #     queryset = Transaction.objects.filter(Customer_id=pk)
-    # #     print(pk)
-    # def get_queryset(self):
-    #     return Transaction.objects.filter(Customer_id=self.request.user.id)
+    context_object_name = 'transaction_list'
+    template_name = 'dashboard/transactions.html'
 
 
+class TransactionDetailView(DetailView):
+    model = Transaction
+    context_object_name = 'transaction_list'
+    template_name = 'dashboard/transactions.html'
+    slug_field = 'order_id'
 
+
+    def get_queryset(self):
+        return super(TransactionDetailView, self).get_queryset()
+
+    def get_object(self):
+        return self.get_queryset().filter(Customer_id=self.request.user.pk)
 
 
 
