@@ -7,11 +7,6 @@ from .models import User
 
 # Create your views here.
 
-# Dashboard view. LoginRequiredMixin redirects users to login page if they are not authenticated
-class UserDashboardView(LoginRequiredMixin, TemplateView):
-    template_name = 'dashboard/dashboard.html'
-    login_url = '/home/'
-
 
 class RegisterView(CreateView):
     model = User
