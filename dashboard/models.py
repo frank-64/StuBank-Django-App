@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 from accounts.models import *
 
 class Payee(models.Model):
@@ -48,7 +47,7 @@ class Transaction(models.Model):
     # transaction direction e.g. is money being removed from the account or added
     Direction = models.CharField(blank=False, choices=Direction.choices, default=Direction.OUT, max_length=10)
     # this is the datetime the model object was created
-    TransactionTime = models.CharField(blank=False, default=timezone.now(), max_length=50)
+    TransactionTime = models.CharField(blank=False, max_length=50)
     # any other comments with the transaction
     Comment = models.CharField(blank=True, max_length=200)
     # customer balance after transaction

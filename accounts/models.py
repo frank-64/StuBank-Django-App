@@ -12,6 +12,7 @@ class Customer(models.Model):
     account_num = models.IntegerField(null=True, blank=True)
     sort_code = models.CharField(null=True, blank=True, max_length=20)
     balance = models.IntegerField(null=True, blank=True)
+    account_frozen = models.BooleanField()
 
 
 class Helper(models.Model):
