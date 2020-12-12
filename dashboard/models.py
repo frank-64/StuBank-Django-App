@@ -12,7 +12,7 @@ class Payee(models.Model):
     AccountNumber = models.IntegerField(blank=False)
 
     def __str__(self):
-        return f"ID:{self.id}, Firstname:{self.FirstName}"
+        return f"ID:{self.id}, Username:{self.Customer.user.username}"
 
 class Card(models.Model):
     Customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
@@ -20,8 +20,9 @@ class Card(models.Model):
     CardNum = models.BigIntegerField(blank=False)
     ExpiryDate = models.DateField(blank=False)
     CVC = models.IntegerField(blank=False)
+
     def __str__(self):
-        return f"ID:{self.id}, Customer Firstname:{self.Customer.user.first_name}"
+        return f"ID:{self.id}, Username:{self.Customer.user.username}"
 
 
 class Transaction(models.Model):
@@ -60,4 +61,4 @@ class Transaction(models.Model):
     Category = models.CharField(blank=False, choices=CATEGORY, max_length=20)
 
     def __str__(self):
-        return f"ID:{self.id}, Customer Firstname:{self.Customer.user.first_name}"
+        return f"ID:{self.id}, Username:{self.Customer.user.username}"

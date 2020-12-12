@@ -17,7 +17,6 @@ class UserRegisterForm(UserCreationForm):
 
         #Can assign account number etc here
         customer = Customer.objects.create(user=user)
-
         customer.account_num = 12345678
         customer.sort_code = "09-87-65"
         customer.save()
