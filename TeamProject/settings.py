@@ -126,7 +126,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 
-LOGIN_REDIRECT_URL = 'dashboard'
+LOGIN_REDIRECT_URL = 'dashboard_home'
 LOGOUT_REDIRECT_URL = 'login'
 
 AUTH_USER_MODEL = 'accounts.User'
