@@ -24,7 +24,6 @@ class TransactionDetailView(DetailView):
     model = Transaction
     context_object_name = 'transaction_list'
     template_name = 'dashboard/transactions.html'
-    slug_field = 'order_id'
 
 
     def get_queryset(self):

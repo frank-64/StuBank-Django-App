@@ -12,9 +12,6 @@
         <li><strong>Balance: £{{ user.customer.balance }}</strong></li>
     </ul>
 {% else %}
-    <script>
-        alert("Not authenticated!")
-    </script>
-    {% url 'login' %}
+    <h3>Not authenticated</h3>
 {% endif %}
 {% endblock content %}
