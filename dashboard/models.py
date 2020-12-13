@@ -50,7 +50,7 @@ class Transaction(models.Model):
     # transaction direction e.g. is money being removed from the account or added
     Direction = models.CharField(blank=False, choices=Direction.choices, default=Direction.OUT, max_length=10)
     # this is the datetime the model object was created
-    TransactionTime = models.CharField(blank=False, max_length=50, default=timezone.now())
+    TransactionTime = models.CharField(blank=False, max_length=50)
     # any other comments with the transaction
     Comment = models.CharField(blank=True, max_length=200)
     # customer balance after transaction

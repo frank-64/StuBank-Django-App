@@ -1,4 +1,4 @@
-{% extends "dashboard/dashboard_base.html" %}
+{% extends "dashboard/customer_dashboard_base.html" %}
 {% block content %}
 {% if user.is_authenticated and user.is_customer%}
     <h3>Welcome to your dashboard {{ user.first_name }}!</h3>
@@ -12,6 +12,9 @@
         <li><strong>Balance: £{{ user.customer.balance }}</strong></li>
     </ul>
 {% else %}
-    <h1>Not authenticated</h1>
+    <script>
+        alert("Not authenticated!")
+    </script>
+    {% url 'login' %}
 {% endif %}
 {% endblock content %}
