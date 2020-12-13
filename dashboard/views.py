@@ -1,9 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from django.views import generic
 from django.views.generic import DetailView, TemplateView, ListView
-from accounts.models import *
 from dashboard.models import *
 
 # Dashboard view. LoginRequiredMixin redirects users to login page if they are not authenticated
@@ -19,6 +15,21 @@ class UserDashboardView(LoginRequiredMixin, DetailView):
 
     def get_queryset(self):
         return super(UserDashboardView, self).get_queryset()
+
+class PayeeDetailView(DetailView):
+    model = Payee
+    context_object_name = 'payee_list'
+    template_name = 'dashboard/customer/payee_dashboard.html'
+
+
+    def get_queryset(self):
+        print(super(PayeeDetailView, self).get_queryset())
+        return super(PayeeDetailView, self).get_queryset()
+
+    def get_object(self):
+        print(self.get_queryset().filter(Customer_id=self.request.user.pk))
+        return self.get_queryset().filter(Customer_id=self.request.user.pk)
+
 
 # class TransactionListView(ListView):
 #     model = Transaction
