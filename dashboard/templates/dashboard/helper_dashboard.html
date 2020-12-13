@@ -1,0 +1,8 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% block content %}
+{% if user.is_authenticated and user.is_helper%}
+    <h3>Welcome to your helper dashboard {{ user.first_name }}!</h3>
+{% else %}
+    <h1>Not authenticated</h1>
+{% endif %}
+{% endblock content %}

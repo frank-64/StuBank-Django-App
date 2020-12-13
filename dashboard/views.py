@@ -8,9 +8,11 @@ from dashboard.models import *
 
 # Dashboard view. LoginRequiredMixin redirects users to login page if they are not authenticated
 class UserDashboardView(LoginRequiredMixin, DetailView):
-    template_name = 'dashboard/dashboard.html'
     def get_object(self, queryset=None):
-        pass
+        if(self.request.user.is_customer):
+            UserDashboardView.template_name = 'dashboard/customer_dashboard.html'
+        else:
+            UserDashboardView.template_name = 'dashboard/helper_dashboard.html'
 
 class TransactionListView(ListView):
     model = Transaction
