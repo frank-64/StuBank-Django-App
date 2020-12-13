@@ -1,8 +1,8 @@
 {% load static %}
+{% if user.is_authenticated and user.is_customer%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -25,8 +25,12 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarToggle">
                 <div class="navbar-nav mr-auto">
-                    <a class="nav-item nav-link" href="{% url 'transactions_user' %}">Your Transactions</a>
                     <a class="nav-item nav-link" href="">My Money Pots</a>
+                    <a class="nav-item nav-link" href="">Transfer Money</a>
+                    <a class="nav-item nav-link" href="">View Payees</a>
+                    <a class="nav-item nav-link" href="">Expenditure Overview</a>
+                    <a class="nav-item nav-link" href="">Your Statements</a>
+                    <a class="nav-item nav-link" href="">Need Help?</a>
                 </div>
 
                 <!-- Navbar Right Side -->
@@ -41,7 +45,9 @@
 <div class="container-fluid">
     {% block content %}{% endblock %}
 </div>
-
+<div class="container-fluid">
+    {% block transaction %}{% endblock %}
+</div>
 
 
 <!-- Optional JavaScript -->
@@ -57,4 +63,7 @@
         crossorigin="anonymous"></script>
 </body>
 </html>
-
+{% else %}
+    <h3>Not authenticated</h3>
+    <a href="{% url 'dashboard_home' %}">Return to dashboard</a>
+{% endif %}

@@ -1,4 +1,4 @@
-{% extends "dashboard/customer_dashboard_base.html" %}
+{% extends "dashboard/customer/customer_dashboard_base.html" %}
 {% block content %}
 {% if user.is_authenticated and user.is_customer%}
     <h3>Here are your transactions {{ user.first_name }}</h3>
@@ -28,7 +28,6 @@
             </tr>
         {% endfor %}
     </table>
-
 {% else %}
     <h3>Not authenticated</h3>
 {% endif %}
