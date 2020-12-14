@@ -9,7 +9,7 @@ class Payee(models.Model):
     PayeeID = models.ForeignKey(Customer, on_delete=models.PROTECT)
 
     def __str__(self):
-        return f"Payee:{self.PayeeID}"
+        return f"ID:{self.id} Customer:{self.User.username}, Payee:{self.PayeeID.user.username}"
 
 class Card(models.Model):
     Customer = models.ForeignKey(Customer, on_delete=models.PROTECT)

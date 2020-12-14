@@ -5,6 +5,7 @@ from dashboard.views import *
 urlpatterns = [
     path('', UserDashboardView.as_view(), name='dashboard_home'),
     path('viewpayees/', PayeeDetailView.as_view(), name='viewpayee'),
+    path('removepayee/<int:pk>/', delete_payee, name='removepayee'),
     # path('livechat/', UserDashboardView.as_view(), name='livechat'),
     # path('addpayee/', UserDashboardView.as_view(), name='addpayee'),
 

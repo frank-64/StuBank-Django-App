@@ -8,6 +8,7 @@
         <li>Email: {{ user.email }}</li>
         <li>Sort Code: {{ user.customer.sort_code }}</li>
         <li>Account Number: {{ user.customer.account_num }}</li>
+        <li>Active?: {{ user.is_active }}</li>
         <li><strong>Balance: £{{ user.customer.balance }}</strong></li>
     </ul>
 {% endblock content %}
