@@ -1,9 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
-from django.views.generic import DetailView, TemplateView, ListView
+from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import redirect, render
+from django.views.generic import DetailView, TemplateView, ListView, CreateView
 from django.views.generic.base import View
-
+from .forms import *
 from dashboard.models import *
 
 # Dashboard view. LoginRequiredMixin redirects users to login page if they are not authenticated
@@ -33,11 +33,32 @@ class PayeeDetailView(DetailView):
         return self.get_queryset().filter(User_id=self.request.user.pk)
 
 def delete_payee(request, pk):
-    print(Payee.objects.filter(pk=pk))
     Payee.objects.filter(pk=pk).delete()
     response = redirect('/dashboard/viewpayees/')
     return response
 
+def add_payee(request):
+    # if this is a POST request we need to process the form data
+    form = PayeeDetails(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        first_name = form.cleaned_data['first_name']
+        last_name = form.cleaned_data['last_name']
+        sort_code = form.cleaned_data['sort_code']
+        account_num = form.cleaned_data['account_num']
+        try:
+            payee_object = Customer.objects.filter(sort_code=sort_code, account_num=account_num,
+                                                   user__first_name=first_name, user__last_name=last_name)
+            payee_id = payee_object[0].pk
+            user_id = request.user.pk
+            p = Payee(PayeeID_id=payee_id, User_id=user_id)
+            p.save()
+            return redirect('/dashboard/viewpayees/')
+        except:
+            error_title = 'Could not add payee!'
+            resolution = 'Did you enter the correct details? Sort code should be in the form DD-DD-DD with hyphens included.'
+            return render(request, 'dashboard/customer/error.html', {'error_title': error_title, 'resolution': resolution})
+
+    return render(request, 'dashboard/customer/add_payee.html', {'form': form})
 
 
 
