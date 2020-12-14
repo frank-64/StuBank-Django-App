@@ -3,8 +3,11 @@
     <h3>Here are your payees {{ user.first_name }}:</h3>
     <br>
     <br>
+
     <table id="payees_table" class="table-responsive table-hover table-striped" width="50%" style=" width: 100%;font-size: 2vw">
         <tr>
+            <th style="padding:0 15px 0 15px;">PayeeID</th>
+            <th style="padding:0 15px 0 15px;">Username</th>
             <th style="padding:0 15px 0 15px;">First Name</th>
             <th style="padding:0 15px 0 15px;">Last Name</th>
             <th style="padding:0 15px 0 15px;">Sort Code</th>
@@ -12,10 +15,12 @@
         </tr>
         {% for p in payee_list %}
             <tr>
-              <td style="padding:0 15px 0 15px;">{{ p.FirstName }}</td>
-              <td style="padding:0 15px 0 15px;">{{ p.LastName }}</td>
-              <td style="padding:0 15px 0 15px;">{{ p.SortCode }}</td>
-              <td style="padding:0 15px 0 15px;">{{ p.AccountNumber }}</td>
+              <td style="padding:0 15px 0 15px;">{{ p.PayeeID.user.id }}</td>
+              <td style="padding:0 15px 0 15px;">{{ p.PayeeID.user.username }}</td>
+              <td style="padding:0 15px 0 15px;">{{ p.PayeeID.user.first_name }}</td>
+              <td style="padding:0 15px 0 15px;">{{ p.PayeeID.user.last_name }}</td>
+              <td style="padding:0 15px 0 15px;">{{ p.PayeeID.sort_code }}</td>
+              <td style="padding:0 15px 0 15px;">{{ p.PayeeID.account_num }}</td>
             </tr>
         {% endfor %}
     </table>

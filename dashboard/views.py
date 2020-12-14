@@ -27,8 +27,8 @@ class PayeeDetailView(DetailView):
         return super(PayeeDetailView, self).get_queryset()
 
     def get_object(self):
-        print(self.get_queryset().filter(Customer_id=self.request.user.pk))
-        return self.get_queryset().filter(Customer_id=self.request.user.pk)
+        print(self.get_queryset().filter(User_id=self.request.user.pk))
+        return self.get_queryset().filter(User_id=self.request.user.pk)
 
 
 # class TransactionListView(ListView):

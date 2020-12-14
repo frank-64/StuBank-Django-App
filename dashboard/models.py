@@ -5,14 +5,11 @@ from accounts.models import *
 
 class Payee(models.Model):
     # customerID that added the payee
-    Customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
-    FirstName = models.CharField(max_length=20, blank=False)
-    LastName = models.CharField(max_length=20, blank=False)
-    SortCode = models.IntegerField(blank=False)
-    AccountNumber = models.IntegerField(blank=False)
+    User = models.ForeignKey(User, on_delete=models.PROTECT)
+    PayeeID = models.ForeignKey(Customer, on_delete=models.PROTECT)
 
     def __str__(self):
-        return f"ID:{self.id}, Username:{self.Customer.user.username}"
+        return f"Payee:{self.PayeeID}"
 
 class Card(models.Model):
     Customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
