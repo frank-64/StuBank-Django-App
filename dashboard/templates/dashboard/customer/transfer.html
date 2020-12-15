@@ -1,0 +1,8 @@
+{% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% block content %}
+{% if user.is_authenticated and user.is_customer%}
+
+{% else %}
+    <h3>Not authenticated</h3>
+{% endif %}
+{% endblock content %}
