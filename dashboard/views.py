@@ -1,6 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
+from decimal import Decimal
 from django.views.generic import DetailView, TemplateView, ListView, CreateView
 from django.views.generic.base import View
 from .forms import *
@@ -52,7 +54,7 @@ def add_payee(request):
             user_id = request.user.pk
             p = Payee(PayeeID_id=payee_id, User_id=user_id)
             p.save()
-            return redirect('/dashboard/viewpayees/')
+            return HttpResponseRedirect(reverse('viewpayee'))
         except:
             error_title = 'Could not add payee!'
             resolution = 'Did you enter the correct details? Sort code should be in the form DD-DD-DD with hyphens included.'
@@ -67,12 +69,40 @@ def payee_transfer(request):
 
         # Create a form instance and populate it with data from the request (binding):
         form = TransferForm(request.user, data=request.POST)
-
         # Check if the form is valid:
         if form.is_valid:
+            payee_id = form.data['Payee']
+            customer_id = request.user.pk
+            amount = form.data['Amount']
+            direction = 'OUT'
+            transaction_time = timezone.now()
+            comment = form.data['Comment']
 
-            return HttpResponse('Thanks')
-            #return HttpResponseRedirect(reverse('all-borrowed') )
+            # new_balance = alter_balance(request, amount)
+            new_balance = request.user.customer.balance - Decimal(amount)
+            # Destination is the main attribute to view in a transaction e.g. which business or payee
+            payee = Payee.objects.filter(id=payee_id)
+            print(payee)
+            print(payee_id)
+            payee_fname = payee[0].PayeeID.user.first_name
+            payee_lname = payee[0].PayeeID.user.last_name
+            destination = payee_fname+" "+payee_lname
+            category = form.data['Category']
+            method = 'Bank Transfer'
+            transaction = Transaction(Payee_id=payee_id, Customer_id=customer_id, Amount=amount,
+                                      Direction=direction, TransactionTime=transaction_time, Comment=comment,
+                                      NewBalance=new_balance, Destination=destination, Category=category,
+                                      Method=method)
+            try:
+                transaction.save()
+                return HttpResponseRedirect(reverse('dashboard_home') )
+            except:
+                error_title = 'Could not complete transaction!'
+                resolution = 'Is your balance correct?'
+                return render(request, 'dashboard/customer/error.html',
+                              {'error_title': error_title, 'resolution': resolution})
+
+
 
     # If this is a GET (or any other method) create the default form.
     else:

@@ -35,6 +35,14 @@ class Transaction(models.Model):
         ('Cheque Deposit', 'Cheque Deposit'),
         ('Bank Transfer', 'Bank Transfer'),
     )
+
+    class Method(models.TextChoices):
+        ATM_Withdrawal = 'ATM Withdrawal'
+        ATM_Deposit = 'ATM Deposit'
+        Cheque_Deposit = 'Cheque Deposit'
+        Bank_Transfer = 'Bank Transfer'
+        Card_Transaction = 'Card Transaction'
+
     class Direction(models.TextChoices):
         IN = 'In'
         OUT = 'Out'
@@ -56,6 +64,7 @@ class Transaction(models.Model):
     Destination = models.CharField(blank=False, max_length=50)
     # this attribute will be used the machine learning to determine probability of certain categories
     Category = models.CharField(blank=False, choices=CATEGORY, max_length=20)
+    Method = models.CharField(blank=False, choices=Method.choices, max_length=20, default=Method.Bank_Transfer)
 
     def __str__(self):
         return f"ID:{self.id}, Username:{self.Customer.user.username}"
