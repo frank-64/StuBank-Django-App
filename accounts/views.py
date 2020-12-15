@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, FormView
 from django.views.generic.base import TemplateView
 from django_otp import devices_for_user
-from django.contrib.auth import views as auth_views
+from django.contrib.auth import views as auth_views, authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from .forms import UserRegisterForm, UserInputQrCodeForm
@@ -34,7 +34,17 @@ class RegisterView(CreateView):
     model = User
     form_class = UserRegisterForm
     template_name = 'accounts/register.html'
-    success_url = '/login/'
+    success_url = '/totp/create'
+
+    def form_valid(self, form):
+        form.save()
+        username = self.request.POST['username']
+        password = self.request.POST['password1']
+
+        user = authenticate(username=username, password=password)
+        login(self.request, user)
+        return redirect(self.success_url)
+
 
 
 # Create TOTP QR code and ask for user code input
