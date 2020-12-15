@@ -1,34 +1,16 @@
 {% extends "accounts/base.html" %}
 {% block content %}
-{% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{% endif %}
-
-{% if next %}
-    {% if user.is_authenticated %}
-    <p>Your account doesn't have access to this page. To proceed,
-    please login with an account that has access.</p>
-    {% else %}
-    <p>Please login to see this page.</p>
+<form method="POST">
+    {% csrf_token %}
+    <div class="form-row"> {{ form.username.errors }}{{ form.username.label_tag }}{{ form.username }} </div>
+    <div class="form-row"> {{ form.password.errors }}{{ form.password.label_tag }}{{ form.password }} </div>
+    {% if form.get_user %}
+    <div class="form-row"> {{ form.otp_device.errors }}{{ form.otp_device.label_tag }}{{ form.otp_device }} </div>
     {% endif %}
-{% endif %}
-
-<form method="post" action="{% url 'login' %}">
-{% csrf_token %}
-<table>
-<tr>
-    <td>{{ form.username.label_tag }}</td>
-    <td>{{ form.username }}</td>
-</tr>
-<tr>
-    <td>{{ form.password.label_tag }}</td>
-    <td>{{ form.password }}</td>
-</tr>
-</table>
-
-<input type="submit" value="login">
-<input type="hidden" name="next" value="{{ next }}">
+    <div class="form-row"> {{ form.otp_token.errors }}{{ form.otp_token.label_tag }}{{ form.otp_token }} </div>
+    <div class="submit-row">
+        <input type="submit" value="Log in"/>
+        {% if form.get_user %}<input type="submit" name="otp_challenge" value="Get Challenge" />{% endif %}
+    </div>
 </form>
-
-<p><a href="{% url 'password_reset' %}">Lost password?</a></p>
 {% endblock content %}
