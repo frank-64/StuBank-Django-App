@@ -1,8 +1,23 @@
 from django import forms
+from dashboard.models import *
 
-class PayeeDetails(forms.Form):
+class PayeeDetailsForm(forms.Form):
     first_name = forms.CharField(required=True, max_length=20)
     last_name = forms.CharField(required=True, max_length=20)
     account_num = forms.IntegerField(required=True)
     sort_code = forms.CharField(required=True, max_length=20)
 
+
+class TransferForm(forms.ModelForm):
+    def __init__(self, user, *args, **kwargs):
+        super(TransferForm, self).__init__(*args, **kwargs)
+        try:
+            self.fields['Payee'].queryset = Payee.objects.filter(User_id=user.pk)
+        except Payee.DoesNotExist:
+            ### there is not userextend corresponding to this user, do what you want
+            pass
+    class Meta:
+        model = Transaction
+        exclude = ['Direction', 'Destination', 'TransactionTime', 'NewBalance', 'Customer', 'Category']
+
+    #Payee = forms.ModelChoiceField(required=True, queryset=None, help_text="Who would you like to transfer to?")

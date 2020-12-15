@@ -39,7 +39,7 @@ def delete_payee(request, pk):
 
 def add_payee(request):
     # if this is a POST request we need to process the form data
-    form = PayeeDetails(request.POST or None)
+    form = PayeeDetailsForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         first_name = form.cleaned_data['first_name']
         last_name = form.cleaned_data['last_name']
@@ -60,6 +60,29 @@ def add_payee(request):
 
     return render(request, 'dashboard/customer/add_payee.html', {'form': form})
 
+
+def payee_transfer(request):
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+
+        # Create a form instance and populate it with data from the request (binding):
+        form = TransferForm(request.user, data=request.POST)
+
+        # Check if the form is valid:
+        if form.is_valid:
+
+            return HttpResponse('Thanks')
+            #return HttpResponseRedirect(reverse('all-borrowed') )
+
+    # If this is a GET (or any other method) create the default form.
+    else:
+        form = TransferForm(request.user)
+
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'dashboard/customer/transfer.html', context)
 
 
 # class TransactionListView(ListView):

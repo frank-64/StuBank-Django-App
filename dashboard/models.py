@@ -9,7 +9,7 @@ class Payee(models.Model):
     PayeeID = models.ForeignKey(Customer, on_delete=models.PROTECT)
 
     def __str__(self):
-        return f"ID:{self.id} Customer:{self.User.username}, Payee:{self.PayeeID.user.username}"
+        return f"Username: {self.PayeeID.user.username}, Name:{self.PayeeID.user.first_name} {self.PayeeID.user.last_name}"
 
 class Card(models.Model):
     Customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
@@ -33,7 +33,7 @@ class Transaction(models.Model):
         ('ATM Withdrawal', 'ATM Withdrawal'),
         ('ATM Deposit', 'ATM Deposit'),
         ('Cheque Deposit', 'Cheque Deposit'),
-        ('Bank Transfer', 'Bank Transfer')
+        ('Bank Transfer', 'Bank Transfer'),
     )
     class Direction(models.TextChoices):
         IN = 'In'

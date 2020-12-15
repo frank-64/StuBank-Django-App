@@ -1,7 +1,38 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
 {% block content %}
+    <script>
+    const balance = {{ user.customer.balance }};
+     $(document).ready(function(){
+          $("input[name='Amount']").keyup(function(){
+              let amount = this.value;
+              let sum = balance-amount;
+              if (sum<0){
+                  alert("You do not have £"+amount+" in your bank account.")
+                  document.getElementById('submit').disabled = true;
+                  document.getElementById("new_balance").innerText = "£"+(sum);
+                  document.getElementById("new_balance").style.color='red';
+              }else {
+                  document.getElementById('submit').disabled = false;
+                  document.getElementById("new_balance").style.color='black';
+                  document.getElementById("new_balance").innerText = "£"+(sum);
+              }
+          });
+        });
+    </script>
 {% if user.is_authenticated and user.is_customer%}
-
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Transfer to payee:</legend>
+            <h5>Your balance: <p id="new_balance">£{{ user.customer.balance }}</p></h5>
+            <table>
+                {{ form.as_table }}
+            </table>
+        </fieldset>
+        <div class="form-group">
+            <button class="btn btn-outline-info" type="submit" id="submit">Transfer</button>
+        </div>
+    </form>
 {% else %}
     <h3>Not authenticated</h3>
 {% endif %}
