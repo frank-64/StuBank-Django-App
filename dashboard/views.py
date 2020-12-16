@@ -49,6 +49,7 @@ class UserDashboardView(LoginRequiredMixin, DetailView):
         else:
             UserDashboardView.template_name = 'dashboard/helper/helper_dashboard.html'
 
+
 class PayeeDetailView(DetailView):
     """Displays all payees related to the current customer's pk
 
@@ -90,6 +91,7 @@ def delete_payee(request, pk):
     Payee.objects.filter(pk=pk).delete()
     response = redirect(reverse('viewpayee'))
     return response
+
 
 def add_payee(request):
     """adds a payee using the POSTed inputs from the PayeeDetailsForm
@@ -174,6 +176,7 @@ def alter_balance(customers_customer_id, payees_customer_id, amount):
     #persisting the changed balance in the database
     Customer.objects.filter(pk=payees_customer_id).update(balance=payee_new_balance)
 
+
 def payee_transfer(request):
     """transfers a sum of money between a customer and one of their payee's using the POSTed inputs from the TransferForm
 
@@ -217,8 +220,9 @@ def payee_transfer(request):
             # setting the new_balance to be the customer's balance after this transaction
             new_balance = request.user.customer.balance - amount
 
-            # Destination is the main attribute to view in a transaction e.g. which business or payee
-            destination = payee_fname+" "+payee_lname
+            # Termini is the main attribute to view in a transaction e.g. who you transferred the
+            # money to/received the money from
+            termini = payee_fname+" "+payee_lname
 
             # getting the category data from the form
             category = form.data['Category']
@@ -229,12 +233,12 @@ def payee_transfer(request):
             # creating the transaction object with all the above variables inserted into their matching fields
             transaction = Transaction(Payee_id=payee_id, Customer_id=customers_customer_id, Amount=amount,
                                       Direction=direction, TransactionTime=transaction_time, Comment=comment,
-                                      NewBalance=new_balance, Destination=destination, Category=category,
+                                      NewBalance=new_balance, Termini=termini, Category=category,
                                       Method=method)
             try:
-                # TODO: -raise error if amount is < 1 to stop small transactions and negative amounts
                 # TODO: Transactions must be added on the other end so payees can see a transaction coming in from the customer
-
+                if (amount < 1.00):
+                    raise
                 # persisting the transaction object
                 transaction.save()
 
@@ -247,13 +251,11 @@ def payee_transfer(request):
             except:
                 # If an error occurred during persistence of the transaction or altering of the balance
                 error_title = 'Could not complete transaction!'
-                resolution = 'Is your balance correct? Is the amount equal to or above £1?'
+                resolution = 'Is your balance correct? Is the amount equal to or above £1.00?'
 
                 # a rendered response is returned as a error.html page with accompanying dictionary containing details about the error
                 return render(request, 'dashboard/customer/error.html',
                               {'error_title': error_title, 'resolution': resolution})
-
-
 
     # if the request is a GET then create the default form, request.user must be sent so that __init_ has
     # access to the user's pk to get all the payee's

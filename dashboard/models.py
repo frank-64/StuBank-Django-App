@@ -1,3 +1,6 @@
+from decimal import Decimal
+
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 
@@ -51,7 +54,7 @@ class Transaction(models.Model):
     # this customer foreign key is used to relate a transaction to a customer
     Customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
     # direction of the transfer e.g. payment into account or transaction out of account
-    Amount = models.DecimalField(blank=False,decimal_places=2, max_digits=10)
+    Amount = models.DecimalField(blank=False,decimal_places=2, max_digits=10, validators=[MinValueValidator(Decimal('1.00'))])
     # transaction direction e.g. is money being removed from the account or added
     Direction = models.CharField(blank=False, choices=Direction.choices, default=Direction.OUT, max_length=10)
     # this is the datetime the model object was created
@@ -60,8 +63,10 @@ class Transaction(models.Model):
     Comment = models.CharField(blank=True, max_length=200)
     # customer balance after transaction
     NewBalance = models.DecimalField(blank=False, decimal_places=2, max_digits=10)
-    # name of payee or establishment e.g. McDonalds or Tesco
-    Destination = models.CharField(blank=False, max_length=50)
+    # This is the destination/origin of the transaction e.g.
+    # If the transfer is IN then the termini would be the name of the person who transferred the money
+    # If the transfer was OUT then the termini would be the name of the payee
+    Termini = models.CharField(blank=False, max_length=50)
     # this attribute will be used the machine learning to determine probability of certain categories
     Category = models.CharField(blank=False, choices=CATEGORY, max_length=20)
     Method = models.CharField(blank=False, choices=Method.choices, max_length=20, default=Method.Bank_Transfer)
