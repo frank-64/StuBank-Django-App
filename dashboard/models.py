@@ -50,9 +50,9 @@ class Transaction(models.Model):
         IN = 'In'
         OUT = 'Out'
     # optional foreign key used to link payees to a transaction if transferring or receiving money from a payee
-    Payee = models.ForeignKey(Payee, blank=True, null=True, on_delete=models.PROTECT)
+    Payee = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
     # this customer foreign key is used to relate a transaction to a customer
-    Customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
+    Customer = models.ForeignKey(Customer, blank=True, null=True, on_delete=models.PROTECT)
     # direction of the transfer e.g. payment into account or transaction out of account
     Amount = models.DecimalField(blank=False,decimal_places=2, max_digits=10, validators=[MinValueValidator(Decimal('1.00'))])
     # transaction direction e.g. is money being removed from the account or added
@@ -72,4 +72,4 @@ class Transaction(models.Model):
     Method = models.CharField(blank=False, choices=Method.choices, max_length=20, default=Method.Bank_Transfer)
 
     def __str__(self):
-        return f"ID:{self.id}, Username:{self.Customer.user.username}"
+        return f"ID:{self.id}, PayeeID:{self.Payee_id}, CustomerID:{self.Customer}"

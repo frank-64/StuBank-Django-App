@@ -15,11 +15,9 @@ meaning it takes a request and returns a response
 
 class UserDashboardView(LoginRequiredMixin, DetailView):
     """Redirects the user to dashboard_home if authenticated or the login page otherwise
-
     Inherits:
         DetailView: inherited class to override the get_object(), get_queryset() and set the Model/template
         LoginRequiredMixin: inherited class used to redirect if not authenticated
-
     Attributes:
         model = model used with this view
         queryset: queryset which will be returned to the URL that called this view
@@ -27,28 +25,32 @@ class UserDashboardView(LoginRequiredMixin, DetailView):
         context_object_name: variable used on the template to access the context sent with the response
     """
     model = Transaction
-    context_object_name = 'transaction_list'
 
     def get_queryset(self):
         """gets all the transactions as we set the view 'model = Transaction'
-
         :return: all transactions
         """
         return super(UserDashboardView, self).get_queryset()
 
     def get_object(self, queryset=None):
         """ checks if the current user is a helper or customer and sets the template_name accordingly
-
         :param request: HttpRequest object containing metadata and current user attributes
-        :return: queryset of customer's transactions
         """
         if(self.request.user.is_customer):
             UserDashboardView.template_name = 'dashboard/customer/customer_dashboard.html'
-            # queryset is set to that specific customer's transaction objects
-            return self.get_queryset().filter(Customer_id=self.request.user.pk)
         else:
             UserDashboardView.template_name = 'dashboard/helper/helper_dashboard.html'
 
+    def get_context_data(self, **kwargs):
+        """gets the transactions in and out of an account adds them to the context
+
+        :param kwargs: used to obtain the queryset
+        :return context: dictionary containing the transactions in an out of the account
+        """
+        context = super(UserDashboardView, self).get_context_data(**kwargs)
+        context['payee_money_out'] = Transaction.objects.filter(Customer_id=self.request.user.pk).filter(Direction='Out')
+        context['payee_money_in'] = Transaction.objects.filter(Customer_id=self.request.user.pk).filter(Direction='In')
+        return context
 
 class PayeeDetailView(DetailView):
     """Displays all payees related to the current customer's pk
@@ -141,15 +143,7 @@ def add_payee(request):
     return render(request, 'dashboard/customer/add_payee.html', {'form': form})
 
 
-def alter_balance(customers_customer_id, payees_customer_id, amount):
-    """ changes the balance of the sender/customer and the reciever/payee
-
-    :param customers_customer_id: primary key of the customer sending the money
-    :param payees_customer_id: primary key of the payee receiving the money
-    :param amount: how much to change the balances by
-    :return:
-    """
-    # reduce customer's balance
+def get_new_balances(customers_customer_id, payees_customer_id, amount):
     # get the customer's customer object using their primary key
     customer = Customer.objects.filter(pk=customers_customer_id)
 
@@ -159,11 +153,6 @@ def alter_balance(customers_customer_id, payees_customer_id, amount):
     # cust_new_balance is the balance of the customer after removing the amount they are transferring
     cust_new_balance = cust_balance - amount
 
-    # persisting the changed balance in the database
-    Customer.objects.filter(pk=customers_customer_id).update(balance=cust_new_balance)
-
-
-    # increase payee's balance
     # get the payees's customer object using their primary key
     payee = Customer.objects.filter(pk=payees_customer_id)
 
@@ -173,8 +162,26 @@ def alter_balance(customers_customer_id, payees_customer_id, amount):
     # payee_new_balance is the balance of the customer after adding the amount they are receiving
     payee_new_balance = payee_balance + amount
 
+    new_balances = [cust_new_balance, payee_new_balance]
+
+    return new_balances
+
+def alter_balance(customers_customer_id, payees_customer_id, new_balances):
+    """ changes the balance of the sender/customer and the reciever/payee
+
+    :param customers_customer_id: primary key of the customer sending the money
+    :param payees_customer_id: primary key of the payee receiving the money
+    :param amount: how much to change the balances by
+    :return:
+    """
+    # reduce customer's balance
+    # persisting the changed balance in the database
+    Customer.objects.filter(pk=customers_customer_id).update(balance=new_balances[0])
+
+    # increase payee's balance
     #persisting the changed balance in the database
-    Customer.objects.filter(pk=payees_customer_id).update(balance=payee_new_balance)
+    Customer.objects.filter(pk=payees_customer_id).update(balance=new_balances[1])
+
 
 
 def payee_transfer(request):
@@ -209,20 +216,19 @@ def payee_transfer(request):
             # parsing the Amount data to a Decimal as this is required to alter the balance
             amount = Decimal(form.data['Amount'])
 
-            direction = 'OUT'
-
             # setting the transaction_time to the current time
             transaction_time = timezone.now()
 
             # getting the comment data from the form
             comment = form.data['Comment']
 
-            # setting the new_balance to be the customer's balance after this transaction
-            new_balance = request.user.customer.balance - amount
+            new_balances = get_new_balances(customers_customer_id, payees_customer_id, amount)
 
             # Termini is the main attribute to view in a transaction e.g. who you transferred the
             # money to/received the money from
-            termini = payee_fname+" "+payee_lname
+            payee_termini = payee_fname+" "+payee_lname
+
+            customer_termini = request.user.first_name+" "+request.user.last_name
 
             # getting the category data from the form
             category = form.data['Category']
@@ -231,22 +237,30 @@ def payee_transfer(request):
             method = 'Bank Transfer'
 
             # creating the transaction object with all the above variables inserted into their matching fields
-            transaction = Transaction(Payee_id=payee_id, Customer_id=customers_customer_id, Amount=amount,
-                                      Direction=direction, TransactionTime=transaction_time, Comment=comment,
-                                      NewBalance=new_balance, Termini=termini, Category=category,
+            customer_transaction = Transaction(Payee_id=payees_customer_id, Customer_id=customers_customer_id, Amount=amount,
+                                      Direction='Out', TransactionTime=transaction_time, Comment=comment,
+                                      NewBalance=new_balances[0], Termini=payee_termini, Category=category,
                                       Method=method)
+
+            payee_transaction = Transaction(Payee_id=customers_customer_id, Customer_id=payees_customer_id,
+                                               Amount=amount,
+                                               Direction='In', TransactionTime=transaction_time, Comment=comment,
+                                               NewBalance=new_balances[1], Termini=customer_termini, Category=category,
+                                               Method=method)
             try:
                 # TODO: Transactions must be added on the other end so payees can see a transaction coming in from the customer
                 if (amount < 1.00):
                     raise
-                # persisting the transaction object
-                transaction.save()
+                else:
+                    #persisting the transaction object
+                    customer_transaction.save()
+                    payee_transaction.save()
 
-                # changing the balance for both the customer and payee
-                alter_balance(customers_customer_id, payees_customer_id, amount)
+                    # changing the balance for both the customer and payee
+                    alter_balance(customers_customer_id, payees_customer_id, new_balances)
 
-                # redirecting the user to the dashboard to view the transaction
-                return HttpResponseRedirect(reverse('dashboard_home'))
+                    # redirecting the user to the dashboard to view the transaction
+                    return HttpResponseRedirect(reverse('dashboard_home'))
 
             except:
                 # If an error occurred during persistence of the transaction or altering of the balance
