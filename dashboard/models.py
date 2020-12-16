@@ -27,16 +27,15 @@ class Card(models.Model):
 
 class Transaction(models.Model):
     CATEGORY = (
-        ('Food', 'Food'),
+        ('Dining Out', 'Dining Out'),
+        ('Food Shopping', 'Food Shopping'),
         ('Transportation', 'Transportation'),
-        ('Drink', 'Drink'),
         ('Entertainment', 'Entertainment'),
         ('Technology', 'Technology'),
         ('Clothing', 'Clothing'),
-        ('ATM Withdrawal', 'ATM Withdrawal'),
-        ('ATM Deposit', 'ATM Deposit'),
-        ('Cheque Deposit', 'Cheque Deposit'),
-        ('Bank Transfer', 'Bank Transfer'),
+        ('Rent', 'Rent'),
+        ('Healthcare', 'Healthcare'),
+        ('Other', 'Other'),
     )
 
     class Method(models.TextChoices):
@@ -54,7 +53,7 @@ class Transaction(models.Model):
     # this customer foreign key is used to relate a transaction to a customer
     Customer = models.ForeignKey(Customer, blank=True, null=True, on_delete=models.PROTECT)
     # direction of the transfer e.g. payment into account or transaction out of account
-    Amount = models.DecimalField(blank=False,decimal_places=2, max_digits=10, validators=[MinValueValidator(Decimal('1.00'))])
+    Amount = models.DecimalField(blank=False,decimal_places=2, max_digits=10)
     # transaction direction e.g. is money being removed from the account or added
     Direction = models.CharField(blank=False, choices=Direction.choices, default=Direction.OUT, max_length=10)
     # this is the datetime the model object was created
