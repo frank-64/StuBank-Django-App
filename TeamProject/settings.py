@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dashboard.apps.DashboardConfig',
-    'StuBank.apps.StubankConfig'
+    'StuBank.apps.StubankConfig',
+    'FakeTransactions.apps.FaketransactionsConfig'
 ]
 
 MIDDLEWARE = [

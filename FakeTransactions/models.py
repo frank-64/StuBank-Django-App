@@ -9,7 +9,6 @@ class Food(models.Model):
         ('Chinese', 'Chinese'),
         ('Groceries', 'Groceries'),
     )
-
     FoodType = models.CharField(max_length=20, blank=True, choices=FOODTYPES)
     price = models.FloatField(null=False)
     quantity = models.IntegerField(null=False)
