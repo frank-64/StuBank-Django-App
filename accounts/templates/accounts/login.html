@@ -1,5 +1,6 @@
 {% extends "accounts/base.html" %}
 {% block content %}
+
 <form method="POST">
     {% csrf_token %}
     <div class="form-row"> {{ form.username.errors }}{{ form.username.label_tag }}{{ form.username }} </div>
@@ -13,4 +14,7 @@
         {% if form.get_user %}<input type="submit" name="otp_challenge" value="Get Challenge" />{% endif %}
     </div>
 </form>
+
+<p><a href="{% url 'password_reset' %}">Lost password?</a></p>
+
 {% endblock content %}

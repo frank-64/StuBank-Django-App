@@ -1,9 +1,9 @@
+from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, FormView
-from django.views.generic.base import TemplateView
 from django_otp import devices_for_user
 from django.contrib.auth import views as auth_views, authenticate, login
-from django.contrib.auth.forms import AuthenticationForm
+from django_otp.decorators import otp_required
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from .forms import UserRegisterForm, UserInputQrCodeForm
 from django_otp.forms import OTPAuthenticationForm
@@ -25,7 +25,7 @@ def generate_qr(data, size, border):
     return qr.make_image()
 
 
-class CustomLoginView(auth_views.LoginView):
+class CustomTOTPLoginView(auth_views.LoginView):
     template_name = 'accounts/login.html'
     form_class = OTPAuthenticationForm
 
@@ -44,7 +44,6 @@ class RegisterView(CreateView):
         user = authenticate(username=username, password=password)
         login(self.request, user)
         return redirect(self.success_url)
-
 
 
 # Create TOTP QR code and ask for user code input

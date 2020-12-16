@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django import forms
 from django.db import transaction
 from .models import User, Customer, Helper
@@ -25,3 +25,5 @@ class UserRegisterForm(UserCreationForm):
 
 class UserInputQrCodeForm(forms.Form):
     code = forms.IntegerField(max_value=999999)
+
+
