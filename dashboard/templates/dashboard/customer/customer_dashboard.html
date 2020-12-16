@@ -1,6 +1,11 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
 {% block content %}
-    <h3>Welcome to your dashboard {{ user.first_name }}!</h3>
+    <h3 style="text-align:left;">
+    Welcome to your dashboard {{ user.first_name }}!
+    <span style="float:right;">
+        <h6>Last login: {{ user.last_login }}</h6>
+    </span>
+    </h3>
     <ul>
         <li>Username: {{ user.username }}</li>
         <li>Firstname: {{ user.first_name }}</li>
