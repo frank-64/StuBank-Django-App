@@ -65,8 +65,17 @@ class TOTPCreateView(FormView):
 
         url = device.config_url
         customer = Customer.objects.get(user=user)
+        '''customer = Customer.objects.get(user=user)
         customer.qrcode_url = url
+        customer.save()'''
+
+        filepath = user.username + '.png'
+        qr_file = ContentFile(b'', name=filepath)
+        qrcode.make(url).save(qr_file, format='PNG')
+        customer.qrcode_file = qr_file
         customer.save()
+
+
         '''#qr = generate_qr(url, 10, 5)
         filepath = 'accounts/qr_codes/' + str(self.request.user.username) + '.png'
         #qr.save(filepath)

@@ -2,7 +2,7 @@
 {% block content %}
 
 <h1>{{ url }}</h1>
-<!--<img class="" src="{{ user.customer.image.url }}">-->
+<img class="" src="{{ user.customer.qrcode_file.url }}">
 <form method="post">{% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Confirm code">
