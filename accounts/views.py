@@ -7,8 +7,9 @@ from django_otp.decorators import otp_required
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from .forms import UserRegisterForm, UserInputQrCodeForm
 from django_otp.forms import OTPAuthenticationForm
-from .models import User
+from .models import User, Customer
 import qrcode
+from django.core.files.base import ContentFile, File
 
 
 def get_user_totp_device(self, user, confirmed=None):
@@ -49,6 +50,7 @@ class RegisterView(CreateView):
 
 # Create TOTP QR code and ask for user code input
 class TOTPCreateView(FormView):
+    model = Customer
     template_name = 'two_factor_auth/totp_create.html'
     form_class = UserInputQrCodeForm
 
@@ -60,7 +62,25 @@ class TOTPCreateView(FormView):
 
         if not device:
             device = user.totpdevice_set.create(confirmed=False)
+
         url = device.config_url
+        customer = Customer.objects.get(user=user)
+        customer.qrcode_url = url
+        customer.save()
+        '''#qr = generate_qr(url, 10, 5)
+        filepath = 'accounts/qr_codes/' + str(self.request.user.username) + '.png'
+        #qr.save(filepath)
+
+        #image = open(filepath, "rb")
+       #django_file = File(image)
+
+        qr_file = ContentFile(b'', name=filepath)
+        qrcode.make(url).save(qr_file, format='PNG')
+
+        customer = Customer.objects.get(user=user)
+        customer.image = qr_file
+        #customer.image.save(filepath, django_file, save=True)'''
+
         context['url'] = url
         return context
 
@@ -76,3 +96,5 @@ class TOTPCreateView(FormView):
                 device.save()
             return redirect('dashboard_home')
         return redirect('login')
+
+
