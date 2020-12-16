@@ -30,6 +30,7 @@ class CustomTOTPLoginView(auth_views.LoginView):
     form_class = OTPAuthenticationForm
 
 
+
 class RegisterView(CreateView):
     model = User
     form_class = UserRegisterForm

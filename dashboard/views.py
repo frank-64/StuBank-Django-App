@@ -17,9 +17,9 @@ class UserDashboardView(DetailView):
             UserDashboardView.template_name = 'dashboard/helper_dashboard.html'
 
     # Prevent non-2FA-verified users from accessing this page
-    @otp_required
+    '''@otp_required
     def dispatch(self, request, *args, **kwargs):
-        return super(UserDashboardView, self).dispatch(request, *args, **kwargs)
+        return super(UserDashboardView, self).dispatch(request, *args, **kwargs)'''
 
 class TransactionListView(ListView):
     model = Transaction
@@ -27,9 +27,9 @@ class TransactionListView(ListView):
     template_name = 'dashboard/transactions.html'
 
     # Prevent non-2FA-verified users from accessing this page
-    @otp_required
+    '''@otp_required
     def dispatch(self, request, *args, **kwargs):
-        return super(TransactionListView, self).dispatch(request, *args, **kwargs)
+        return super(TransactionListView, self).dispatch(request, *args, **kwargs)'''
 
 
 class TransactionDetailView(DetailView):
@@ -46,8 +46,8 @@ class TransactionDetailView(DetailView):
         return self.get_queryset().filter(Customer_id=self.request.user.pk)
 
     # Prevent non-2FA-verified users from accessing this page
-    @otp_required
+    '''@otp_required
     def dispatch(self, request, *args, **kwargs):
-        return super(TransactionDetailView, self).dispatch(request, *args, **kwargs)
+        return super(TransactionDetailView, self).dispatch(request, *args, **kwargs)'''
 
 
