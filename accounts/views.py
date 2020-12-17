@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, FormView

@@ -18,7 +18,7 @@ class Customer(models.Model):
     balance = models.DecimalField(null=True, blank=False, max_digits=9, decimal_places=2, default=100)
     account_frozen = models.BooleanField(default=False, blank=False)
     #qrcode_url = models.CharField(null=True, blank=False, max_length=200)
-    qrcode_file = models.ImageField(upload_to='accounts/qr_codes', blank=True, null=True)
+    qrcode_file = models.ImageField(upload_to='qr_codes', blank=True, null=True)
 
     def __str__(self):
         return f"ID:{self.user.id}, Username:{self.user.username}"

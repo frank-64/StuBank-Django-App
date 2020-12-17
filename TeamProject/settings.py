@@ -135,3 +135,6 @@ LOGOUT_REDIRECT_URL = 'login'
 AUTH_USER_MODEL = 'accounts.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') #Directory where uploaded files are saved
+MEDIA_URL = '/media/'
