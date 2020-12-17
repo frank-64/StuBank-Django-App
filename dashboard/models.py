@@ -5,14 +5,11 @@ from accounts.models import *
 
 class Payee(models.Model):
     # customerID that added the payee
-    Customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
-    FirstName = models.CharField(max_length=20, blank=False)
-    LastName = models.CharField(max_length=20, blank=False)
-    SortCode = models.IntegerField(blank=False)
-    AccountNumber = models.IntegerField(blank=False)
+    User = models.ForeignKey(User, on_delete=models.PROTECT)
+    PayeeID = models.ForeignKey(Customer, on_delete=models.PROTECT)
 
     def __str__(self):
-        return f"ID:{self.id}, Username:{self.Customer.user.username}"
+        return f"Username: {self.PayeeID.user.username}, Name:{self.PayeeID.user.first_name} {self.PayeeID.user.last_name}"
 
 class Card(models.Model):
     Customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
@@ -36,8 +33,16 @@ class Transaction(models.Model):
         ('ATM Withdrawal', 'ATM Withdrawal'),
         ('ATM Deposit', 'ATM Deposit'),
         ('Cheque Deposit', 'Cheque Deposit'),
-        ('Bank Transfer', 'Bank Transfer')
+        ('Bank Transfer', 'Bank Transfer'),
     )
+
+    class Method(models.TextChoices):
+        ATM_Withdrawal = 'ATM Withdrawal'
+        ATM_Deposit = 'ATM Deposit'
+        Cheque_Deposit = 'Cheque Deposit'
+        Bank_Transfer = 'Bank Transfer'
+        Card_Transaction = 'Card Transaction'
+
     class Direction(models.TextChoices):
         IN = 'In'
         OUT = 'Out'
@@ -50,7 +55,7 @@ class Transaction(models.Model):
     # transaction direction e.g. is money being removed from the account or added
     Direction = models.CharField(blank=False, choices=Direction.choices, default=Direction.OUT, max_length=10)
     # this is the datetime the model object was created
-    TransactionTime = models.CharField(blank=False, max_length=50, default=timezone.now())
+    TransactionTime = models.CharField(blank=False, max_length=50)
     # any other comments with the transaction
     Comment = models.CharField(blank=True, max_length=200)
     # customer balance after transaction
@@ -59,6 +64,7 @@ class Transaction(models.Model):
     Destination = models.CharField(blank=False, max_length=50)
     # this attribute will be used the machine learning to determine probability of certain categories
     Category = models.CharField(blank=False, choices=CATEGORY, max_length=20)
+    Method = models.CharField(blank=False, choices=Method.choices, max_length=20, default=Method.Bank_Transfer)
 
     def __str__(self):
         return f"ID:{self.id}, Username:{self.Customer.user.username}"
