@@ -3,7 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, FormView
 from django_otp import devices_for_user
-from django.contrib.auth import views as auth_views, authenticate, login
+from django.contrib.auth import views as auth_views, authenticate, login, logout
 from django_otp.decorators import otp_required
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from .forms import UserRegisterForm, UserInputQrCodeForm
@@ -32,7 +32,6 @@ class CustomTOTPLoginView(auth_views.LoginView):
     form_class = OTPAuthenticationForm
 
 
-
 class RegisterView(CreateView):
     model = User
     form_class = UserRegisterForm
@@ -59,39 +58,25 @@ class TOTPCreateView(FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        device = get_user_totp_device(self, user)
 
+        # If there isn't a device registered with this user, then create a new device
+        device = get_user_totp_device(self, user)
         if not device:
             device = user.totpdevice_set.create(confirmed=False)
 
+        # Retrieve the url for the QR code and the current customer from the database
         url = device.config_url
         customer = Customer.objects.get(user=user)
-        '''customer = Customer.objects.get(user=user)
-        customer.qrcode_url = url
-        customer.save()'''
 
-        filepath = user.username + '.png'
-        qr_file = ContentFile(b'', name=filepath)
-        qrcode.make(url).save(qr_file, format='PNG')
-        customer.qrcode_file = qr_file
-        customer.save()
+        # If no QR code has been generated for this user before, then generate one
+        if not customer.qrcode_generated:
+            filepath = user.username + '.png'
+            qr_file = ContentFile(b'', name=filepath)
+            qrcode.make(url).save(qr_file, format='PNG')
+            customer.qrcode_file = qr_file
+            customer.qrcode_generated = True
+            customer.save()
 
-
-        '''#qr = generate_qr(url, 10, 5)
-        filepath = 'accounts/qr_codes/' + str(self.request.user.username) + '.png'
-        #qr.save(filepath)
-
-        #image = open(filepath, "rb")
-       #django_file = File(image)
-
-        qr_file = ContentFile(b'', name=filepath)
-        qrcode.make(url).save(qr_file, format='PNG')
-
-        customer = Customer.objects.get(user=user)
-        customer.image = qr_file
-        #customer.image.save(filepath, django_file, save=True)'''
-
-        context['url'] = url
         return context
 
     # Redirect the user to their dashboard or the login page, depending on the success of the auth code
@@ -105,6 +90,8 @@ class TOTPCreateView(FormView):
                 device.confirmed = True
                 device.save()
             return redirect('dashboard_home')
-        return redirect('login')
+        return redirect('totp_create')
+
+
 
 
