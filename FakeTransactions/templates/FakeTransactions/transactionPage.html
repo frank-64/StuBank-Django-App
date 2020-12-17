@@ -1,14 +1,39 @@
-{% extends "FakeTransactions/base.html" %}
-{% load static %}
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <title>Make Transactions</title>
 </head>
+
+<label for="SpendingMoney"> Purchase Items: <br>
+
+    <select name="Food" id="Food"><br><br>
+        <option value="FoodNull">Food</option>
+        <option value="Groceries">Groceries(£)</option>
+        <option value="FastFood">Fast Food(£)</option>
+        <option value="Snack">Snack(£)</option>
+    </select><br><br>
+
+    <select name="Clothes" id="Clothes"><br><br>
+        <option value="ClothesNull">Clothes</option>
+        <option value="Jeans">Jeans(£)</option>
+        <option value="Shorts">Shorts(£)</option>
+        <option value="Shirts">Shirts(£)</option>
+    </select><br><br>
+
+    <select name="Drinks" id="Drinks"><br><br>
+        <option value="DrinksNull">Drinks</option>
+        <option value="Alcohol">Alcohol(£)</option>
+        <option value="FizzyDrink">Fizzy Drink(£)</option>
+        <option value="Water">Water(£)</option>
+    </select><br><br>
+</label>
+
+<label for="ReceivingMoney"> Payee Incoming/Cheque
+
+
+
+</label>
 <body>
 
 </body>
