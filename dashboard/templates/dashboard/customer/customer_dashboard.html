@@ -1,6 +1,11 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
 {% block content %}
-    <h3>Welcome to your dashboard {{ user.first_name }}!</h3>
+    <h3 style="text-align:left;">
+    Welcome to your dashboard {{ user.first_name }}!
+    <span style="float:right;">
+        <h6>Last login: {{ user.last_login }}</h6>
+    </span>
+    </h3>
     <ul>
         <li>Username: {{ user.username }}</li>
         <li>Firstname: {{ user.first_name }}</li>
@@ -13,28 +18,51 @@
     </ul>
 {% endblock content %}
 {% block transaction %}
-    <h3>Your transactions:</h3>
-    <br>
+    <h3>Your transactions In:</h3>
     <br>
     <table id="transactions_table" class="table-responsive table-hover table-striped" width="50%" style=" width: 100%;font-size: 2vw">
         <tr>
             <th style="padding:0 15px 0 15px;">Date Time</th>
             <th style="padding:0 15px 0 15px;">Amount</th>
             <th style="padding:0 15px 0 15px;">New Balance</th>
-            <th style="padding:0 15px 0 15px;">Destination</th>
+            <th style="padding:0 15px 0 15px;">Where?</th>
             <th style="padding:0 15px 0 15px;">Category</th>
             <th style="padding:0 15px 0 15px;">Direction</th>
             <th style="padding:0 15px 0 15px;">Comment</th>
         </tr>
-        {% for t in transaction_list %}
+        {% for p in payee_money_in %}
             <tr>
-              <td style="padding:0 15px 0 15px;">{{ t.TransactionTime }}</td>
-              <td style="padding:0 15px 0 15px;">{{ t.Amount }}</td>
-              <td style="padding:0 15px 0 15px;">{{ t.NewBalance }}</td>
-              <td style="padding:0 15px 0 15px;">{{ t.Destination }}</td>
-              <td style="padding:0 15px 0 15px;">{{ t.Category }}</td>
-              <td style="padding:0 15px 0 15px;">{{ t.Direction }}</td>
-              <td style="padding:0 15px 0 15px;">{{ t.Comment }}</td>
+              <td style="padding:0 15px 0 15px;">{{ p.TransactionTime }}</td>
+              <td style="padding:0 15px 0 15px;">{{ p.Amount }}</td>
+              <td style="padding:0 15px 0 15px;">{{ p.NewBalance }}</td>
+              <td style="padding:0 15px 0 15px;">{{ p.Termini }}</td>
+              <td style="padding:0 15px 0 15px;">{{ p.Category }}</td>
+              <td style="padding:0 15px 0 15px;">{{ p.Direction }}</td>
+              <td style="padding:0 15px 0 15px;">{{ p.Comment }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <h3>Your transactions Out:</h3>
+    <br>
+    <table id="transactions_table" class="table-responsive table-hover table-striped" width="50%" style=" width: 100%;font-size: 2vw">
+        <tr>
+            <th style="padding:0 15px 0 15px;">Date Time</th>
+            <th style="padding:0 15px 0 15px;">Amount</th>
+            <th style="padding:0 15px 0 15px;">New Balance</th>
+            <th style="padding:0 15px 0 15px;">Where?</th>
+            <th style="padding:0 15px 0 15px;">Category</th>
+            <th style="padding:0 15px 0 15px;">Direction</th>
+            <th style="padding:0 15px 0 15px;">Comment</th>
+        </tr>
+        {% for c in payee_money_out %}
+            <tr>
+              <td style="padding:0 15px 0 15px;">{{ c.TransactionTime }}</td>
+              <td style="padding:0 15px 0 15px;">{{ c.Amount }}</td>
+              <td style="padding:0 15px 0 15px;">{{ c.NewBalance }}</td>
+              <td style="padding:0 15px 0 15px;">{{ c.Termini }}</td>
+              <td style="padding:0 15px 0 15px;">{{ c.Category }}</td>
+              <td style="padding:0 15px 0 15px;">{{ c.Direction }}</td>
+              <td style="padding:0 15px 0 15px;">{{ c.Comment }}</td>
             </tr>
         {% endfor %}
     </table>

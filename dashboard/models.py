@@ -1,3 +1,6 @@
+from decimal import Decimal
+
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 
@@ -24,16 +27,15 @@ class Card(models.Model):
 
 class Transaction(models.Model):
     CATEGORY = (
-        ('Food', 'Food'),
+        ('Dining Out', 'Dining Out'),
+        ('Food Shopping', 'Food Shopping'),
         ('Transportation', 'Transportation'),
-        ('Drink', 'Drink'),
         ('Entertainment', 'Entertainment'),
         ('Technology', 'Technology'),
         ('Clothing', 'Clothing'),
-        ('ATM Withdrawal', 'ATM Withdrawal'),
-        ('ATM Deposit', 'ATM Deposit'),
-        ('Cheque Deposit', 'Cheque Deposit'),
-        ('Bank Transfer', 'Bank Transfer'),
+        ('Rent', 'Rent'),
+        ('Healthcare', 'Healthcare'),
+        ('Other', 'Other'),
     )
 
     class Method(models.TextChoices):
@@ -47,9 +49,9 @@ class Transaction(models.Model):
         IN = 'In'
         OUT = 'Out'
     # optional foreign key used to link payees to a transaction if transferring or receiving money from a payee
-    Payee = models.ForeignKey(Payee, blank=True, null=True, on_delete=models.PROTECT)
+    Payee = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
     # this customer foreign key is used to relate a transaction to a customer
-    Customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
+    Customer = models.ForeignKey(Customer, blank=True, null=True, on_delete=models.PROTECT)
     # direction of the transfer e.g. payment into account or transaction out of account
     Amount = models.DecimalField(blank=False,decimal_places=2, max_digits=10)
     # transaction direction e.g. is money being removed from the account or added
@@ -60,11 +62,13 @@ class Transaction(models.Model):
     Comment = models.CharField(blank=True, max_length=200)
     # customer balance after transaction
     NewBalance = models.DecimalField(blank=False, decimal_places=2, max_digits=10)
-    # name of payee or establishment e.g. McDonalds or Tesco
-    Destination = models.CharField(blank=False, max_length=50)
+    # This is the destination/origin of the transaction e.g.
+    # If the transfer is IN then the termini would be the name of the person who transferred the money
+    # If the transfer was OUT then the termini would be the name of the payee
+    Termini = models.CharField(blank=False, max_length=50)
     # this attribute will be used the machine learning to determine probability of certain categories
     Category = models.CharField(blank=False, choices=CATEGORY, max_length=20)
     Method = models.CharField(blank=False, choices=Method.choices, max_length=20, default=Method.Bank_Transfer)
 
     def __str__(self):
-        return f"ID:{self.id}, Username:{self.Customer.user.username}"
+        return f"ID:{self.id}, PayeeID:{self.Payee_id}, CustomerID:{self.Customer}"
