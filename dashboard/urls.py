@@ -4,9 +4,12 @@ from dashboard.views import *
 
 urlpatterns = [
     path('', UserDashboardView.as_view(), name='dashboard_home'),
-    path('transactions/all/', TransactionListView.as_view(), name='transactions'),
-    path('transactions/detail/', TransactionDetailView.as_view(), name='transactions_user')
+    path('viewpayees/', PayeeDetailView.as_view(), name='viewpayee'),
+    path('removepayee/<int:pk>/', delete_payee, name='removepayee'),
+    path('addpayee/', add_payee, name='addpayee'),
+    path('transfer/', payee_transfer, name='transfer'),
+    # path('transfer/get-payees', payee_list, name='get-payees')
     # path('livechat/', UserDashboardView.as_view(), name='livechat'),
-    # path('addpayee/', UserDashboardView.as_view(), name='addpayee'),
-    # path('viewpayees/', UserDashboardView.as_view(), name='viewpayee'),
+    # path('transactions/all/', TransactionListView.as_view(), name='transactions'),
+    # path('transactions/detail/', TransactionDetailView.as_view(), name='transactions_user'),
 ]
