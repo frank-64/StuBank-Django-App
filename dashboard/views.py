@@ -3,17 +3,19 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from decimal import Decimal
+from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, TemplateView, ListView, CreateView
 from django.views.generic.base import View
 from .forms import *
 from dashboard.models import *
+from django_otp.decorators import otp_required
 
 """
 request is not a visible parameter with Class-based views because as_view() on the .urls file makes the view callable
 meaning it takes a request and returns a response
 """
-
-class UserDashboardView(LoginRequiredMixin, DetailView):
+@method_decorator(otp_required, name='dispatch')
+class UserDashboardView(DetailView):
     """Redirects the user to dashboard_home if authenticated or the login page otherwise
     Inherits:
         DetailView: inherited class to override the get_object(), get_queryset() and set the Model/template
@@ -52,6 +54,7 @@ class UserDashboardView(LoginRequiredMixin, DetailView):
         context['payee_money_in'] = Transaction.objects.filter(Customer_id=self.request.user.pk).filter(Direction='In')
         return context
 
+@method_decorator(otp_required, name='dispatch')
 class PayeeDetailView(DetailView):
     """Displays all payees related to the current customer's pk
 
@@ -82,7 +85,7 @@ class PayeeDetailView(DetailView):
         """
         return self.get_queryset().filter(User_id=self.request.user.pk)
 
-
+@otp_required
 def delete_payee(request, pk):
     """deletes a payee
 
@@ -95,6 +98,7 @@ def delete_payee(request, pk):
     return response
 
 
+@otp_required
 def add_payee(request):
     """adds a payee using the POSTed inputs from the PayeeDetailsForm
 
@@ -183,7 +187,7 @@ def alter_balance(customers_customer_id, payees_customer_id, new_balances):
     Customer.objects.filter(pk=payees_customer_id).update(balance=new_balances[1])
 
 
-
+@otp_required
 def payee_transfer(request):
     """transfers a sum of money between a customer and one of their payee's using the POSTed inputs from the TransferForm
 
