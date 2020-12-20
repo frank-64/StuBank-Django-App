@@ -1,0 +1,10 @@
+{% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        <h1>Update Money Pot:</h1>
+            {{ form.as_p }}
+        <button type="submit">Update</button>
+    </form>
+
+{% endblock content %}

@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from decimal import Decimal
 from django.utils.decorators import method_decorator
-from django.views.generic import DetailView, TemplateView, ListView, CreateView, DeleteView
+from django.views.generic import DetailView, TemplateView, ListView, CreateView, DeleteView, UpdateView
 from django.views.generic.base import View
 from .forms import *
 from dashboard.models import *
@@ -289,6 +289,10 @@ def payee_transfer(request):
     return render(request, 'dashboard/customer/transfer.html', context)
 
 
+'''
+MONEY POT VIEWS
+'''
+
 class MoneyPotListView(ListView):
     model = MoneyPot
     template_name = 'dashboard/customer/money_pots.html'
@@ -301,7 +305,7 @@ class MoneyPotListView(ListView):
 
 
 class MoneyPotCreateView(CreateView):
-    template_name = 'dashboard/customer/add_money_pot.html'
+    template_name = 'dashboard/customer/money_pots_add.html'
     model = MoneyPot
     fields = ['name', 'target_balance']
     success_url = '/dashboard/moneypots/'
@@ -318,6 +322,11 @@ class MoneyPotDeleteView(DeleteView):
     success_url = '/dashboard/moneypots/'
 
 
+class MoneyPotUpdateView(UpdateView):
+    template_name = 'dashboard/customer/money_pots_update.html'
+    model = MoneyPot
+    fields = ['name', 'target_balance']
+    success_url = '/dashboard/moneypots/'
 
 
 

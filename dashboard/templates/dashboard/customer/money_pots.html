@@ -12,6 +12,7 @@
             <p>POT BALANCE: {{ pot.pot_balance }}</p>
             <p>TARGET BALANCE: {{ pot.target_balance }}</p>
             <a href="{% url 'delete_money_pot' pot.id %}">Delete</a>
+            <a href="{% url 'update_money_pot' pot.id %}">Update</a>
         </div>
     </article>
 {% endfor %}
