@@ -1,0 +1,17 @@
+{% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% block content %}
+
+<h5>Want to add a new money pot?</h5><a href="{% url 'add_money_pot' %}">Add Money Pot</a>
+<br>
+<br>
+<h5>YOUR MONEY POTS</h5>
+{%  for pot in money_pots %}
+    <article class="media content-section">
+        <div class="media-body">
+            <p>POT BALANCE: {{ pot.pot_balance }}</p>
+            <p>TARGET BALANCE: {{ pot.target_balance }}</p>
+        </div>
+    </article>
+{% endfor %}
+
+{% endblock content %}

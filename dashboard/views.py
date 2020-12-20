@@ -289,6 +289,32 @@ def payee_transfer(request):
     return render(request, 'dashboard/customer/transfer.html', context)
 
 
+class MoneyPotListView(ListView):
+    model = MoneyPot
+    template_name = 'dashboard/customer/money_pots.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        customer = Customer.objects.get(user=self.request.user)
+        context = super().get_context_data(**kwargs)
+        context['money_pots'] = MoneyPot.objects.filter(customer=customer)
+        return context
+
+
+class MoneyPotCreateView(CreateView):
+    template_name = 'dashboard/customer/add_money_pot.html'
+    model = MoneyPot
+    fields = ['target_balance']
+    success_url = '/dashboard/moneypots/'
+
+    def form_valid(self, form):
+        customer = Customer.objects.get(user=self.request.user)
+        form.instance.customer = customer
+        return super(MoneyPotCreateView, self).form_valid(form)
+
+
+
+
+
 # class TransactionListView(ListView):
 #     model = Transaction
 #     context_object_name = 'transaction_list'
