@@ -187,11 +187,18 @@ def alter_balance(customers_customer_id, payees_customer_id, new_balances):
     """
     # reduce customer's balance
     # persisting the changed balance in the database
-    Customer.objects.filter(pk=customers_customer_id).update(balance=new_balances[0])
+    customer = Customer.objects.get(pk=customers_customer_id)
+    customer.balance = new_balances[0]
+    customer.save()
 
     # increase payee's balance
     # persisting the changed balance in the database
-    Customer.objects.filter(pk=payees_customer_id).update(balance=new_balances[1])
+    payee = Customer.objects.get(pk=payees_customer_id)
+    payee.balance = new_balances[1]
+    payee.save()
+
+    update_available_balance(customer)
+    update_available_balance(payee)
 
 
 @otp_required
@@ -338,18 +345,11 @@ class MoneyPotDeleteView(DeleteView):
         return redirect('money_pots')
 
 
-
 class MoneyPotUpdateView(UpdateView):
     template_name = 'dashboard/customer/money_pots_update.html'
     model = MoneyPot
     fields = ['name', 'target_balance']
     success_url = '/dashboard/moneypots/'
-
-    # TESTING
-    def form_valid(self, form):
-        customer = Customer.objects.get(user=self.request.user)
-        update_available_balance(customer)
-        return super(MoneyPotUpdateView, self).form_valid(form)
 
 
 class MoneyPotDepositView(FormView):
@@ -392,13 +392,6 @@ def update_available_balance(customer):
     available_balance = customer.balance - money_pots_total
     customer.available_balance = available_balance
     customer.save()
-
-
-
-
-
-
-
 
 # class TransactionListView(ListView):
 #     model = Transaction

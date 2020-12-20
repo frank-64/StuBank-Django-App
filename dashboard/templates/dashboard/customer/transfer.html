@@ -1,11 +1,11 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
 {% block content %}
     <script>
-    const balance = {{ user.customer.balance }};
+    const available_balance = {{ user.customer.available_balance }};
      $(document).ready(function(){
           $("input[name='Amount']").keyup(function(){
               let amount = this.value;
-              let sum = balance-amount;
+              let sum = available_balance-amount;
               if (sum<0){
                   alert("You do not have £"+amount+" in your bank account.")
                   document.getElementById('submit').disabled = true;
@@ -24,7 +24,8 @@
         {% csrf_token %}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">Transfer to payee:</legend>
-            <h5>Your balance: <p id="new_balance">£{{ user.customer.balance }}</p></h5>
+            <h5>Balance in account: £{{ user.customer.balance }}</h5>
+            <h4>Available balance: <p id="new_balance">£{{ user.customer.available_balance }}</p></h4>
             <table>
                 {{ form.as_table }}
             </table>

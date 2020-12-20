@@ -14,7 +14,8 @@
         <li>Sort Code: {{ user.customer.sort_code }}</li>
         <li>Account Number: {{ user.customer.account_num }}</li>
         <li>Active?: {{ user.is_active }}</li>
-        <li><strong>Balance: £{{ user.customer.balance }}</strong></li>
+        <li>Balance: £{{ user.customer.balance }}</li>
+        <li><strong>Available Balance: £{{ user.customer.available_balance }}</strong></li>
     </ul>
 {% endblock content %}
 {% block transaction %}
