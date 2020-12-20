@@ -8,8 +8,10 @@
 {%  for pot in money_pots %}
     <article class="media content-section">
         <div class="media-body">
+            <h2>{{ pot.name }}</h2>
             <p>POT BALANCE: {{ pot.pot_balance }}</p>
             <p>TARGET BALANCE: {{ pot.target_balance }}</p>
+            <a href="{% url 'delete_money_pot' pot.id %}">Delete</a>
         </div>
     </article>
 {% endfor %}

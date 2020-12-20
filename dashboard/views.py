@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from decimal import Decimal
 from django.utils.decorators import method_decorator
-from django.views.generic import DetailView, TemplateView, ListView, CreateView
+from django.views.generic import DetailView, TemplateView, ListView, CreateView, DeleteView
 from django.views.generic.base import View
 from .forms import *
 from dashboard.models import *
@@ -303,13 +303,19 @@ class MoneyPotListView(ListView):
 class MoneyPotCreateView(CreateView):
     template_name = 'dashboard/customer/add_money_pot.html'
     model = MoneyPot
-    fields = ['target_balance']
+    fields = ['name', 'target_balance']
     success_url = '/dashboard/moneypots/'
 
     def form_valid(self, form):
         customer = Customer.objects.get(user=self.request.user)
         form.instance.customer = customer
         return super(MoneyPotCreateView, self).form_valid(form)
+
+
+class MoneyPotDeleteView(DeleteView):
+    template_name = 'dashboard/customer/money_pots_confirm_delete.html'
+    model = MoneyPot
+    success_url = '/dashboard/moneypots/'
 
 
 
