@@ -1,0 +1,11 @@
+{% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% block content %}
+    <h3>Available money: {{ user.customer.available_balance }}</h3>
+    <form method="POST">
+        {% csrf_token %}
+        <h1>Deposit money to pot: {{ object.name }}</h1>
+            {{ form.as_p }}
+        <button type="submit">Deposit</button>
+    </form>
+
+{% endblock content %}

@@ -21,3 +21,7 @@ class TransferForm(forms.ModelForm):
         exclude = ['Direction', 'Termini', 'TransactionTime', 'NewBalance', 'Customer', 'Method']
 
     #Payee = forms.ModelChoiceField(required=True, queryset=None, help_text="Who would you like to transfer to?")
+
+
+class DepositForm(forms.Form):
+    amount = forms.DecimalField(required=True, decimal_places=2, max_digits=10)

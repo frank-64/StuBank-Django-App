@@ -1,6 +1,7 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
 {% block content %}
-
+<h3>Balance in account: £{{ user.customer.balance }}</h3>
+<h1>Available balance: £{{ user.customer.available_balance }}</h1>
 <h5>Want to add a new money pot?</h5><a href="{% url 'add_money_pot' %}">Add Money Pot</a>
 <br>
 <br>
@@ -11,6 +12,7 @@
             <h2>{{ pot.name }}</h2>
             <p>POT BALANCE: {{ pot.pot_balance }}</p>
             <p>TARGET BALANCE: {{ pot.target_balance }}</p>
+            <a href="{% url 'deposit_money_pot' pot.id %}">Deposit</a>
             <a href="{% url 'delete_money_pot' pot.id %}">Delete</a>
             <a href="{% url 'update_money_pot' pot.id %}">Update</a>
         </div>

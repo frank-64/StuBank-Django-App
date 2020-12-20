@@ -17,6 +17,7 @@ class Customer(models.Model):
     account_num = models.IntegerField(null=True, blank=True)
     sort_code = models.CharField(null=True, blank=False, max_length=20)
     balance = models.DecimalField(null=True, blank=False, max_digits=9, decimal_places=2, default=100)
+    available_balance = models.DecimalField(null=True, blank=False, max_digits=9, decimal_places=2, default=0)
     account_frozen = models.BooleanField(default=False, blank=False)
     qrcode_file = models.ImageField(upload_to='qr_codes', blank=True, null=True)
     qrcode_generated = models.BooleanField(default=False, blank=False)
