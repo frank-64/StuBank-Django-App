@@ -1,16 +1,46 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
+
+{% block javascript %}
+<script>
+    var payee_exists = false;
+
+    function check_function(){
+        var firstname = $("input[name='first_name']").val();
+        var lastname = $("input[name='last_name']").val();
+        var account_num = $("input[name='account_num']").val();
+        var sort_code = $("input[name='sort_code']").val();
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("payee_check").hidden = false;
+            }
+        };
+        var json_account = {
+            'firstname':firstname,
+            'lastname':lastname,
+            'account_num':account_num,
+            'sort_code':sort_code
+        }
+        xhttp.open("POST", '/dashboard/checkpayee/');
+        xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhttp.send(JSON.stringify(json_account));
+    }
+</script>
+{% endblock javascript %}
+
 {% block content %}
+    <button onclick="check_function()" class="btn">Check Payee</button>
+    <legend class="border-bottom mb-4">Add payee:</legend>
     <form method="POST">
         {% csrf_token %}
-        <h1>{{ payee }}</h1>
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Add payee:</legend>
             <table>
                 {{ form.as_table }}
             </table>
         </fieldset>
+        <p hidden id="payee_check">Payee Exists!</p>
         <div class="form-group">
-            <button class="btn btn-outline-info" type="submit">Add</button>
+            <button class="btn btn-outline-info" type="submit" id="submit" disabled>Add</button>
         </div>
     </form>
 

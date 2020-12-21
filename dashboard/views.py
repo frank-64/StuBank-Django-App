@@ -4,11 +4,13 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from decimal import Decimal
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.views.generic import DetailView, TemplateView, ListView, CreateView
 from django.views.generic.base import View
 from .forms import *
 from dashboard.models import *
 from django_otp.decorators import otp_required
+import json
 
 """
 request is not a visible parameter with Class-based views because as_view() on the .urls file makes the view callable
@@ -96,6 +98,16 @@ def delete_payee(request, pk):
     Payee.objects.filter(pk=pk).delete()
     response = redirect(reverse('viewpayee'))
     return response
+
+@csrf_exempt
+def check_payee(request):
+    if request.method == "POST":
+        str_details = request.body.decode('UTF-8')
+        json_details = json.loads(str_details)
+        payee_customer_exists = Customer.objects.filter(sort_code=json_details['sort_code'], account_num=json_details['account_num'],
+                                                        user__first_name=json_details['firstname'], user__last_name=json_details['lastname']).exists()
+        if payee_customer_exists:
+            return HttpResponse("True")
 
 
 @otp_required
@@ -252,7 +264,6 @@ def payee_transfer(request):
                                                NewBalance=new_balances[1], Termini=customer_termini, Category=category,
                                                Method=method)
             try:
-                # TODO: Transactions must be added on the other end so payees can see a transaction coming in from the customer
                 if (amount < 1.00):
                     raise
                 else:

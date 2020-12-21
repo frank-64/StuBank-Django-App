@@ -1,6 +1,7 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
-{% block content %}
-    <script>
+
+{% block javascript %}
+        <script>
     const balance = {{ user.customer.balance }};
      $(document).ready(function(){
           $("input[name='Amount']").keyup(function(){
@@ -19,6 +20,9 @@
           });
         });
     </script>
+{% endblock javascript %}
+
+{% block content %}
 {% if user.is_authenticated and user.is_customer%}
     <form method="POST">
         {% csrf_token %}
