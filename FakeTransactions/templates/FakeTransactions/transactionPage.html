@@ -1,40 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
+{% extends "FakeTransactions/base.html" %}
+{% block content %}
   <title>Make Transactions</title>
-</head>
 
-<label for="SpendingMoney"> Purchase Items: <br>
-
-    <select name="Food" id="Food"><br><br>
-        <option value="FoodNull">Food</option>
-        <option value="Groceries">Groceries(£)</option>
-        <option value="FastFood">Fast Food(£)</option>
-        <option value="Snack">Snack(£)</option>
-    </select><br><br>
-
-    <select name="Clothes" id="Clothes"><br><br>
-        <option value="ClothesNull">Clothes</option>
-        <option value="Jeans">Jeans(£)</option>
-        <option value="Shorts">Shorts(£)</option>
-        <option value="Shirts">Shirts(£)</option>
-    </select><br><br>
-
-    <select name="Drinks" id="Drinks"><br><br>
-        <option value="DrinksNull">Drinks</option>
-        <option value="Alcohol">Alcohol(£)</option>
-        <option value="FizzyDrink">Fizzy Drink(£)</option>
-        <option value="Water">Water(£)</option>
-    </select><br><br>
-</label>
-
-<label for="ReceivingMoney"> Payee Incoming/Cheque
-
-
-
-</label>
 <body>
 
+
+<form action="models.py"> <h2>Purchase Items: </h2><br>
+<h3>Food</h3><br>
+
+    <input type="checkbox" id="Groceries" name="Groceries">
+    <label for="Groceries">Groceries(£)</label><br>
+    <input type="checkbox" id="FastFood" name="FastFood">
+    <label for="FastFood">FastFood(£)</label><br>
+    <input type="checkbox" id="Snack" name="Snack">
+    <label for="Snack">Snack(£)</label><br><br>
+
+<h3>Clothes</h3><br>
+
+    <input type="checkbox" id="Jeans" name="Jeans">
+    <label for="Jeans">Jeans(£)</label><br>
+    <input type="checkbox" id="Shorts" name="Shorts">
+    <label for="Shorts">Shorts(£)</label><br>
+    <input type="checkbox" id="Shirts" name="Shirts">
+    <label for="Shirts">Shirts(£)</label><br><br>
+
+<h3>Drinks</h3><br>
+
+    <input type="checkbox" id="Alcohol" name="Alcohol">
+    <label for="Alcohol">Alcohol(£)</label><br>
+    <input type="checkbox" id="FizzyDrink" name="FizzyDrink">
+    <label for="FizzyDrink">FizzyDrink(£)</label><br>
+    <input type="checkbox" id="Water" name="Water">
+    <label for="Water">Water(£)</label><br><br>
+
+
+    <input type="submit" value="Submit">
+</form>
+<br>
+<label for="ReceivingMoney"><h3>Incoming Capital:</h3><br>
+
+
+
+</label>
+
+
 </body>
-</html>
+
+{% endblock content %}
