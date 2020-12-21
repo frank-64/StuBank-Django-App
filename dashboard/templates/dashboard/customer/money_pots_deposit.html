@@ -1,11 +1,33 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
 {% block content %}
-    <h3>Available money: {{ user.customer.available_balance }}</h3>
+    <script>
+    const available_balance = {{ user.customer.available_balance }};
+     $(document).ready(function(){
+          $("input[name='amount']").keyup(function(){
+              let amount = this.value;
+              let sum = available_balance-amount;
+              if (sum<0){
+                  alert("You do not have £"+amount+" in your bank account.")
+                  document.getElementById('submit').disabled = true;
+                  document.getElementById("new_balance").innerText = "£"+(sum);
+                  document.getElementById("new_balance").style.color='red';
+              }else {
+                  document.getElementById('submit').disabled = false;
+                  document.getElementById("new_balance").style.color='black';
+                  document.getElementById("new_balance").innerText = "£"+(sum);
+              }
+          });
+        });
+    </script>
+
+    <h3>Available balance: <p id="new_balance">{{ user.customer.available_balance }}</p></h3>
     <form method="POST">
         {% csrf_token %}
-        <h1>Deposit money to pot: {{ object.name }}</h1>
+        <h1>Deposit money to pot: {{ pot.name }}</h1>
+        <h3>Current amount in pot: {{ pot.pot_balance }}</h3>
+        <h3>Target: {{ pot.target_balance }}</h3>
             {{ form.as_p }}
-        <button type="submit">Deposit</button>
+        <button type="submit" id="submit">Deposit</button>
     </form>
 
 {% endblock content %}

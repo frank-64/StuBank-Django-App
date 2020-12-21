@@ -305,7 +305,9 @@ def payee_transfer(request):
 
 
 '''
-MONEY POT VIEWS
+MONEY POT STUFF ( ͡° ͜ʖ ͡°)
+- Money pot displays notice when target has been met
+- Display percentage complete of each pot
 '''
 
 
@@ -377,6 +379,15 @@ class MoneyPotDepositView(FormView):
             update_available_balance(customer)
 
         return super(MoneyPotDepositView, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        pk = self.kwargs['pk']
+        money_pot = MoneyPot.objects.get(pk=pk)
+
+        context = super().get_context_data(**kwargs)
+
+        context['pot'] = money_pot
+        return context
 
 
 # Update the available balance of the customer. Any money not in a money pot is available to spend

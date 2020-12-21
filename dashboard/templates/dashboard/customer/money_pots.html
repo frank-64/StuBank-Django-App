@@ -1,5 +1,15 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
 {% block content %}
+
+<script>
+    const pot_balance = {{  }}
+</script>
+
+
+
+
+
+
 <h3>Balance in account: £{{ user.customer.balance }}</h3>
 <h1>Available balance: £{{ user.customer.available_balance }}</h1>
 <h5>Want to add a new money pot?</h5><a href="{% url 'add_money_pot' %}">Add Money Pot</a>
