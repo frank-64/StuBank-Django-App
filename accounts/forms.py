@@ -15,7 +15,7 @@ class UserRegisterForm(UserCreationForm):
         user.is_customer = True
         user.save()
 
-
+        # creating the customer object
         customer = Customer.objects.create(user=user)
 
         # random account number between 2000000 and 3000000 which only persists
@@ -27,10 +27,7 @@ class UserRegisterForm(UserCreationForm):
         # preset account number
         customer.sort_code = "42-04-20"
         customer.save()
-        return user
 
 
 class UserInputQrCodeForm(forms.Form):
     code = forms.IntegerField(max_value=999999)
-
-

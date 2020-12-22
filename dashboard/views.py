@@ -1,15 +1,16 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+import datetime
+import random
+
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from decimal import Decimal
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
-from django.views.generic import DetailView, TemplateView, ListView, CreateView
-from django.views.generic.base import View
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import DetailView
 from .forms import *
 from dashboard.models import *
 from django_otp.decorators import otp_required
+from dashboard.card_gen import credit_card_number
 import json
 
 """
@@ -54,7 +55,52 @@ class UserDashboardView(DetailView):
         context = super(UserDashboardView, self).get_context_data(**kwargs)
         context['payee_money_out'] = Transaction.objects.filter(Customer_id=self.request.user.pk).filter(Direction='Out')
         context['payee_money_in'] = Transaction.objects.filter(Customer_id=self.request.user.pk).filter(Direction='In')
+        context['card'] = Card.objects.filter(Customer_id=self.request.user.pk)
         return context
+
+
+def get_expiry_date():
+    """gets the date in 5 years time
+
+    :return datetime of the date now + 5 years:
+    """
+    now = timezone.now().date()
+    return now + datetime.timedelta(days=1825)
+
+
+def get_CVC():
+    """randomises 3 digits to generate a CVC
+
+    :return string array CVC:
+    """
+    generator = random.Random()
+    generator.seed()
+    digit_str = []
+    for i in range(3):
+        digit = str(generator.choice(range(0, 10)))
+        digit_str.append(digit)
+
+    return digit_str
+
+
+def get_card(request):
+    """creates a card object for the user that called this method on their dashboard
+
+    :param request: HttpRequest object containing metadata and current user attributes
+    :return HttpResponseRedirect: redirects user to the dashboard
+    """
+    generator = random.Random()
+    generator.seed()
+    card_num = int(credit_card_number(generator, 16, 1)[0])
+    while (Card.objects.filter(CardNum=card_num).exists()):
+        card_num = int(credit_card_number(generator, 16, 1)[0])
+    #TODO:CVC numbers such as 000 and 055 are formatted to 0 and 55 respectively which needs changing
+    #TODO:Need to add validation to ensure unique card numbers
+    card = Card.objects.create(Customer_id=request.user.id, CardNum=card_num, CVC=''.join(get_CVC()),
+                               ExpiryDate=get_expiry_date())
+    card.save()
+    return HttpResponseRedirect(reverse('dashboard_home'))
+
 
 @method_decorator(otp_required, name='dispatch')
 class PayeeDetailView(DetailView):

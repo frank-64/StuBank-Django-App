@@ -4,6 +4,19 @@
     Welcome to your dashboard {{ user.first_name }}!
     <span style="float:right;">
         <h6>Last login: {{ user.last_login }}</h6>
+        {# TODO: The card details should not be displayed in deployment and card number masked aside from last 4 digits #}
+        {% if card %}
+            {% for c in card %}
+                <ul>
+                    <li><small>Card number: {{ c.CardNum }}</small></li>
+                    <li><small>CVC: {{ c.CVC }}</small></li>
+                    <li><small>Expiry Date: {{ c.ExpiryDate }}</small></li>
+                </ul>
+            {% endfor %}
+        {% else %}
+            <a href="{% url 'getcard' %}">Get your card here!</a>
+        {% endif %}
+
     </span>
     </h3>
     <ul>
