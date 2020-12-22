@@ -4,8 +4,8 @@ from dashboard.models import *
 class PayeeDetailsForm(forms.Form):
     first_name = forms.CharField(required=True, max_length=20)
     last_name = forms.CharField(required=True, max_length=20)
-    account_num = forms.IntegerField(required=True)
     sort_code = forms.CharField(required=True, max_length=20)
+    account_num = forms.IntegerField(required=True)
 
 
 class TransferForm(forms.ModelForm):
@@ -14,7 +14,7 @@ class TransferForm(forms.ModelForm):
         try:
             self.fields['Payee'].queryset = Payee.objects.filter(User_id=user.pk)
         except Payee.DoesNotExist:
-            ### there is not userextend corresponding to this user, do what you want
+            ### there is not payee corresponding to this user
             pass
     class Meta:
         model = Transaction

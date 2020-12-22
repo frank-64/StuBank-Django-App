@@ -107,7 +107,7 @@ def check_payee(request):
         payee_customer_exists = Customer.objects.filter(sort_code=json_details['sort_code'], account_num=json_details['account_num'],
                                                         user__first_name=json_details['firstname'], user__last_name=json_details['lastname']).exists()
         if payee_customer_exists:
-            return HttpResponse("True")
+            return HttpResponse(True)
 
 
 @otp_required

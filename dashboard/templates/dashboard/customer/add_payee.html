@@ -2,8 +2,16 @@
 
 {% block javascript %}
 <script>
-    var payee_exists = false;
+    // This function stops the user from submitting if they change the field values after checking the payee
+    $(document).ready(function(){
+          $("input[name='first_name'], input[name='last_name'], input[name='account_num'], input[name='sort_code']").keyup(function(){
+                document.getElementById("payee_check").hidden = true;
+                document.getElementById("submit").hidden = true;
+                document.getElementById("payee_btn").hidden = false;
+          });
+        });
 
+    // AJAX method which posts the field values to the check_payee() view which returns a HttpResponse if a payee exists
     function check_function(){
         var firstname = $("input[name='first_name']").val();
         var lastname = $("input[name='last_name']").val();
@@ -11,8 +19,15 @@
         var sort_code = $("input[name='sort_code']").val();
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
+            sleep(9000)
             if (this.readyState == 4 && this.status == 200) {
                 document.getElementById("payee_check").hidden = false;
+                document.getElementById("payee_check").innerHTML = "Payee Exists!"
+                document.getElementById("submit").hidden = false;
+                document.getElementById("payee_btn").hidden = true;
+            }else{
+                document.getElementById("payee_check").hidden = false;
+                document.getElementById("payee_check").innerHTML = "Payee does not exist!"
             }
         };
         var json_account = {
@@ -25,11 +40,14 @@
         xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhttp.send(JSON.stringify(json_account));
     }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
 </script>
 {% endblock javascript %}
 
 {% block content %}
-    <button onclick="check_function()" class="btn">Check Payee</button>
     <legend class="border-bottom mb-4">Add payee:</legend>
     <form method="POST">
         {% csrf_token %}
@@ -38,10 +56,10 @@
                 {{ form.as_table }}
             </table>
         </fieldset>
-        <p hidden id="payee_check">Payee Exists!</p>
+        <p hidden id="payee_check"></p>
         <div class="form-group">
-            <button class="btn btn-outline-info" type="submit" id="submit" disabled>Add</button>
+            <button class="btn btn-primary" type="submit" id="submit" hidden >Add</button>
         </div>
     </form>
-
+    <button onclick="check_function()" class="btn" id="payee_btn">Check Payee</button>
 {% endblock content %}
