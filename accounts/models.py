@@ -14,7 +14,7 @@ class User(AbstractUser):
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    account_num = models.IntegerField(null=True, blank=True)
+    account_num = models.IntegerField(null=True, blank=True, unique=True)
     sort_code = models.CharField(null=True, blank=False, max_length=20)
     balance = models.DecimalField(null=True, blank=False, max_digits=9, decimal_places=2, default=100)
     account_frozen = models.BooleanField(default=False, blank=False)
