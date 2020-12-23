@@ -92,10 +92,12 @@ def get_card(request):
     generator = random.Random()
     generator.seed()
     card_num = int(credit_card_number(generator, 16, 1)[0])
+
+    # validation to ensure unique card numbers
     while (Card.objects.filter(CardNum=card_num).exists()):
         card_num = int(credit_card_number(generator, 16, 1)[0])
+
     #TODO:CVC numbers such as 000 and 055 are formatted to 0 and 55 respectively which needs changing
-    #TODO:Need to add validation to ensure unique card numbers
     card = Card.objects.create(Customer_id=request.user.id, CardNum=card_num, CVC=''.join(get_CVC()),
                                ExpiryDate=get_expiry_date())
     card.save()

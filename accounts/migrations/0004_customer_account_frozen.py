@@ -9,10 +9,3 @@ class Migration(migrations.Migration):
         ('accounts', '0003_auto_20201210_1634'),
     ]
 
-    operations = [
-        migrations.AddField(
-            model_name='customer',
-            name='account_frozen',
-            field=models.BooleanField(default=False),
-        ),
-    ]

@@ -1,34 +1,59 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
-{% block content %}
-    <h3 style="text-align:left;">
-    Welcome to your dashboard {{ user.first_name }}!
-    <span style="float:right;">
-        <h6>Last login: {{ user.last_login }}</h6>
-        {# TODO: The card details should not be displayed in deployment and card number masked aside from last 4 digits #}
-        {% if card %}
-            {% for c in card %}
-                <ul>
-                    <li><small>Card number: {{ c.CardNum }}</small></li>
-                    <li><small>CVC: {{ c.CVC }}</small></li>
-                    <li><small>Expiry Date: {{ c.ExpiryDate }}</small></li>
-                </ul>
-            {% endfor %}
-        {% else %}
-            <a href="{% url 'getcard' %}">Get your card here!</a>
-        {% endif %}
+{% load static %}
 
-    </span>
-    </h3>
-    <ul>
-        <li>Username: {{ user.username }}</li>
-        <li>Firstname: {{ user.first_name }}</li>
-        <li>Surname: {{ user.last_name }}</li>
-        <li>Email: {{ user.email }}</li>
-        <li>Sort Code: {{ user.customer.sort_code }}</li>
-        <li>Account Number: {{ user.customer.account_num }}</li>
-        <li>Active?: {{ user.is_active }}</li>
-        <li><strong>Balance: £{{ user.customer.balance }}</strong></li>
-    </ul>
+{% block javascript %}
+<script>
+    $(document).ready(function(){
+      var card_num = '{{ card.first.CardNum }}';
+      let mask_card_num = 'xxxxxxxxxxx';
+      mask_card_num = mask_card_num+card_num.substring(11,15);
+      document.getElementById("card_num_id").innerText = mask_card_num;
+
+    });
+</script>
+{% endblock javascript %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <h4>Welcome to your dashboard {{ user.first_name }}!</h4>
+                <ul>
+                    <li>Username: {{ user.username }}</li>
+                    <li>Firstname: {{ user.first_name }}</li>
+                    <li>Surname: {{ user.last_name }}</li>
+                    <li>Email: {{ user.email }}</li>
+                    <li>Sort Code: {{ user.customer.sort_code }}</li>
+                    <li>Account Number: {{ user.customer.account_num }}</li>
+                    <li>Active?: {{ user.is_active }}</li>
+                    <li><strong>Balance: £{{ user.customer.balance }}</strong></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+
+            </div>
+            <div class="col-md-4 card_div">
+                <h6>Last login: {{ user.last_login }}</h6>
+                {% if card %}
+                    <div class="panel">
+                      <div class="card">
+                        <div class="card_field_right card_company_name">StuBank</div>
+                        <div class="card_field_right card_type">Digital Debit Card</div>
+                        <div class="card_field_left card_num" id="card_num_id"></div>
+                        <div class="card_field_left card_owner_logo">
+                            {{ user.first_name }} {{ user.last_name }}
+                            <span style="float:right;">
+                                <i class="fab fa-cc-visa fa-lg"></i>
+                            </span>
+                        </div>
+                      </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'getcard' %}">Get your card here!</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock content %}
 {% block transaction %}
     <h3>Your transactions In:</h3>
@@ -51,6 +76,7 @@
               <td style="padding:0 15px 0 15px;">{{ p.Termini }}</td>
               <td style="padding:0 15px 0 15px;">{{ p.Category }}</td>
               <td style="padding:0 15px 0 15px;">{{ p.Direction }}</td>
+              <td style="padding:0 15px 0 15px;">{{ p.Method }}</td>
               <td style="padding:0 15px 0 15px;">{{ p.Comment }}</td>
             </tr>
         {% endfor %}
@@ -75,6 +101,7 @@
               <td style="padding:0 15px 0 15px;">{{ c.Termini }}</td>
               <td style="padding:0 15px 0 15px;">{{ c.Category }}</td>
               <td style="padding:0 15px 0 15px;">{{ c.Direction }}</td>
+              <td style="padding:0 15px 0 15px;">{{ c.Method }}</td>
               <td style="padding:0 15px 0 15px;">{{ c.Comment }}</td>
             </tr>
         {% endfor %}
