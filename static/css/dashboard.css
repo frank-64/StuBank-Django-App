@@ -13,7 +13,7 @@
   font-family: 'CredFont';
   src:  url('/static/css/kredit back.ttf');
 }
-.card {
+.stucard {
   font-size: 20px;
   width:322px;
   height: 203px;
@@ -37,7 +37,12 @@
 .card_num{
     font-family: CredFont, serif;
     font-size: 27px;
-    padding-top: 20px;
+    padding-top: 10px;
+}
+
+.card.card_field_central{
+    font-family: CredFont, serif;
+    font-size: 15px;
 }
 
 .card_type{
@@ -45,5 +50,19 @@
 }
 
 .card_owner_logo{
-    padding-top: 35px;
+    padding-top: 10px;
+}
+
+small{
+    font-size: 10px;
+}
+
+.fa-arrow-down{
+  padding-left: 40px;
+  color: #228B22;
+}
+
+.fa-arrow-up{
+  padding-left: 40px;
+  color: #8B0000;
 }

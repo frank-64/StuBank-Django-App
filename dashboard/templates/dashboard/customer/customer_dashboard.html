@@ -36,10 +36,16 @@
                 <h6>Last login: {{ user.last_login }}</h6>
                 {% if card %}
                     <div class="panel">
-                      <div class="card">
+                      <div class="card stucard">
                         <div class="card_field_right card_company_name">StuBank</div>
                         <div class="card_field_right card_type">Digital Debit Card</div>
                         <div class="card_field_left card_num" id="card_num_id"></div>
+                        <div class="card_field_central" id="card_num_id">
+                            {{ user.customer.sort_code }}
+                            <span style="float:right;">
+                                {{ user.customer.account_num }}
+                            </span>
+                        </div>
                         <div class="card_field_left card_owner_logo">
                             {{ user.first_name }} {{ user.last_name }}
                             <span style="float:right;">
@@ -56,54 +62,56 @@
     </div>
 {% endblock content %}
 {% block transaction %}
-    <h3>Your transactions In:</h3>
-    <br>
-    <table id="transactions_table" class="table-responsive table-hover table-striped" width="50%" style=" width: 100%;font-size: 2vw">
-        <tr>
-            <th style="padding:0 15px 0 15px;">Date Time</th>
-            <th style="padding:0 15px 0 15px;">Amount</th>
-            <th style="padding:0 15px 0 15px;">New Balance</th>
-            <th style="padding:0 15px 0 15px;">Where?</th>
-            <th style="padding:0 15px 0 15px;">Category</th>
-            <th style="padding:0 15px 0 15px;">Direction</th>
-            <th style="padding:0 15px 0 15px;">Comment</th>
-        </tr>
-        {% for p in payee_money_in %}
-            <tr>
-              <td style="padding:0 15px 0 15px;">{{ p.TransactionTime }}</td>
-              <td style="padding:0 15px 0 15px;">{{ p.Amount }}</td>
-              <td style="padding:0 15px 0 15px;">{{ p.NewBalance }}</td>
-              <td style="padding:0 15px 0 15px;">{{ p.Termini }}</td>
-              <td style="padding:0 15px 0 15px;">{{ p.Category }}</td>
-              <td style="padding:0 15px 0 15px;">{{ p.Direction }}</td>
-              <td style="padding:0 15px 0 15px;">{{ p.Method }}</td>
-              <td style="padding:0 15px 0 15px;">{{ p.Comment }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-    <h3>Your transactions Out:</h3>
-    <br>
-    <table id="transactions_table" class="table-responsive table-hover table-striped" width="50%" style=" width: 100%;font-size: 2vw">
-        <tr>
-            <th style="padding:0 15px 0 15px;">Date Time</th>
-            <th style="padding:0 15px 0 15px;">Amount</th>
-            <th style="padding:0 15px 0 15px;">New Balance</th>
-            <th style="padding:0 15px 0 15px;">Where?</th>
-            <th style="padding:0 15px 0 15px;">Category</th>
-            <th style="padding:0 15px 0 15px;">Direction</th>
-            <th style="padding:0 15px 0 15px;">Comment</th>
-        </tr>
-        {% for c in payee_money_out %}
-            <tr>
-              <td style="padding:0 15px 0 15px;">{{ c.TransactionTime }}</td>
-              <td style="padding:0 15px 0 15px;">{{ c.Amount }}</td>
-              <td style="padding:0 15px 0 15px;">{{ c.NewBalance }}</td>
-              <td style="padding:0 15px 0 15px;">{{ c.Termini }}</td>
-              <td style="padding:0 15px 0 15px;">{{ c.Category }}</td>
-              <td style="padding:0 15px 0 15px;">{{ c.Direction }}</td>
-              <td style="padding:0 15px 0 15px;">{{ c.Method }}</td>
-              <td style="padding:0 15px 0 15px;">{{ c.Comment }}</td>
-            </tr>
-        {% endfor %}
-    </table>
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Your transactions In:</h3>
+            {% for c in payee_money_in %}
+                <div class="card">
+                  <div class="card-header">
+                      <span>{{ c.Termini }}</span>
+                      <span style="float:right;">
+                        £{{ c.Amount }}
+                        <small>(£{{ c.NewBalance }})</small>
+                      </span>
+                  </div>
+                  <div class="card-body">
+                    <p class="card-text">
+                        {{ c.Comment }}
+                        <span style="float:right;">
+                            {{ c.Method }}<i class="fas fa-arrow-down"></i><br>
+                            <small>{{ c.TransactionTime }}</small><br>
+                        </span>
+                        <br>
+                        <small>{{ c.Category }}</small>
+                    </p>
+                  </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="col-md-6">
+            <h3>Your transactions Out:</h3>
+            {% for c in payee_money_out %}
+                <div class="card">
+                  <div class="card-header">
+                      <span>{{ c.Termini }}</span>
+                      <span style="float:right;">
+                        £{{ c.Amount }}
+                        <small>(£{{ c.NewBalance }})</small>
+                      </span>
+                  </div>
+                  <div class="card-body">
+                    <p class="card-text">
+                        {{ c.Comment }}
+                        <span style="float:right;">
+                            {{ c.Method }}<i class="fas fa-arrow-up"></i><br>
+                            <small>{{ c.TransactionTime }}</small><br>
+                        </span>
+                        <br>
+                        <small>{{ c.Category }}</small>
+                    </p>
+                  </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}
