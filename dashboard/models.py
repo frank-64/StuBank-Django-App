@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from accounts.models import *
 
+
 class Payee(models.Model):
     # customerID that added the payee
     User = models.ForeignKey(User, on_delete=models.PROTECT)
@@ -13,6 +14,7 @@ class Payee(models.Model):
 
     def __str__(self):
         return f"Username: {self.PayeeID.user.username}, Name:{self.PayeeID.user.first_name} {self.PayeeID.user.last_name}"
+
 
 class Card(models.Model):
     Customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
@@ -48,12 +50,13 @@ class Transaction(models.Model):
     class Direction(models.TextChoices):
         IN = 'In'
         OUT = 'Out'
+
     # optional foreign key used to link payees to a transaction if transferring or receiving money from a payee
     Payee = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
     # this customer foreign key is used to relate a transaction to a customer
     Customer = models.ForeignKey(Customer, blank=True, null=True, on_delete=models.PROTECT)
     # direction of the transfer e.g. payment into account or transaction out of account
-    Amount = models.DecimalField(blank=False,decimal_places=2, max_digits=10)
+    Amount = models.DecimalField(blank=False, decimal_places=2, max_digits=10)
     # transaction direction e.g. is money being removed from the account or added
     Direction = models.CharField(blank=False, choices=Direction.choices, default=Direction.OUT, max_length=10)
     # this is the datetime the model object was created
@@ -72,3 +75,10 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"ID:{self.id}, PayeeID:{self.Payee_id}, CustomerID:{self.Customer}"
+
+
+class MoneyPot(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    name = models.CharField(blank=False, default='My Money Pot', max_length=100)
+    target_balance = models.DecimalField(blank=False, decimal_places=2, max_digits=10)
+    pot_balance = models.DecimalField(blank=False, default=0, decimal_places=2, max_digits=10)

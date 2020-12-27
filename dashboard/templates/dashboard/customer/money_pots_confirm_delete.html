@@ -1,0 +1,12 @@
+{% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% block content %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <h1>Delete Pot</h1>
+        <h5>Are you sure you want to delete the pot "{{ object.name }}?"</h5>
+        <button type="submit">Yes, Delete</button>
+        <a href="{% url 'money_pots' %}">Cancel</a>
+    </form>
+
+{% endblock content %}

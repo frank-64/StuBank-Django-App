@@ -7,6 +7,8 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView
+from django.views.generic import DetailView, TemplateView, ListView, CreateView, DeleteView, UpdateView, FormView
+from django.views.generic.base import View
 from .forms import *
 from dashboard.models import *
 from django_otp.decorators import otp_required
@@ -17,6 +19,8 @@ import json
 request is not a visible parameter with Class-based views because as_view() on the .urls file makes the view callable
 meaning it takes a request and returns a response
 """
+
+
 @method_decorator(otp_required, name='dispatch')
 class UserDashboardView(DetailView):
     """Redirects the user to dashboard_home if authenticated or the login page otherwise
@@ -41,7 +45,7 @@ class UserDashboardView(DetailView):
         """ checks if the current user is a helper or customer and sets the template_name accordingly
         :param request: HttpRequest object containing metadata and current user attributes
         """
-        if(self.request.user.is_customer):
+        if (self.request.user.is_customer):
             UserDashboardView.template_name = 'dashboard/customer/customer_dashboard.html'
         else:
             UserDashboardView.template_name = 'dashboard/helper/helper_dashboard.html'
@@ -53,7 +57,8 @@ class UserDashboardView(DetailView):
         :return context: dictionary containing the transactions in an out of the account
         """
         context = super(UserDashboardView, self).get_context_data(**kwargs)
-        context['payee_money_out'] = Transaction.objects.filter(Customer_id=self.request.user.pk).filter(Direction='Out')
+        context['payee_money_out'] = Transaction.objects.filter(Customer_id=self.request.user.pk).filter(
+            Direction='Out')
         context['payee_money_in'] = Transaction.objects.filter(Customer_id=self.request.user.pk).filter(Direction='In')
         context['card'] = Card.objects.filter(Customer_id=self.request.user.pk)
         return context
@@ -104,6 +109,7 @@ def get_card(request):
     return HttpResponseRedirect(reverse('dashboard_home'))
 
 
+
 @method_decorator(otp_required, name='dispatch')
 class PayeeDetailView(DetailView):
     """Displays all payees related to the current customer's pk
@@ -134,6 +140,7 @@ class PayeeDetailView(DetailView):
         :return: queryset of customer's payees
         """
         return self.get_queryset().filter(User_id=self.request.user.pk)
+
 
 @otp_required
 def delete_payee(request, pk):
@@ -179,7 +186,7 @@ def add_payee(request):
             # this attempts to find ane existing customer with details matching the form inputs
             # TODO: Separate this to a separate method which uses AJAX to check if customer exists.
             payee_customer_object = Customer.objects.filter(sort_code=sort_code, account_num=account_num,
-                                                   user__first_name=first_name, user__last_name=last_name)
+                                                            user__first_name=first_name, user__last_name=last_name)
 
             # getting the payee's pk from the queryset of customer objects
             payee_customer_pk = payee_customer_object[0].pk
@@ -201,7 +208,8 @@ def add_payee(request):
             resolution = 'Did you enter the correct details? Sort code should be in the form DD-DD-DD with hyphens included.'
 
             # a rendered response is returned as a error.html page with accompanying dictionary containing details about the error
-            return render(request, 'dashboard/customer/error.html', {'error_title': error_title, 'resolution': resolution})
+            return render(request, 'dashboard/customer/error.html',
+                          {'error_title': error_title, 'resolution': resolution})
 
     # if the request is not POST then render a response with the form on the add_payee.html page
     return render(request, 'dashboard/customer/add_payee.html', {'form': form})
@@ -230,6 +238,7 @@ def get_new_balances(customers_customer_id, payees_customer_id, amount):
 
     return new_balances
 
+
 def alter_balance(customers_customer_id, payees_customer_id, new_balances):
     """ changes the balance of the sender/customer and the reciever/payee
 
@@ -240,11 +249,18 @@ def alter_balance(customers_customer_id, payees_customer_id, new_balances):
     """
     # reduce customer's balance
     # persisting the changed balance in the database
-    Customer.objects.filter(pk=customers_customer_id).update(balance=new_balances[0])
+    customer = Customer.objects.get(pk=customers_customer_id)
+    customer.balance = new_balances[0]
+    customer.save()
 
     # increase payee's balance
-    #persisting the changed balance in the database
-    Customer.objects.filter(pk=payees_customer_id).update(balance=new_balances[1])
+    # persisting the changed balance in the database
+    payee = Customer.objects.get(pk=payees_customer_id)
+    payee.balance = new_balances[1]
+    payee.save()
+
+    update_available_balance(customer)
+    update_available_balance(payee)
 
 
 @otp_required
@@ -290,9 +306,9 @@ def payee_transfer(request):
 
             # Termini is the main attribute to view in a transaction e.g. who you transferred the
             # money to/received the money from
-            payee_termini = payee_fname+" "+payee_lname
+            payee_termini = payee_fname + " " + payee_lname
 
-            customer_termini = request.user.first_name+" "+request.user.last_name
+            customer_termini = request.user.first_name + " " + request.user.last_name
 
             # getting the category data from the form
             category = form.data['Category']
@@ -301,21 +317,22 @@ def payee_transfer(request):
             method = 'Bank Transfer'
 
             # creating the transaction object with all the above variables inserted into their matching fields
-            customer_transaction = Transaction(Payee_id=payees_customer_id, Customer_id=customers_customer_id, Amount=amount,
-                                      Direction='Out', TransactionTime=transaction_time, Comment=comment,
-                                      NewBalance=new_balances[0], Termini=payee_termini, Category=category,
-                                      Method=method)
+            customer_transaction = Transaction(Payee_id=payees_customer_id, Customer_id=customers_customer_id,
+                                               Amount=amount,
+                                               Direction='Out', TransactionTime=transaction_time, Comment=comment,
+                                               NewBalance=new_balances[0], Termini=payee_termini, Category=category,
+                                               Method=method)
 
             payee_transaction = Transaction(Payee_id=customers_customer_id, Customer_id=payees_customer_id,
-                                               Amount=amount,
-                                               Direction='In', TransactionTime=transaction_time, Comment=comment,
-                                               NewBalance=new_balances[1], Termini=customer_termini, Category=category,
-                                               Method=method)
+                                            Amount=amount,
+                                            Direction='In', TransactionTime=transaction_time, Comment=comment,
+                                            NewBalance=new_balances[1], Termini=customer_termini, Category=category,
+                                            Method=method)
             try:
                 if (amount < 1.00):
                     raise
                 else:
-                    #persisting the transaction object
+                    # persisting the transaction object
                     customer_transaction.save()
                     payee_transaction.save()
 
@@ -348,6 +365,106 @@ def payee_transfer(request):
     return render(request, 'dashboard/customer/transfer.html', context)
 
 
+'''
+MONEY POT STUFF ( ͡° ͜ʖ ͡°)
+- Money pot displays notice when target has been met
+- Display percentage complete of each pot
+'''
+
+
+class MoneyPotListView(ListView):
+    model = MoneyPot
+    template_name = 'dashboard/customer/money_pots.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        customer = Customer.objects.get(user=self.request.user)
+        context = super().get_context_data(**kwargs)
+        context['money_pots'] = MoneyPot.objects.filter(customer=customer)
+        return context
+
+
+class MoneyPotCreateView(CreateView):
+    template_name = 'dashboard/customer/money_pots_add.html'
+    model = MoneyPot
+    fields = ['name', 'target_balance']
+    success_url = '/dashboard/moneypots/'
+
+    def form_valid(self, form):
+        customer = Customer.objects.get(user=self.request.user)
+        form.instance.customer = customer
+        return super(MoneyPotCreateView, self).form_valid(form)
+
+
+class MoneyPotDeleteView(DeleteView):
+    template_name = 'dashboard/customer/money_pots_confirm_delete.html'
+    model = MoneyPot
+    success_url = '/dashboard/moneypots/'
+
+    # If money pot is deleted, update the available balance
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        customer = Customer.objects.get(user=self.request.user)
+        update_available_balance(customer)
+        return redirect('money_pots')
+
+
+class MoneyPotUpdateView(UpdateView):
+    template_name = 'dashboard/customer/money_pots_update.html'
+    model = MoneyPot
+    fields = ['name', 'target_balance']
+    success_url = '/dashboard/moneypots/'
+
+
+class MoneyPotDepositView(FormView):
+    template_name = 'dashboard/customer/money_pots_deposit.html'
+    form_class = DepositForm
+    success_url = '/dashboard/moneypots/'
+
+    def form_valid(self, form):
+        customer = Customer.objects.get(user=self.request.user)
+        amount = form.cleaned_data.get('amount')
+
+        if (customer.available_balance - amount) < 0:
+            # Customer doesn't have enough funds to deposit
+            print('Not enough money')
+        else:
+            # Customer has enough funds to deposit
+            pk = self.kwargs['pk']
+            money_pot = MoneyPot.objects.get(pk=pk)
+
+            # Add deposited amount to money pot
+            money_pot.pot_balance += amount
+            money_pot.save()
+
+            # Update customers available balance
+            update_available_balance(customer)
+
+        return super(MoneyPotDepositView, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        pk = self.kwargs['pk']
+        money_pot = MoneyPot.objects.get(pk=pk)
+
+        context = super().get_context_data(**kwargs)
+
+        context['pot'] = money_pot
+        return context
+
+
+# Update the available balance of the customer. Any money not in a money pot is available to spend
+def update_available_balance(customer):
+    money_pots_total = 0
+    money_pots = MoneyPot.objects.filter(customer=customer)
+
+    # Add up the current balances of all the customers pots
+    for pot in money_pots:
+        money_pots_total += pot.pot_balance
+
+    # Find the balance the customer can spend by subtracting all money pot balances from main balance
+    available_balance = customer.balance - money_pots_total
+    customer.available_balance = available_balance
+    customer.save()
+
 # class TransactionListView(ListView):
 #     model = Transaction
 #     context_object_name = 'transaction_list'
@@ -365,7 +482,3 @@ def payee_transfer(request):
 #
 #     def get_object(self):
 #         return self.get_queryset().filter(Customer_id=self.request.user.pk)
-
-
-
-

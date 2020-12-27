@@ -3,7 +3,7 @@
     <script>
     const available_balance = {{ user.customer.available_balance }};
      $(document).ready(function(){
-          $("input[name='Amount']").keyup(function(){
+          $("input[name='amount']").keyup(function(){
               let amount = this.value;
               let sum = available_balance-amount;
               if (sum<0){
@@ -19,22 +19,15 @@
           });
         });
     </script>
-{% if user.is_authenticated and user.is_customer%}
+
+    <h3>Available balance: <p id="new_balance">{{ user.customer.available_balance }}</p></h3>
     <form method="POST">
         {% csrf_token %}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Transfer to payee:</legend>
-            <h5>Balance in account: £{{ user.customer.balance }}</h5>
-            <h4>Available balance: <p id="new_balance">£{{ user.customer.available_balance }}</p></h4>
-            <table>
-                {{ form.as_table }}
-            </table>
-        </fieldset>
-        <div class="form-group">
-            <button class="btn btn-outline-info" type="submit" id="submit">Transfer</button>
-        </div>
+        <h1>Deposit money to pot: {{ pot.name }}</h1>
+        <h3>Current amount in pot: {{ pot.pot_balance }}</h3>
+        <h3>Target: {{ pot.target_balance }}</h3>
+            {{ form.as_p }}
+        <button type="submit" id="submit">Deposit</button>
     </form>
-{% else %}
-    <h3>Not authenticated</h3>
-{% endif %}
+
 {% endblock content %}
