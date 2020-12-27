@@ -20,13 +20,17 @@
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-                document.getElementById("payee_check").hidden = false;
-                document.getElementById("payee_check").innerHTML = "Payee Exists!"
-                document.getElementById("submit").hidden = false;
-                document.getElementById("payee_btn").hidden = true;
-            }else{
-                document.getElementById("payee_check").hidden = false;
-                document.getElementById("payee_check").innerHTML = "Payee does not exist!"
+                if(xhttp.response === 'Exists'){
+                    document.getElementById("payee_check").hidden = false;
+                    document.getElementById("payee_check").innerHTML = "Payee Exists!"
+                    document.getElementById("submit").hidden = false;
+                    document.getElementById("payee_btn").hidden = true;
+                }else if (xhttp.response === 'Same') {
+                    alert("You cannot add yourself as a payee!")
+                }else if (xhttp.response === 'None') {
+                    document.getElementById("payee_check").hidden = false;
+                    document.getElementById("payee_check").innerHTML = "Payee does not exist!"
+                }
             }
         };
         var json_account = {

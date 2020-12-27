@@ -159,10 +159,18 @@ def check_payee(request):
     if request.method == "POST":
         str_details = request.body.decode('UTF-8')
         json_details = json.loads(str_details)
-        payee_customer_exists = Customer.objects.filter(sort_code=json_details['sort_code'], account_num=json_details['account_num'],
-                                                        user__first_name=json_details['firstname'], user__last_name=json_details['lastname']).exists()
-        if payee_customer_exists:
-            return HttpResponse(True)
+        try:
+            payee_customer = Customer.objects.filter(sort_code=json_details['sort_code'],
+                                                            account_num=json_details['account_num'],
+                                                            user__first_name=json_details['firstname'],
+                                                            user__last_name=json_details['lastname'])
+
+            if payee_customer[0] == request.user.customer:
+                return HttpResponse('Same')
+            if payee_customer.exists():
+                return HttpResponse('Exists')
+        except:
+            return HttpResponse('None')
 
 
 @otp_required
@@ -184,7 +192,6 @@ def add_payee(request):
 
         try:
             # this attempts to find ane existing customer with details matching the form inputs
-            # TODO: Separate this to a separate method which uses AJAX to check if customer exists.
             payee_customer_object = Customer.objects.filter(sort_code=sort_code, account_num=account_num,
                                                             user__first_name=first_name, user__last_name=last_name)
 
@@ -316,7 +323,8 @@ def payee_transfer(request):
             # default method is Bank Transfer
             method = 'Bank Transfer'
 
-            # creating the transaction object with all the above variables inserted into their matching fields
+            # creating the transaction object for customer and payee with all the above variables
+            # inserted into their matching fields
             customer_transaction = Transaction(Payee_id=payees_customer_id, Customer_id=customers_customer_id,
                                                Amount=amount,
                                                Direction='Out', TransactionTime=transaction_time, Comment=comment,
