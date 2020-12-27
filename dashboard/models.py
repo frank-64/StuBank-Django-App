@@ -21,7 +21,7 @@ class Card(models.Model):
     CardFrozen = models.BooleanField(default=False)
     CardNum = models.BigIntegerField(blank=False, unique=True)
     ExpiryDate = models.DateField(blank=False)
-    CVC = models.IntegerField(blank=False)
+    CVC = models.CharField(blank=False, max_length=3)
 
     def __str__(self):
         return f"ID:{self.id}, Username:{self.Customer.user.username}"
@@ -50,7 +50,8 @@ class Transaction(models.Model):
     class Direction(models.TextChoices):
         IN = 'In'
         OUT = 'Out'
-
+    # optional foreign key used to link the card used with the customer who made the transaction
+    Card = models.ForeignKey(Card, blank=True, null=True, on_delete=models.PROTECT)
     # optional foreign key used to link payees to a transaction if transferring or receiving money from a payee
     Payee = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
     # this customer foreign key is used to relate a transaction to a customer
@@ -59,8 +60,8 @@ class Transaction(models.Model):
     Amount = models.DecimalField(blank=False, decimal_places=2, max_digits=10)
     # transaction direction e.g. is money being removed from the account or added
     Direction = models.CharField(blank=False, choices=Direction.choices, default=Direction.OUT, max_length=10)
-    # this is the datetime the model object was created
-    TransactionTime = models.CharField(blank=False, max_length=50)
+    # time the transaction took place
+    TransactionTime = models.DateTimeField(blank=False)
     # any other comments with the transaction
     Comment = models.CharField(blank=True, max_length=200)
     # customer balance after transaction

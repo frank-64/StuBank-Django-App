@@ -5,7 +5,7 @@
 <script>
     $(document).ready(function(){
       var card_num = '{{ card.first.CardNum }}';
-      let mask_card_num = 'xxxxxxxxxxx';
+      let mask_card_num = 'xxxxxxxxxxxx';
       mask_card_num = mask_card_num+card_num.substring(11,15);
       document.getElementById("card_num_id").innerText = mask_card_num;
 
@@ -33,7 +33,7 @@
 
             </div>
             <div class="col-md-4 card_div">
-                <h6>Last login: {{ user.last_login }}</h6>
+                <h6>Last login: {{ user.last_login|date:"l dS F, h:mA" }}</h6>
                 {% if card %}
                     <div class="panel">
                       <div class="card stucard">
@@ -79,7 +79,7 @@
                         {{ c.Comment }}
                         <span style="float:right;">
                             {{ c.Method }}<i class="fas fa-arrow-down"></i><br>
-                            <small>{{ c.TransactionTime }}</small><br>
+                            <small>{{ c.TransactionTime|date:"d-m-Y" }}</small><br>
                         </span>
                         <br>
                         <small>{{ c.Category }}</small>
@@ -104,7 +104,7 @@
                         {{ c.Comment }}
                         <span style="float:right;">
                             {{ c.Method }}<i class="fas fa-arrow-up"></i><br>
-                            <small>{{ c.TransactionTime }}</small><br>
+                            <small>{{ c.TransactionTime|date:"d/m/Y h:m A" }}</small><br>
                         </span>
                         <br>
                         <small>{{ c.Category }}</small>
