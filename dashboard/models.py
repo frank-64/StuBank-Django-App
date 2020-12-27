@@ -24,7 +24,10 @@ class Card(models.Model):
     CVC = models.CharField(blank=False, max_length=3)
 
     def __str__(self):
-        return f"ID:{self.id}, Username:{self.Customer.user.username}"
+        mask = 'xxxxxxxxxxxx'
+        card = str(self.CardNum)[11:]
+
+        return f"{mask+card}"
 
 
 class Transaction(models.Model):

@@ -55,6 +55,7 @@ class UserDashboardView(DetailView):
         :return context: dictionary containing the transactions in an out of the account
         """
         context = super(UserDashboardView, self).get_context_data(**kwargs)
+        # get the customer's transactions which are ordered by most recent transaction first
         context['customer_transactions'] = Transaction.objects.filter(Customer_id=self.request.user.pk).order_by('-TransactionTime')
         context['card'] = Card.objects.filter(Customer_id=self.request.user.pk)
         return context
@@ -227,43 +228,38 @@ def get_new_balances(customers_customer_id, payees_customer_id, amount):
     # cust_new_balance is the balance of the customer after removing the amount they are transferring
     cust_new_balance = cust_balance - amount
 
-    # get the payees's customer object using their primary key
-    payee = Customer.objects.filter(pk=payees_customer_id)
+    if payees_customer_id != -1:
+        # get the payees's customer object using their primary key
+        payee = Customer.objects.filter(pk=payees_customer_id)
 
-    # payee_balance is the current balance of the payee
-    payee_balance = payee[0].balance
+        # payee_balance is the current balance of the payee
+        payee_balance = payee[0].balance
 
-    # payee_new_balance is the balance of the customer after adding the amount they are receiving
-    payee_new_balance = payee_balance + amount
+        # payee_new_balance is the balance of the customer after adding the amount they are receiving
+        payee_new_balance = payee_balance + amount
+    else:
+        # if performing a card transaction the payee balance will not need to change as no payee is involved
+        payee_new_balance = 0
 
     new_balances = [cust_new_balance, payee_new_balance]
 
     return new_balances
 
 
-def alter_balance(customers_customer_id, payees_customer_id, new_balances):
-    """ changes the balance of the sender/customer and the reciever/payee
+def alter_balance(customers_customer_id, new_balance):
+    """ changes the balance of the sender/customer and the receiver/payee
 
-    :param customers_customer_id: primary key of the customer sending the money
-    :param payees_customer_id: primary key of the payee receiving the money
-    :param amount: how much to change the balances by
+    :param customers_customer_id: primary key of the user
+    :param new_balance: updated balance
     :return:
     """
     # reduce customer's balance
     # persisting the changed balance in the database
-    customer = Customer.objects.get(pk=customers_customer_id)
-    customer.balance = new_balances[0]
-    customer.save()
+    user = Customer.objects.get(pk=customers_customer_id)
+    user.balance = new_balance
+    user.save()
 
-    # increase payee's balance
-    # persisting the changed balance in the database
-    payee = Customer.objects.get(pk=payees_customer_id)
-    payee.balance = new_balances[1]
-    payee.save()
-
-    update_available_balance(customer)
-    update_available_balance(payee)
-
+    update_available_balance(user)
 
 @otp_required
 def payee_transfer(request):
@@ -340,7 +336,8 @@ def payee_transfer(request):
                     payee_transaction.save()
 
                     # changing the balance for both the customer and payee
-                    alter_balance(customers_customer_id, payees_customer_id, new_balances)
+                    alter_balance(customers_customer_id, new_balances[0])
+                    alter_balance(payees_customer_id, new_balances[1])
 
                     # redirecting the user to the dashboard to view the transaction
                     return HttpResponseRedirect(reverse('dashboard_home'))
@@ -366,6 +363,63 @@ def payee_transfer(request):
 
     # returning the rendered transfer.html with the form inside the context
     return render(request, 'dashboard/customer/transfer.html', context)
+
+
+def card_transaction(request):
+    """transfers a sum of money between a customer and one of their payee's using the POSTed inputs from the TransferForm
+
+        :param request: HttpRequest object containing metadata and current user attributes
+        :return:
+        """
+    # if this is a POST request then process the Form data
+    if request.method == 'POST':
+
+        # create a form instance and populate it with data from the request
+        form = CardTransaction(request.user, data=request.POST)
+        # check if the form is valid before accessing the data
+        if form.is_valid:
+            customer_id = request.user.pk
+
+            card_transaction_object = Transaction(Payee_id=payees_customer_id, Customer_id=customers_customer_id,
+                                               Amount=amount,
+                                               Direction='Out', TransactionTime=transaction_time, Comment=comment,
+                                               NewBalance=new_balances[0], Termini=payee_termini, Category=category,
+                                               Method=method)
+            try:
+                if (amount < 1.00):
+                    raise
+                else:
+                    # persisting the transaction object
+                    customer_transaction.save()
+                    payee_transaction.save()
+
+                    # changing the balance for both the customer and payee
+                    alter_balance(customers_customer_id, payees_customer_id, new_balances)
+
+                    # redirecting the user to the dashboard to view the transaction
+                    return HttpResponseRedirect(reverse('dashboard_home'))
+
+            except:
+                # If an error occurred during persistence of the transaction or altering of the balance
+                error_title = 'Could not complete transaction!'
+                resolution = 'Is your balance correct? Is the amount equal to or above £1.00?'
+
+                # a rendered response is returned as a error.html page with accompanying dictionary containing details about the error
+                return render(request, 'dashboard/customer/error.html',
+                              {'error_title': error_title, 'resolution': resolution})
+
+    # if the request is a GET then create the default form, request.user must be sent so that __init_ has
+    # access to the user's pk to get all the payee's
+    else:
+        form = CardTransaction(request.user)
+
+    # setting the context to the form
+    context = {
+        'form': form,
+    }
+
+    # returning the rendered transfer.html with the form inside the context
+    return render(request, 'dashboard/customer/spoof_transaction.html', context)
 
 
 '''
