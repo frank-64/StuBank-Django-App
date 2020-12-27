@@ -2,15 +2,6 @@
 {% load static %}
 
 {% block javascript %}
-<script>
-    $(document).ready(function(){
-      var card_num = '{{ card.first.CardNum }}';
-      let mask_card_num = 'xxxxxxxxxxxx';
-      mask_card_num = mask_card_num+card_num.substring(11,15);
-      document.getElementById("card_num_id").innerText = mask_card_num;
-
-    });
-</script>
 {% endblock javascript %}
 
 {% block content %}
@@ -39,7 +30,7 @@
                       <div class="card stucard">
                         <div class="card_field_right card_company_name">StuBank</div>
                         <div class="card_field_right card_type">Digital Debit Card</div>
-                        <div class="card_field_left card_num" id="card_num_id"></div>
+                        <div class="card_field_left card_num">{{ card.first.MaskCardNum }}</div>
                         <div class="card_field_central" id="card_num_id">
                             {{ user.customer.sort_code }}
                             <span style="float:right;">
@@ -78,6 +69,8 @@
                                 <i class="fas fa-arrow-up fa-lg"></i>
                             {% endif %}
                       </span>
+                        <br>
+                        <small>{{ i.TransactionTime|date:"d/m/Y h:m A" }}</small>
                   </div>
                   <div class="card-body">
                     <p class="card-text">
@@ -85,7 +78,11 @@
                         <span style="float:right;">
                             {{ i.Method }}
                             <br>
-                            <small>{{ i.TransactionTime|date:"d/m/Y h:m A" }}</small><br>
+                            {% if i.Method == 'Card Transaction' %}
+                                <small>{{ i.Card.MaskCardNum }}</small>
+                            {% elif i.Method == 'Bank Transfer' and i.Direction == 'Out'%}
+                                <small>{{ i.Payee.customer.sort_code }} {{ i.Payee.customer.account_num }}</small>
+                            {% endif %}
                         </span>
                         <br>
                         <small>{{ i.Category }}</small>

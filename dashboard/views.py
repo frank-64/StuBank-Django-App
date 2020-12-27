@@ -99,7 +99,10 @@ def get_card(request):
     while (Card.objects.filter(CardNum=card_num).exists()):
         card_num = int(credit_card_number(generator, 16, 1)[0])
 
-    card = Card.objects.create(Customer_id=request.user.id, CardNum=card_num, CVC=''.join(get_CVC()),
+    mask = "xxxxxxxxxxxx"
+    digits = str(card_num)[11:]
+    masked_card_num = mask+digits
+    card = Card.objects.create(Customer_id=request.user.id, CardNum=card_num, MaskCardNum=masked_card_num, CVC=''.join(get_CVC()),
                                ExpiryDate=get_expiry_date())
     card.save()
     return HttpResponseRedirect(reverse('dashboard_home'))
@@ -378,23 +381,44 @@ def card_transaction(request):
         form = CardTransaction(request.user, data=request.POST)
         # check if the form is valid before accessing the data
         if form.is_valid:
+            # getting the Card id
+            card_id = form.data['Card']
+
+            # getting the Customer id from the request attributes
             customer_id = request.user.pk
 
-            card_transaction_object = Transaction(Payee_id=payees_customer_id, Customer_id=customers_customer_id,
+            # parsing the Amount data to a Decimal as this is required to alter the balance
+            amount = Decimal(form.data['Amount'])
+
+
+            # setting the transaction_time to the current time
+            transaction_time = timezone.now()
+
+            # getting the comment data from the form
+            comment = form.data['Comment']
+
+            termini = form.data['Termini']
+
+            category = form.data['Category']
+
+            new_balance = get_new_balances(customer_id, -1, amount)
+
+            method = 'Card Transaction'
+
+            card_transaction_object = Transaction(Card_id=card_id, Customer_id=customer_id,
                                                Amount=amount,
                                                Direction='Out', TransactionTime=transaction_time, Comment=comment,
-                                               NewBalance=new_balances[0], Termini=payee_termini, Category=category,
+                                               NewBalance=new_balance[0], Termini=termini, Category=category,
                                                Method=method)
             try:
                 if (amount < 1.00):
                     raise
                 else:
                     # persisting the transaction object
-                    customer_transaction.save()
-                    payee_transaction.save()
+                    card_transaction_object.save()
 
                     # changing the balance for both the customer and payee
-                    alter_balance(customers_customer_id, payees_customer_id, new_balances)
+                    alter_balance(customer_id, new_balance[0])
 
                     # redirecting the user to the dashboard to view the transaction
                     return HttpResponseRedirect(reverse('dashboard_home'))

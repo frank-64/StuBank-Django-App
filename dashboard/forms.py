@@ -33,7 +33,7 @@ class CardTransaction(forms.ModelForm):
             pass
     class Meta:
         model = Transaction
-        exclude = ['Direction', 'Termini', 'TransactionTime', 'NewBalance', 'Customer', 'Method', 'Payee']
+        exclude = ['Direction', 'TransactionTime', 'NewBalance', 'Customer', 'Method', 'Payee']
 
     #Payee = forms.ModelChoiceField(required=True, queryset=None, help_text="Who would you like to transfer to?")
 

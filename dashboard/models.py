@@ -20,14 +20,12 @@ class Card(models.Model):
     Customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
     CardFrozen = models.BooleanField(default=False)
     CardNum = models.BigIntegerField(blank=False, unique=True)
+    MaskCardNum = models.CharField(blank=False, max_length=16, default='xxxxxxxxxxxxxxxx')
     ExpiryDate = models.DateField(blank=False)
     CVC = models.CharField(blank=False, max_length=3)
 
     def __str__(self):
-        mask = 'xxxxxxxxxxxx'
-        card = str(self.CardNum)[11:]
-
-        return f"{mask+card}"
+        return f"{self.MaskCardNum}"
 
 
 class Transaction(models.Model):
