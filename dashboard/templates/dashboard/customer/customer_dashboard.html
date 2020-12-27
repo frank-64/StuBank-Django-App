@@ -33,7 +33,7 @@
 
             </div>
             <div class="col-md-4 card_div">
-                <h6>Last login: {{ user.last_login|date:"l dS F, h:mA" }}</h6>
+                <h6>Last login: {{ user.last_login|date:"l dS F, h:m A" }}</h6>
                 {% if card %}
                     <div class="panel">
                       <div class="card stucard">
@@ -64,50 +64,31 @@
 {% block transaction %}
     <div class="row">
         <div class="col-md-6">
-            <h3>Your transactions In:</h3>
-            {% for c in payee_money_in %}
-                <div class="card">
+            <h3>Your transactions</h3>
+            {% for i in customer_transactions %}
+                <div class="card transaction_card" style="margin-bottom: 10px">
                   <div class="card-header">
-                      <span>{{ c.Termini }}</span>
+                      <span>{{ i.Termini }}</span>
                       <span style="float:right;">
-                        £{{ c.Amount }}
-                        <small>(£{{ c.NewBalance }})</small>
+                        £{{ i.Amount }}
+                        <small>(£{{ i.NewBalance }})</small>
+                            {% if i.Direction == 'In' %}
+                                <i class="fas fa-arrow-down fa-lg"></i>
+                            {% else %}
+                                <i class="fas fa-arrow-up fa-lg"></i>
+                            {% endif %}
                       </span>
                   </div>
                   <div class="card-body">
                     <p class="card-text">
-                        {{ c.Comment }}
+                        {{ i.Comment }}
                         <span style="float:right;">
-                            {{ c.Method }}<i class="fas fa-arrow-down"></i><br>
-                            <small>{{ c.TransactionTime|date:"d-m-Y" }}</small><br>
+                            {{ i.Method }}
+                            <br>
+                            <small>{{ i.TransactionTime|date:"d/m/Y h:m A" }}</small><br>
                         </span>
                         <br>
-                        <small>{{ c.Category }}</small>
-                    </p>
-                  </div>
-                </div>
-            {% endfor %}
-        </div>
-        <div class="col-md-6">
-            <h3>Your transactions Out:</h3>
-            {% for c in payee_money_out %}
-                <div class="card">
-                  <div class="card-header">
-                      <span>{{ c.Termini }}</span>
-                      <span style="float:right;">
-                        £{{ c.Amount }}
-                        <small>(£{{ c.NewBalance }})</small>
-                      </span>
-                  </div>
-                  <div class="card-body">
-                    <p class="card-text">
-                        {{ c.Comment }}
-                        <span style="float:right;">
-                            {{ c.Method }}<i class="fas fa-arrow-up"></i><br>
-                            <small>{{ c.TransactionTime|date:"d/m/Y h:m A" }}</small><br>
-                        </span>
-                        <br>
-                        <small>{{ c.Category }}</small>
+                        <small>{{ i.Category }}</small>
                     </p>
                   </div>
                 </div>

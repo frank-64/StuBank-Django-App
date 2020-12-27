@@ -6,9 +6,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import DetailView
-from django.views.generic import DetailView, TemplateView, ListView, CreateView, DeleteView, UpdateView, FormView
-from django.views.generic.base import View
+from django.views.generic import DetailView, ListView, CreateView, DeleteView, UpdateView, FormView
 from .forms import *
 from dashboard.models import *
 from django_otp.decorators import otp_required
@@ -57,9 +55,7 @@ class UserDashboardView(DetailView):
         :return context: dictionary containing the transactions in an out of the account
         """
         context = super(UserDashboardView, self).get_context_data(**kwargs)
-        context['payee_money_out'] = Transaction.objects.filter(Customer_id=self.request.user.pk).filter(
-            Direction='Out')
-        context['payee_money_in'] = Transaction.objects.filter(Customer_id=self.request.user.pk).filter(Direction='In')
+        context['customer_transactions'] = Transaction.objects.filter(Customer_id=self.request.user.pk).order_by('-TransactionTime')
         context['card'] = Card.objects.filter(Customer_id=self.request.user.pk)
         return context
 
