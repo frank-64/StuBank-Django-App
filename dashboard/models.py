@@ -1,11 +1,4 @@
-from decimal import Decimal
-
-from django.core.validators import MinValueValidator
-from django.db import models
-from django.utils import timezone
-
 from accounts.models import *
-
 
 class Payee(models.Model):
     # customerID that added the payee
@@ -84,3 +77,11 @@ class MoneyPot(models.Model):
     name = models.CharField(blank=False, default='My Money Pot', max_length=100)
     target_balance = models.DecimalField(blank=False, decimal_places=2, max_digits=10)
     pot_balance = models.DecimalField(blank=False, default=0, decimal_places=2, max_digits=10)
+
+
+class Message(models.Model):
+    sender = models.ForeignKey(User, related_name='sent', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='recieved', on_delete=models.CASCADE)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

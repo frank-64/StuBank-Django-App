@@ -14,7 +14,6 @@ class User(AbstractUser):
 
 class Customer(models.Model):
     default_bal = 100
-
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     account_num = models.IntegerField(null=True, blank=True, unique=True)
     sort_code = models.CharField(null=True, blank=False, max_length=20)

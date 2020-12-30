@@ -1,9 +1,11 @@
 import datetime
 import random
+from decimal import Decimal
 
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, ListView, CreateView, DeleteView, UpdateView, FormView
@@ -11,6 +13,8 @@ from .forms import *
 from dashboard.models import *
 from django_otp.decorators import otp_required
 from dashboard.card_gen import credit_card_number
+from django.http.response import JsonResponse
+from django.db.models import Q
 import json
 
 """
@@ -444,6 +448,13 @@ def card_transaction(request):
 
     # returning the rendered transfer.html with the form inside the context
     return render(request, 'dashboard/customer/spoof_transaction.html', context)
+
+def livechat(request, pk):
+    other_user = get_object_or_404(User, pk=pk)
+    messages = Message.objects.filter(
+        Q(receiver=other_user, sender=request.user) | Q(receiver=request.user, sender=other_user)
+    ).order_by("created_at")
+    return render(request, 'dashboard/customer/livechat.html', {"other_user":other_user, "messages":messages})
 
 
 '''

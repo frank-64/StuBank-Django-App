@@ -1,0 +1,30 @@
+{% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static '/css/livechat.css' %}">
+{% endblock css %}
+
+{% block javascript %}
+{% endblock javascript %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="header"><h3>{{ other_user.username }}</h3></div>
+            <br>
+            <div class="message-area">
+                {% for x in messages %}
+                <div class="message-{% if x.sender == request.user %}right{% else %}left{% endif %}">
+                    <div class="sent-by">{{ x.sender.username }}<small> - {{ x.updated_at }}</small></div>
+                    <div class="content">{{ x.message }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="input-area">
+                <input type="text" id="message-input">
+                <button id="sent-btn">Send</button>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
