@@ -7,7 +7,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.views.generic import DetailView, ListView, CreateView, DeleteView, UpdateView, FormView
 from .forms import *
 from dashboard.models import *
@@ -455,6 +455,16 @@ def livechat(request, pk):
         Q(receiver=other_user, sender=request.user) | Q(receiver=request.user, sender=other_user)
     ).order_by("created_at")
     return render(request, 'dashboard/customer/livechat.html', {"other_user":other_user, "messages":messages})
+
+@csrf_exempt
+#TODO: csrf_exempt must be temporary to prevent cross site scripting attacks
+def add_message(request, pk):
+    other_user = get_object_or_404(User, pk=pk)
+    if request.method == "POST":
+        message = json.loads(request.body)
+        m = Message(receiver=other_user, sender=request.user, message=message)
+        m.save()
+        return HttpResponse("Added")
 
 
 '''

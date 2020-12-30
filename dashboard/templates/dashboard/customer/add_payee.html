@@ -39,7 +39,7 @@
             'account_num':account_num,
             'sort_code':sort_code
         }
-        xhttp.open("POST", '/dashboard/checkpayee/');
+        xhttp.open("POST", {% url 'checkpayee' %});
         xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhttp.send(JSON.stringify(json_account));
     }

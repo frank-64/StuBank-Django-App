@@ -6,6 +6,23 @@
 {% endblock css %}
 
 {% block javascript %}
+    <script>
+    // AJAX method which posts the field values to the check_payee() view which returns a HttpResponse if a payee exists
+    function send_message(){
+        var message = document.getElementById("message-input").value;
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState === 4 && this.status === 200) {
+                if(xhttp.response === 'Added'){
+                    document.getElementById("message-input").value = ""
+                }
+            }
+        };
+        xhttp.open("POST", '{% url 'addmessage' other_user.id%}');
+        xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhttp.send(JSON.stringify(message));
+    }
+    </script>
 {% endblock javascript %}
 
 {% block content %}
@@ -16,14 +33,14 @@
             <div class="message-area">
                 {% for x in messages %}
                 <div class="message-{% if x.sender == request.user %}right{% else %}left{% endif %}">
-                    <div class="sent-by">{{ x.sender.username }}<small> - {{ x.updated_at }}</small></div>
+                    <div class="sent-by"><strong>{{ x.sender.username }}</strong><small> - {{ x.updated_at|date:"d/m/Y h:m A" }}</small></div>
                     <div class="content">{{ x.message }}</div>
                 </div>
                 {% endfor %}
             </div>
             <div class="input-area">
                 <input type="text" id="message-input">
-                <button id="sent-btn">Send</button>
+                <button onclick="send_message()" class="btn" id="msg_btn">Send</button>
             </div>
         </div>
     </div>
