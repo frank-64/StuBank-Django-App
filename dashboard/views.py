@@ -2,6 +2,8 @@ import datetime
 import random
 from decimal import Decimal
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
@@ -24,8 +26,7 @@ meaning it takes a request and returns a response
 """
 
 
-@method_decorator(otp_required, name='dispatch')
-class UserDashboardView(DetailView):
+class UserDashboardView(LoginRequiredMixin, DetailView):
     """Redirects the user to dashboard_home if authenticated or the login page otherwise
     Inherits:
         DetailView: inherited class to override the get_object(), get_queryset() and set the Model/template
@@ -61,7 +62,8 @@ class UserDashboardView(DetailView):
         """
         context = super(UserDashboardView, self).get_context_data(**kwargs)
         # get the customer's transactions which are ordered by most recent transaction first
-        context['customer_transactions'] = Transaction.objects.filter(Customer_id=self.request.user.pk).order_by('-TransactionTime')
+        context['customer_transactions'] = Transaction.objects.filter(Customer_id=self.request.user.pk).order_by(
+            '-TransactionTime')
         context['card'] = Card.objects.filter(Customer_id=self.request.user.pk)
         return context
 
@@ -106,16 +108,15 @@ def get_card(request):
 
     mask = "xxxxxxxxxxxx"
     digits = str(card_num)[11:]
-    masked_card_num = mask+digits
-    card = Card.objects.create(Customer_id=request.user.id, CardNum=card_num, MaskCardNum=masked_card_num, CVC=''.join(get_CVC()),
+    masked_card_num = mask + digits
+    card = Card.objects.create(Customer_id=request.user.id, CardNum=card_num, MaskCardNum=masked_card_num,
+                               CVC=''.join(get_CVC()),
                                ExpiryDate=get_expiry_date())
     card.save()
     return HttpResponseRedirect(reverse('dashboard_home'))
 
 
-
-@method_decorator(otp_required, name='dispatch')
-class PayeeDetailView(DetailView):
+class PayeeDetailView(LoginRequiredMixin, DetailView):
     """Displays all payees related to the current customer's pk
 
     Inherits:
@@ -146,7 +147,7 @@ class PayeeDetailView(DetailView):
         return self.get_queryset().filter(User_id=self.request.user.pk)
 
 
-@otp_required
+@login_required
 def delete_payee(request, pk):
     """deletes a payee
 
@@ -158,6 +159,7 @@ def delete_payee(request, pk):
     response = redirect(reverse('viewpayee'))
     return response
 
+
 @csrf_exempt
 def check_payee(request):
     if request.method == "POST":
@@ -165,9 +167,9 @@ def check_payee(request):
         json_details = json.loads(str_details)
         try:
             payee_customer = Customer.objects.filter(sort_code=json_details['sort_code'],
-                                                            account_num=json_details['account_num'],
-                                                            user__first_name=json_details['firstname'],
-                                                            user__last_name=json_details['lastname'])
+                                                     account_num=json_details['account_num'],
+                                                     user__first_name=json_details['firstname'],
+                                                     user__last_name=json_details['lastname'])
 
             if payee_customer[0] == request.user.customer:
                 return HttpResponse('Same')
@@ -177,7 +179,7 @@ def check_payee(request):
             return HttpResponse('None')
 
 
-@otp_required
+@login_required
 def add_payee(request):
     """adds a payee using the POSTed inputs from the PayeeDetailsForm
 
@@ -269,7 +271,8 @@ def alter_balance(customers_customer_id, new_balance):
 
     update_available_balance(user)
 
-@otp_required
+
+@login_required
 def payee_transfer(request):
     """transfers a sum of money between a customer and one of their payee's using the POSTed inputs from the TransferForm
 
@@ -373,6 +376,7 @@ def payee_transfer(request):
     return render(request, 'dashboard/customer/transfer.html', context)
 
 
+@login_required
 def card_transaction(request):
     """transfers a sum of money between a customer and one of their payee's using the POSTed inputs from the TransferForm
 
@@ -395,7 +399,6 @@ def card_transaction(request):
             # parsing the Amount data to a Decimal as this is required to alter the balance
             amount = Decimal(form.data['Amount'])
 
-
             # setting the transaction_time to the current time
             transaction_time = timezone.now()
 
@@ -411,10 +414,10 @@ def card_transaction(request):
             method = 'Card Transaction'
 
             card_transaction_object = Transaction(Card_id=card_id, Customer_id=customer_id,
-                                               Amount=amount,
-                                               Direction='Out', TransactionTime=transaction_time, Comment=comment,
-                                               NewBalance=new_balance[0], Termini=termini, Category=category,
-                                               Method=method)
+                                                  Amount=amount,
+                                                  Direction='Out', TransactionTime=transaction_time, Comment=comment,
+                                                  NewBalance=new_balance[0], Termini=termini, Category=category,
+                                                  Method=method)
             try:
                 if (amount < 1.00):
                     raise
@@ -504,7 +507,7 @@ MONEY POT STUFF ( ͡° ͜ʖ ͡°)
 '''
 
 
-class MoneyPotListView(ListView):
+class MoneyPotListView(LoginRequiredMixin, ListView):
     model = MoneyPot
     template_name = 'dashboard/customer/money_pots.html'
 
@@ -515,7 +518,7 @@ class MoneyPotListView(ListView):
         return context
 
 
-class MoneyPotCreateView(CreateView):
+class MoneyPotCreateView(LoginRequiredMixin, CreateView):
     template_name = 'dashboard/customer/money_pots_add.html'
     model = MoneyPot
     fields = ['name', 'target_balance']
@@ -527,7 +530,7 @@ class MoneyPotCreateView(CreateView):
         return super(MoneyPotCreateView, self).form_valid(form)
 
 
-class MoneyPotDeleteView(DeleteView):
+class MoneyPotDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'dashboard/customer/money_pots_confirm_delete.html'
     model = MoneyPot
     success_url = '/dashboard/moneypots/'
@@ -540,14 +543,14 @@ class MoneyPotDeleteView(DeleteView):
         return redirect('money_pots')
 
 
-class MoneyPotUpdateView(UpdateView):
+class MoneyPotUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'dashboard/customer/money_pots_update.html'
     model = MoneyPot
     fields = ['name', 'target_balance']
     success_url = '/dashboard/moneypots/'
 
 
-class MoneyPotDepositView(FormView):
+class MoneyPotDepositView(LoginRequiredMixin, FormView):
     template_name = 'dashboard/customer/money_pots_deposit.html'
     form_class = DepositForm
     success_url = '/dashboard/moneypots/'
