@@ -2,6 +2,7 @@ import datetime
 import random
 from decimal import Decimal
 
+from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
@@ -450,6 +451,13 @@ def card_transaction(request):
     return render(request, 'dashboard/customer/spoof_transaction.html', context)
 
 def livechat(request, pk):
+    """this method returns all the message objects between two users and renders them on livechat.html with the relevant
+    context
+
+    :param request: HttpRequest object containing metadata and current user attributes
+    :param pk: the primary key of the other user in the livechat
+    :return render: rendered livechat.html template with messages and other_user as context
+    """
     other_user = get_object_or_404(User, pk=pk)
     messages = Message.objects.filter(
         Q(receiver=other_user, sender=request.user) | Q(receiver=request.user, sender=other_user)
@@ -458,13 +466,35 @@ def livechat(request, pk):
 
 @csrf_exempt
 #TODO: csrf_exempt must be temporary to prevent cross site scripting attacks
-def add_message(request, pk):
+def message(request, pk):
+    """This method creates method objects if the have been POSTed from one of the users in the livechat.
+    If the method is GET then the unseen messages are returned.
+
+    :param request: HttpRequest object containing metadata and current user attributes
+    :param pk: Primary key of the other user in the livechat
+    :return HttpResponse/JsonResponse:
+    'Added' is returned once the message is persisted into the database if the request method is POST.
+    JSON objects of the new unseen messages are returned if the request method is GET.
+    """
     other_user = get_object_or_404(User, pk=pk)
     if request.method == "POST":
         message = json.loads(request.body)
         m = Message(receiver=other_user, sender=request.user, message=message)
         m.save()
         return HttpResponse("Added")
+    elif request.method == "GET":
+        messages = Message.objects.filter(seen=False, receiver=request.user)
+        results = []
+        for message in messages:
+            result = {
+                "message": message.message,
+                "sender": message.sender.username,
+                "time": naturaltime(message.created_at),
+                "sent": False
+            }
+            results.append(result)
+        messages.update(seen=True)
+        return JsonResponse(results, safe=False)
 
 
 '''

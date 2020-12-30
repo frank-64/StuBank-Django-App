@@ -16,5 +16,5 @@ urlpatterns = [
     path('moneypots/<int:pk>/update', MoneyPotUpdateView.as_view(), name='update_money_pot'),
     path('moneypots/<int:pk>/deposit', MoneyPotDepositView.as_view(), name='deposit_money_pot'),
     path('livechat/<int:pk>/', livechat, name='livechat'),
-    path('message/<int:pk>/', add_message, name='addmessage')
+    path('message/<int:pk>/', message, name='message')
 ]

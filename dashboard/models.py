@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from accounts.models import *
 
 class Payee(models.Model):
@@ -81,7 +83,7 @@ class MoneyPot(models.Model):
 
 class Message(models.Model):
     sender = models.ForeignKey(User, related_name='sent', on_delete=models.CASCADE)
-    receiver = models.ForeignKey(User, related_name='recieved', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='received', on_delete=models.CASCADE)
+    seen = models.BooleanField(default=False)
     message = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(default=timezone.now())
