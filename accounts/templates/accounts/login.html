@@ -1,6 +1,10 @@
 {% extends "accounts/base.html" %}
 {% block content %}
 
+<script>
+ 
+</script>
+
 <form method="POST">
     {% csrf_token %}
     <div class="form-row"> {{ form.username.errors }}{{ form.username.label_tag }}{{ form.username }} </div>
