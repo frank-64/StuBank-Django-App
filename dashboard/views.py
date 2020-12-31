@@ -1,10 +1,12 @@
 import datetime
+import io
 import random
 from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.humanize.templatetags.humanize import naturaltime
+from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
@@ -12,13 +14,20 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.views.generic import DetailView, ListView, CreateView, DeleteView, UpdateView, FormView
+from reportlab.lib import colors
+from reportlab.pdfgen import canvas
+
 from .forms import *
 from dashboard.models import *
 from django_otp.decorators import otp_required
 from dashboard.card_gen import credit_card_number
-from django.http.response import JsonResponse
+from django.http.response import JsonResponse, FileResponse
 from django.db.models import Q
 import json
+
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch, cm
 
 """
 request is not a visible parameter with Class-based views because as_view() on the .urls file makes the view callable
@@ -599,6 +608,76 @@ def update_available_balance(customer):
     available_balance = customer.balance - money_pots_total
     customer.available_balance = available_balance
     customer.save()
+
+
+'''
+BANK STATEMENTS STUFF [̲̅$̲̅(̲̅ιοο̲̅)̲̅$̲̅]
+'''
+
+def pdf_view(request):
+    user = request.user
+    filename = user.username + "_statement.pdf"
+
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer)
+    transactions = Transaction.objects.filter(Customer_id=user.pk).order_by(
+        '-TransactionTime')
+
+    data = [['Termini', 'Amount', 'New Balance', 'Direction', 'Time', 'Comment', 'Method', 'Category']]
+    for i in transactions:
+        termini = str(i.Termini)
+        amount = str(i.Amount)
+        new_balance = str(i.NewBalance)
+        direction = str(i.Direction)
+        time = str(i.TransactionTime)
+        comment = str(i.Comment)
+        method = str(i.Method)
+        category = str(i.Category)
+
+        data.append([termini, amount, new_balance, direction, time, comment, method, category])
+
+    table = Table(data, colWidths=[3 * cm, 3 * cm, 3 * cm, 3 * cm, 3 * cm, 3 * cm, 3 * cm, 3 * cm])
+    table.setStyle(TableStyle([
+        ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
+        ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
+    ]))
+    table.wrapOn(pdf, 0, 0)
+    table.drawOn(pdf, 0, 0)
+
+    pdf.showPage()
+    pdf.save()
+
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename=filename)
+
+
+
+    '''pdf = SimpleDocTemplate(filename)
+    styles = getSampleStyleSheet()
+    story = [Spacer(1, 2 * inch)]
+    style = styles["Normal"]
+
+    transactions = Transaction.objects.filter(Customer_id=user.pk).order_by(
+            '-TransactionTime')
+
+    for i in range(100):
+        # text = ("Transaction comment:" + i.Comment)
+        text = ("Transaction comment: %s. " % i)
+        p = Paragraph(text, style)
+        story.append(p)
+        story.append(Spacer(1, 0.2 * inch))
+    pdf.build(story)
+
+    fs = FileSystemStorage()
+    with fs.open(filename) as pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="somefilename.pdf"'
+        return response'''
+
+
+
+
+
 
 # class TransactionListView(ListView):
 #     model = Transaction

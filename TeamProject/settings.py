@@ -140,7 +140,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During devel
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-# Expire session after 10 minutes of inactivity
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+# Expire session after 10 minutes of inactivity RE-ENABLE AFTER DEVELOPMENT
+'''SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 600
-SESSION_SAVE_EVERY_REQUEST = True
+SESSION_SAVE_EVERY_REQUEST = True'''
