@@ -2,6 +2,7 @@ import datetime
 import io
 import random
 from decimal import Decimal
+from functools import partial
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -15,6 +16,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.views.generic import DetailView, ListView, CreateView, DeleteView, UpdateView, FormView
 from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
 from .forms import *
@@ -25,7 +27,7 @@ from django.http.response import JsonResponse, FileResponse
 from django.db.models import Q
 import json
 
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Frame, PageTemplate, FrameBreak
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch, cm
 
@@ -462,6 +464,7 @@ def card_transaction(request):
     # returning the rendered transfer.html with the form inside the context
     return render(request, 'dashboard/customer/spoof_transaction.html', context)
 
+
 def livechat(request, pk):
     """this method returns all the message objects between two users and renders them on livechat.html with the relevant
     context
@@ -474,10 +477,11 @@ def livechat(request, pk):
     messages = Message.objects.filter(
         Q(receiver=other_user, sender=request.user) | Q(receiver=request.user, sender=other_user)
     ).order_by("created_at")
-    return render(request, 'dashboard/customer/livechat.html', {"other_user":other_user, "messages":messages})
+    return render(request, 'dashboard/customer/livechat.html', {"other_user": other_user, "messages": messages})
+
 
 @csrf_exempt
-#TODO: csrf_exempt must be temporary to prevent cross site scripting attacks
+# TODO: csrf_exempt must be temporary to prevent cross site scripting attacks
 def message(request, pk):
     """This method creates method objects if the have been POSTed from one of the users in the livechat.
     If the method is GET then the unseen messages are returned.
@@ -614,70 +618,85 @@ def update_available_balance(customer):
 BANK STATEMENTS STUFF [̲̅$̲̅(̲̅ιοο̲̅)̲̅$̲̅]
 '''
 
+
 def pdf_view(request):
     user = request.user
     filename = user.username + "_statement.pdf"
 
+    # Initialise HttpResponse which provides user with pdf download when requested
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=' + filename
+
+    # Create initial pdf document
     buffer = io.BytesIO()
-    pdf = canvas.Canvas(buffer)
+    pdf = SimpleDocTemplate(buffer, pagesize=A4)
+    width, height = A4
+
+    # Create frames for use in template
+    margin = 50
+    active_width = (width - margin * 2)
+    frame_padding = (active_width - 9 * margin) / 2
+
+    frames = [Frame(margin, height - (margin * 2.5), margin * 2, margin * 1.75, id='logo', showBoundary=1),
+              Frame(margin + (margin * 2.5), height - (margin * 2.5), margin * 2, margin * 1.75, id='logo_text',
+                    showBoundary=1),
+              Frame(width - (margin + margin * 3.5), height - (margin * 2.5), margin * 3.5, margin * 1.75,
+                    id='account_details', showBoundary=1),
+              Frame(margin, height - (margin * 4.5), margin * 3, margin * 1.75, id='branch_details', showBoundary=1),
+              Frame(margin + (margin * 3 + frame_padding), height - (margin * 4.5), margin * 3, margin * 1.75,
+                    id='personal_details', showBoundary=1),
+              Frame(margin + (margin * 6 + 2 * frame_padding), height - (margin * 4.5), margin * 3, margin,
+                    id='current_balance', showBoundary=1),
+              Frame(margin, margin, width - (margin * 2), margin * 11, id='statement', showBoundary=1)]
+
+    # Create template and add it to pdf
+    template = PageTemplate(id='main', frames=frames)
+    pdf.addPageTemplates([template])
+
+    # Elements list which will contain all content to be drawn onto the pdf
+    elements = []
+    styles = getSampleStyleSheet()
+
+    # Add pdf content here
+
+    heading = Paragraph("This is the heading.  It goes on every page.  " * 30)
+
+    # Retrieve all user's transactions
     transactions = Transaction.objects.filter(Customer_id=user.pk).order_by(
         '-TransactionTime')
 
+    # Build list of lists containing all data to be inserted into statement table
     data = [['Termini', 'Amount', 'New Balance', 'Direction', 'Time', 'Comment', 'Method', 'Category']]
     for i in transactions:
-        termini = str(i.Termini)
-        amount = str(i.Amount)
-        new_balance = str(i.NewBalance)
-        direction = str(i.Direction)
-        time = str(i.TransactionTime)
-        comment = str(i.Comment)
-        method = str(i.Method)
-        category = str(i.Category)
+        termini = Paragraph(str(i.Termini), styles['Normal'])
+        amount = Paragraph(str(i.Amount), styles['Normal'])
+        new_balance = Paragraph(str(i.NewBalance), styles['Normal'])
+        direction = Paragraph(str(i.Direction), styles['Normal'])
+        time = Paragraph(str(i.TransactionTime), styles['Normal'])
+        comment = Paragraph(str(i.Comment), styles['Normal'])
+        method = Paragraph(str(i.Method), styles['Normal'])
+        category = Paragraph(str(i.Category), styles['Normal'])
 
         data.append([termini, amount, new_balance, direction, time, comment, method, category])
 
-    table = Table(data, colWidths=[3 * cm, 3 * cm, 3 * cm, 3 * cm, 3 * cm, 3 * cm, 3 * cm, 3 * cm])
+    # Set table properties and styles
+    table = Table(data, colWidths=[2 * cm, 2 * cm, 2.5 * cm, 2 * cm, 3 * cm, 3 * cm, 2.5 * cm, 3 * cm])
     table.setStyle(TableStyle([
         ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
         ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
     ]))
-    table.wrapOn(pdf, 0, 0)
-    table.drawOn(pdf, 0, 0)
 
-    pdf.showPage()
-    pdf.save()
+    # End pdf content here
 
-    buffer.seek(0)
-    return FileResponse(buffer, as_attachment=True, filename=filename)
+    elements.append(heading)
+    # elements.append(FrameBreak())
+    # elements.append(table)
+    pdf.build(elements)
 
+    response.write(buffer.getvalue())
+    buffer.close()
 
-
-    '''pdf = SimpleDocTemplate(filename)
-    styles = getSampleStyleSheet()
-    story = [Spacer(1, 2 * inch)]
-    style = styles["Normal"]
-
-    transactions = Transaction.objects.filter(Customer_id=user.pk).order_by(
-            '-TransactionTime')
-
-    for i in range(100):
-        # text = ("Transaction comment:" + i.Comment)
-        text = ("Transaction comment: %s. " % i)
-        p = Paragraph(text, style)
-        story.append(p)
-        story.append(Spacer(1, 0.2 * inch))
-    pdf.build(story)
-
-    fs = FileSystemStorage()
-    with fs.open(filename) as pdf:
-        response = HttpResponse(pdf, content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="somefilename.pdf"'
-        return response'''
-
-
-
-
-
+    return response
 
 # class TransactionListView(ListView):
 #     model = Transaction
