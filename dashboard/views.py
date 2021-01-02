@@ -457,18 +457,26 @@ def card_transaction(request):
 
 @login_required
 def livechat(request, pk):
-    """this method returns all the message objects between two users and renders them on livechat.html with the relevant
+    """this method returns all the message objects between two users and renders them on customer_livechat.html with the relevant
     context
 
     :param request: HttpRequest object containing metadata and current user attributes
     :param pk: the primary key of the other user in the livechat
-    :return render: rendered livechat.html template with messages and other_user as context
+    :return render: rendered customer_livechat.html template with messages and other_user as context
     """
     other_user = get_object_or_404(User, pk=pk)
     messages = Message.objects.filter(
         Q(receiver=other_user, sender=request.user) | Q(receiver=request.user, sender=other_user)
     ).order_by("created_at")
-    return render(request, 'dashboard/customer/livechat.html', {"other_user": other_user, "messages": messages})
+    print(other_user.is_helper)
+    if(other_user.is_helper):
+        return render(request, 'dashboard/customer/customer_livechat.html',
+                      {"other_user": other_user, "messages": messages})
+    else:
+        return render(request, 'dashboard/helper/helper_livechat.html',
+                      {"other_user": other_user, "messages": messages})
+
+
 
 
 @login_required

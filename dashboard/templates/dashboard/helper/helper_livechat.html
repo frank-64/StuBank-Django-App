@@ -1,0 +1,85 @@
+{% extends "dashboard/helper/helper_dashboard_base.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static '/css/livechat.css' %}">
+{% endblock css %}
+
+{% block javascript %}
+    <script>
+    window.onload = function() {
+      updateMsg()
+    };
+    // AJAX function which POSTs the message to the message() view which adds it to the database.
+    function sendMsg(){
+        var message = document.getElementById("message-input").value;
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState === 4 && this.status === 200) {
+                document.getElementById("message-input").value = ""
+                var messages = JSON.parse(xhttp.responseText)
+                addMsg(messages)
+            }
+        }
+        xhttp.open("POST", '{% url 'message' other_user.id%}');
+        xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhttp.send(JSON.stringify(message));
+    }
+
+    // this function is called once the page loads and calls itself every 4 seconds to check for new messages
+    function updateMsg(){
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState === 4 && this.status === 200) {
+                var messages = JSON.parse(xhttp.responseText)
+                for (let i = 0; i < messages.length; i++) {
+                    addMsg(messages[i])
+                }
+            }
+        };
+        xhttp.open("GET", '{% url 'message' other_user.id%}');
+        xhttp.overrideMimeType("application/json");
+        xhttp.send(null);
+        setTimeout('updateMsg()', 4000)
+    }
+
+    // this function adds a message to the livechat
+    function addMsg(message){
+        let message_container = document.querySelector(".message-area");
+        let class_name = "message-left";
+        if (message.sent === true) {
+            class_name = "message-right";
+        }
+        let div = document.createElement("div");
+        div.classList.add("message", class_name)
+        div.innerHTML = `
+        <div class="sent-by"><strong>${ message.sender }</strong><small> - ${ message.time }</small></div>
+                    <div class="content">${ message.message }</div>
+        `
+        message_container.appendChild(div)
+        div.scrollIntoView()
+    }
+
+    </script>
+{% endblock javascript %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="header"><h3>{{ other_user.username }}</h3></div>
+            <br>
+            <div class="message-area">
+                {% for message in messages %}
+                <div class="message-{% if message.sender == request.user %}right{% else %}left{% endif %}">
+                    <div class="sent-by"><strong>{{ message.sender.username }}</strong><small> - {{ message.created_at|date:"d/m/Y H:i A" }}</small></div>
+                    <div class="content">{{ message.message }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="input-area">
+                <input type="text" id="message-input">
+                <button onclick="sendMsg()" class="btn" id="msg_btn">Send</button>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

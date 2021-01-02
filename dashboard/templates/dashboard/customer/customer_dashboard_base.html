@@ -1,5 +1,5 @@
 {% load static %}
-{% if user.is_authenticated and user.is_customer or user.is_helper%}
+{% if user.is_authenticated and user.is_customer%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,6 +61,5 @@
 </body>
 </html>
 {% else %}
-    <h3>Not authenticated</h3>
-    <a href="{% url 'login' %}">Return to login</a>
+    <meta http-equiv="REFRESH" content="0;url=http://{% url 'dashboard_home' %}">
 {% endif %}
