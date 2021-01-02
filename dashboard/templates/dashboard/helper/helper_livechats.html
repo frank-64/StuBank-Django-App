@@ -1,0 +1,22 @@
+{% extends "dashboard/helper/helper_dashboard_base.html" %}
+{% block content %}
+{% if user.is_authenticated and user.is_helper%}
+    <h3>Here are your live chats with customers {{ user.first_name }}!</h3>
+    <div class="row">
+        <div class="col-md-3">
+            {% for livechat in livechats%}
+                <div class="card" style="margin-bottom:40px">
+                    <div class="card-header">
+                        {{ livechat.customer.first_name }}
+                    </div>
+                    <div class="card-body">
+                        <a href="{% url 'livechat' livechat.customer.pk %}">Connect!</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% else %}
+    <h3>Not authenticated</h3>
+{% endif %}
+{% endblock content %}

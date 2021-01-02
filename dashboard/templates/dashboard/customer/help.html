@@ -13,11 +13,13 @@
                 if(xhttp.responseText==='None'){
                     document.getElementById('helper-status').innerText = "A helper could not be found at the moment.";
                 }else{
-                    document.getElementById('helper-status').innerText = "Helper found with ID:"+xhttp.responseText;
+                    var helper_id = xhttp.responseText;
+                    var a = document.getElementById('livechat_link');
+                    a.href = "{% url 'livechat' 5%}".replace(/5/, helper_id.toString())
                 }
             }
         }
-        xhttp.open("GET", '{% url 'gethelper' request.user.pk%}');
+        xhttp.open("GET", '{% url 'gethelper' %}');
         xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhttp.send();
     }
@@ -110,7 +112,9 @@
                 Need more help? Connect to a helper to discuss account issues and freeze your account or card.<br>
                 <button class="btn" onclick="getHelp()">Get Help</button>
                 <br>
-                <span id="helper-status"></span>
+                <div id="helper_status">
+                    <a id="livechat_link">Livechat</a>
+                </div>
             </div>
         </div>
     </div>

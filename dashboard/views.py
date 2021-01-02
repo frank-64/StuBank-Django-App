@@ -517,7 +517,7 @@ def help_page(request):
 
 
 @login_required
-def get_helper(request, pk):
+def get_helper(request):
     helpers = Helper.objects.filter(pk=5)
     helper_object = None
     #TODO: is_authenticated doesn't work as expected and returns helpers that are not logged in.
@@ -525,16 +525,25 @@ def get_helper(request, pk):
         if helper.user.is_authenticated:
             helper_object = helper
     if(helper_object!=None):
+        #TODO: Validation should be added to ensure a LiveChat between the same customer and helper can exist
+        livechat = LiveChat(customer_id=request.user.id, helper_id=helper_object.pk)
+        livechat.save()
         return HttpResponse(helper_object.pk)
     else:
         return HttpResponse('None')
+
+
+def get_livechats(request):
+    #TODO: Need to add a way to get user permission to freeze accounts/cards etc
+    livechats = LiveChat.objects.filter(helper_id=request.user.id)
+    return render(request, 'dashboard/helper/helper_livechats.html', {"livechats":livechats})
+
 
 '''
 MONEY POT STUFF ( ͡° ͜ʖ ͡°)
 - Money pot displays notice when target has been met
 - Display percentage complete of each pot
 '''
-
 
 class MoneyPotListView(LoginRequiredMixin, ListView):
     model = MoneyPot

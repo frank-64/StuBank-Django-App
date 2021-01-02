@@ -21,7 +21,7 @@
                 addMsg(messages)
             }
         }
-        xhttp.open("GET", '{% url 'message' other_user.id%}');
+        xhttp.open("POST", '{% url 'message' other_user.id%}');
         xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhttp.send(JSON.stringify(message));
     }
