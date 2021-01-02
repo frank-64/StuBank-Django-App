@@ -38,6 +38,7 @@ meaning it takes a request and returns a response
 """
 
 
+@method_decorator(login_required, name='dispatch')
 class UserDashboardView(LoginRequiredMixin, DetailView):
     """Redirects the user to dashboard_home if authenticated or the login page otherwise
     Inherits:
@@ -521,6 +522,7 @@ MONEY POT STUFF ( ͡° ͜ʖ ͡°)
 '''
 
 
+@method_decorator(login_required, name='dispatch')
 class MoneyPotListView(LoginRequiredMixin, ListView):
     model = MoneyPot
     template_name = 'dashboard/customer/money_pots.html'
@@ -532,6 +534,7 @@ class MoneyPotListView(LoginRequiredMixin, ListView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class MoneyPotCreateView(LoginRequiredMixin, CreateView):
     template_name = 'dashboard/customer/money_pots_add.html'
     model = MoneyPot
@@ -544,6 +547,7 @@ class MoneyPotCreateView(LoginRequiredMixin, CreateView):
         return super(MoneyPotCreateView, self).form_valid(form)
 
 
+@method_decorator(login_required, name='dispatch')
 class MoneyPotDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'dashboard/customer/money_pots_confirm_delete.html'
     model = MoneyPot
@@ -557,6 +561,7 @@ class MoneyPotDeleteView(LoginRequiredMixin, DeleteView):
         return redirect('money_pots')
 
 
+@method_decorator(login_required, name='dispatch')
 class MoneyPotUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'dashboard/customer/money_pots_update.html'
     model = MoneyPot
@@ -564,6 +569,7 @@ class MoneyPotUpdateView(LoginRequiredMixin, UpdateView):
     success_url = '/dashboard/moneypots/'
 
 
+@method_decorator(login_required, name='dispatch')
 class MoneyPotDepositView(LoginRequiredMixin, FormView):
     template_name = 'dashboard/customer/money_pots_deposit.html'
     form_class = DepositForm
@@ -620,6 +626,7 @@ BANK STATEMENTS STUFF [̲̅$̲̅(̲̅ιοο̲̅)̲̅$̲̅]
 '''
 
 
+@login_required
 def pdf_view(request):
     user = request.user
     customer = Customer.objects.get(user=user)
@@ -649,7 +656,9 @@ def pdf_view(request):
               Frame(margin + (margin * 3 + frame_padding), height - (margin * 4), margin * 3, margin * 1.75,
                     id='personal_details', showBoundary=0),
               Frame(margin + (margin * 6 + 2 * frame_padding), height - (margin * 4), (active_width - (frame_padding *
-                    2) - (margin * 6)), margin, id='current_balance', showBoundary=0),
+                                                                                                       2) - (
+                                                                                                   margin * 6)), margin,
+                    id='current_balance', showBoundary=0),
               Frame(margin, margin * 2, active_width, margin * 11, id='statement', showBoundary=0),
               Frame(margin, margin * 0.8, active_width, margin * 0.8, id='small_print', showBoundary=0)]
 

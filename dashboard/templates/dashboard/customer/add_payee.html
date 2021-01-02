@@ -1,4 +1,5 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% load crispy_forms_tags %}
 
 {% block javascript %}
 <script>
@@ -52,7 +53,7 @@
         {% csrf_token %}
         <fieldset class="form-group">
             <table>
-                {{ form.as_table }}
+                {{ form|crispy }}
             </table>
         </fieldset>
         <p hidden id="payee_check"></p>
