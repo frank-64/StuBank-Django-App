@@ -468,7 +468,6 @@ def livechat(request, pk):
     messages = Message.objects.filter(
         Q(receiver=other_user, sender=request.user) | Q(receiver=request.user, sender=other_user)
     ).order_by("created_at")
-    print(other_user.is_helper)
     if(other_user.is_helper):
         return render(request, 'dashboard/customer/customer_livechat.html',
                       {"other_user": other_user, "messages": messages})
@@ -533,10 +532,12 @@ def get_helper(request):
         if helper.user.is_authenticated:
             helper_object = helper
     if(helper_object!=None):
-        #TODO: Validation should be added to ensure a LiveChat between the same customer and helper can exist
-        livechat = LiveChat(customer_id=request.user.id, helper_id=helper_object.pk)
-        livechat.save()
-        return HttpResponse(helper_object.pk)
+        if LiveChat.objects.filter(customer_id=request.user.id, helper_id=helper_object.pk).exists():
+            return HttpResponse(helper_object.pk)
+        else:
+            livechat_object = LiveChat(customer_id=request.user.id, helper_id=helper_object.pk)
+            livechat_object.save()
+            return HttpResponse(helper_object.pk)
     else:
         return HttpResponse('None')
 
