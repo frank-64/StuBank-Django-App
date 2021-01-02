@@ -91,3 +91,4 @@ class Message(models.Model):
 class LiveChat(models.Model):
     customer = models.ForeignKey(User, related_name='customer_livechat', on_delete=models.CASCADE)
     helper = models.ForeignKey(User, related_name='helper_livechat', on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=True)

@@ -464,16 +464,23 @@ def livechat(request, pk):
     :param pk: the primary key of the other user in the livechat
     :return render: rendered customer_livechat.html template with messages and other_user as context
     """
+
+    livechat_created = LiveChat.objects.filter(customer_id=request.user.id, helper_id=pk, is_active=True).exists()
     other_user = get_object_or_404(User, pk=pk)
     messages = Message.objects.filter(
         Q(receiver=other_user, sender=request.user) | Q(receiver=request.user, sender=other_user)
     ).order_by("created_at")
-    if(other_user.is_helper):
+    if other_user.is_helper and livechat_created:
         return render(request, 'dashboard/customer/customer_livechat.html',
                       {"other_user": other_user, "messages": messages})
-    else:
+    elif (not other_user.is_helper):
         return render(request, 'dashboard/helper/helper_livechat.html',
                       {"other_user": other_user, "messages": messages})
+    else:
+        error = "The Livechat could not be accessed."
+        resolution = "Have you requested assistance and clicked the link on the Help page?"
+        return render(request, 'dashboard/customer/error.html',
+                      {"error": error, "resolution": resolution})
 
 
 
@@ -525,27 +532,19 @@ def help_page(request):
 
 @login_required
 def get_helper(request):
-    helpers = Helper.objects.filter(pk=5)
-    helper_object = None
-    #TODO: is_authenticated doesn't work as expected and returns helpers that are not logged in.
-    for helper in helpers:
-        if helper.user.is_authenticated:
-            helper_object = helper
-    if(helper_object!=None):
-        if LiveChat.objects.filter(customer_id=request.user.id, helper_id=helper_object.pk).exists():
-            return HttpResponse(helper_object.pk)
-        else:
-            livechat_object = LiveChat(customer_id=request.user.id, helper_id=helper_object.pk)
-            livechat_object.save()
-            return HttpResponse(helper_object.pk)
+    if LiveChat.objects.filter(customer_id=request.user.id, is_active=True).exists():
+        existing_chat = LiveChat.objects.get(customer_id=request.user.id)
+        return HttpResponse(existing_chat.helper.pk)
     else:
-        return HttpResponse('None')
+        helpers = Helper.objects.all()
+        random_helper = random.choice(helpers)
+        return HttpResponse(random_helper.pk)
 
 
 def get_livechats(request):
     #TODO: Need to add a way to get user permission to freeze accounts/cards etc
     livechats = LiveChat.objects.filter(helper_id=request.user.id)
-    return render(request, 'dashboard/helper/helper_livechats.html', {"livechats":livechats})
+    return render(request, 'dashboard/helper/helper_chats.html', {"livechats":livechats})
 
 
 '''
