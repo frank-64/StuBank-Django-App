@@ -473,7 +473,7 @@ def livechat(request, pk):
     if other_user.is_helper and livechat_created:
         return render(request, 'dashboard/customer/customer_livechat.html',
                       {"other_user": other_user, "messages": messages})
-    elif (not other_user.is_helper):
+    elif not other_user.is_helper:
         return render(request, 'dashboard/helper/helper_livechat.html',
                       {"other_user": other_user, "messages": messages})
     else:
