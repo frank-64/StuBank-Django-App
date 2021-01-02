@@ -16,18 +16,11 @@
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
-                if(xhttp.response === 'Added'){
-                    document.getElementById("message-input").value = ""
-                    var sender_msg = {
-                        "message":message,
-                        "sent": true,
-                        "sender": '{{ request.user.username }}',
-                        "time": "Now"
-                    }
-                    addMsg(sender_msg)
-                }
+                document.getElementById("message-input").value = ""
+                var messages = JSON.parse(xhttp.responseText)
+                addMsg(messages)
             }
-        };
+        }
         xhttp.open("POST", '{% url 'message' other_user.id%}');
         xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhttp.send(JSON.stringify(message));
@@ -66,6 +59,7 @@
         message_container.appendChild(div)
         div.scrollIntoView()
     }
+
     </script>
 {% endblock javascript %}
 

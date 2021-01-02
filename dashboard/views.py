@@ -482,9 +482,15 @@ def message(request, pk):
     other_user = get_object_or_404(User, pk=pk)
     if request.method == "POST":
         message = json.loads(request.body)
-        m = Message(receiver=other_user, sender=request.user, message=message)
+        m = Message(receiver=other_user, sender=request.user, message=message, created_at=timezone.now())
         m.save()
-        return HttpResponse("Added")
+        result = {
+            "message": m.message,
+            "sender": m.sender.username,
+            "time": naturaltime(m.created_at),
+            "sent": True
+        }
+        return JsonResponse(result, safe=False)
     elif request.method == "GET":
         messages = Message.objects.filter(seen=False, receiver=request.user)
         results = []
