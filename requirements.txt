@@ -1,4 +1,4 @@
-reportlab
+reportlab==3.5.57
 asgiref==3.3.1
 click==7.1.2
 colorama==0.4.4

@@ -15,7 +15,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.views.generic import DetailView, ListView, CreateView, DeleteView, UpdateView, FormView
-from reportlab.lib import colors
+from reportlab.lib import colors, utils
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
@@ -27,8 +27,9 @@ from django.http.response import JsonResponse, FileResponse
 from django.db.models import Q
 import json
 
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Frame, PageTemplate, FrameBreak
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Frame, PageTemplate, FrameBreak, \
+    Image
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch, cm
 
 """
@@ -621,7 +622,9 @@ BANK STATEMENTS STUFF [̲̅$̲̅(̲̅ιοο̲̅)̲̅$̲̅]
 
 def pdf_view(request):
     user = request.user
+    customer = Customer.objects.get(user=user)
     filename = user.username + "_statement.pdf"
+    theme_colour = colors.Color(red=(95 / 255), green=(120 / 255), blue=(138 / 255))
 
     # Initialise HttpResponse which provides user with pdf download when requested
     response = HttpResponse(content_type='application/pdf')
@@ -635,19 +638,20 @@ def pdf_view(request):
     # Create frames for use in template
     margin = 50
     active_width = (width - margin * 2)
-    frame_padding = (active_width - 9 * margin) / 2
+    frame_padding = 10
 
-    frames = [Frame(margin, height - (margin * 2.5), margin * 2, margin * 1.75, id='logo', showBoundary=1),
-              Frame(margin + (margin * 2.5), height - (margin * 2.5), margin * 2, margin * 1.75, id='logo_text',
-                    showBoundary=1),
+    frames = [Frame(margin, height - (margin * 2.5), margin * 2, margin * 1.75, id='logo', showBoundary=0),
+              Frame(margin + (margin * 2.5), height - (margin * 2.5), margin * 3, margin * 1.75, id='logo_text',
+                    showBoundary=0),
               Frame(width - (margin + margin * 3.5), height - (margin * 2.5), margin * 3.5, margin * 1.75,
-                    id='account_details', showBoundary=1),
-              Frame(margin, height - (margin * 4.5), margin * 3, margin * 1.75, id='branch_details', showBoundary=1),
-              Frame(margin + (margin * 3 + frame_padding), height - (margin * 4.5), margin * 3, margin * 1.75,
-                    id='personal_details', showBoundary=1),
-              Frame(margin + (margin * 6 + 2 * frame_padding), height - (margin * 4.5), margin * 3, margin,
-                    id='current_balance', showBoundary=1),
-              Frame(margin, margin, width - (margin * 2), margin * 11, id='statement', showBoundary=1)]
+                    id='account_details', showBoundary=0),
+              Frame(margin, height - (margin * 4), margin * 3, margin * 1.75, id='branch_details', showBoundary=0),
+              Frame(margin + (margin * 3 + frame_padding), height - (margin * 4), margin * 3, margin * 1.75,
+                    id='personal_details', showBoundary=0),
+              Frame(margin + (margin * 6 + 2 * frame_padding), height - (margin * 4), (active_width - (frame_padding *
+                    2) - (margin * 6)), margin, id='current_balance', showBoundary=0),
+              Frame(margin, margin * 2, active_width, margin * 11, id='statement', showBoundary=0),
+              Frame(margin, margin * 0.8, active_width, margin * 0.8, id='small_print', showBoundary=0)]
 
     # Create template and add it to pdf
     template = PageTemplate(id='main', frames=frames)
@@ -655,42 +659,92 @@ def pdf_view(request):
 
     # Elements list which will contain all content to be drawn onto the pdf
     elements = []
+
+    # Create styles that will be assigned to paragraphs for paragraph customisation
     styles = getSampleStyleSheet()
+    heading1 = ParagraphStyle('Heading1', fontName='Helvetica-Bold', fontSize=25)
+    account_details = ParagraphStyle('details', alignment=2)
+    heading2 = ParagraphStyle('Heading2', backColor=theme_colour, alignment=0, textColor=colors.white, fontSize=12,
+                              leading=16)
+    content1 = ParagraphStyle('content1', alignment=0, fontSize=8)
+    balances = ParagraphStyle('balances', alignment=0, fontSize=10)
+    small_content = ParagraphStyle('small_print', alignment=0, fontSize=6, leading=8)
 
-    # Add pdf content here
+    '''
+    Add PDF content here
+    '''
 
-    heading = Paragraph("This is the heading.  It goes on every page.  " * 30)
+    # Logo
+    logo = Image('static/images/monkey.png')
+    logo._restrictSize(margin * 1.75, margin * 1.5)
+
+    # Logo text
+    logo_text = Paragraph("Statement", heading1)
+
+    # Account details
+    account_details = Paragraph('Account number: <b>' + str(customer.account_num) + '</b><br/>Sort code: <b>' +
+                                str(customer.sort_code) + '</b><br/>Username: <b>' + str(user.username) + '</b>',
+                                account_details)
+
+    # Branch details
+    branch_title = Paragraph('Branch Details', heading2)
+    branch_details = Paragraph('StuBank PLC <br/> 21 Canada Crescent <br/> Newcastle upon Tyne <br/> NE2 7BM', content1)
+
+    # Personal Details
+    personal_title = Paragraph('Your current details', heading2)
+    personal_details = Paragraph(str(user.first_name) + ' ' + str(user.last_name) + '<br/>' + str(user.email), content1)
+
+    # Current balance
+    balance = Paragraph('<br/> Current balance: <b>£' + str(customer.balance) + '</b><br/> Available balance: <b>£' +
+                        str(customer.available_balance) + '</b>', balances)
+
+    small_print = Paragraph('StuBank Plc, registered in England and Wales No. 482309. Registered office: Sir Matt Busby'
+                            ' Way, Old Trafford, Stretford, Manchester M16 0RA. Authorised by the Prudential Regulation '
+                            'Authority and regulated by the Financial Conduct Authority and the Prudential Regulation '
+                            'Authority. © StuBank Plc. OK not really, but it sounds cool if we write it anyway.'
+                            ' Downloaded from StuBank Online Statement Service on ' + str(datetime.date.today()) + '.',
+                            small_content)
 
     # Retrieve all user's transactions
     transactions = Transaction.objects.filter(Customer_id=user.pk).order_by(
         '-TransactionTime')
 
-    # Build list of lists containing all data to be inserted into statement table
-    data = [['Termini', 'Amount', 'New Balance', 'Direction', 'Time', 'Comment', 'Method', 'Category']]
+    # Build list of lists containing all transaction data to be inserted into statement table
+    data = [['Date', 'Method', 'Category', 'Comment', 'Direction', 'Termini', 'Amount', 'New balance']]
     for i in transactions:
         termini = Paragraph(str(i.Termini), styles['Normal'])
         amount = Paragraph(str(i.Amount), styles['Normal'])
         new_balance = Paragraph(str(i.NewBalance), styles['Normal'])
         direction = Paragraph(str(i.Direction), styles['Normal'])
-        time = Paragraph(str(i.TransactionTime), styles['Normal'])
+        date = Paragraph(str(i.TransactionTime)[:19], styles['Normal'])
         comment = Paragraph(str(i.Comment), styles['Normal'])
         method = Paragraph(str(i.Method), styles['Normal'])
         category = Paragraph(str(i.Category), styles['Normal'])
 
-        data.append([termini, amount, new_balance, direction, time, comment, method, category])
+        data.append([date, method, category, comment, direction, termini, amount, new_balance])
 
     # Set table properties and styles
-    table = Table(data, colWidths=[2 * cm, 2 * cm, 2.5 * cm, 2 * cm, 3 * cm, 3 * cm, 2.5 * cm, 3 * cm])
+    table = Table(data)
     table.setStyle(TableStyle([
         ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
         ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
+        ('BACKGROUND', (0, 0), (-1, 0), theme_colour),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
     ]))
 
-    # End pdf content here
+    '''
+    End PDF content here
+    '''
 
-    elements.append(heading)
-    # elements.append(FrameBreak())
-    # elements.append(table)
+    # Add the different elements of the PDF to elements list, and use it to build PDF
+    elements.extend([logo, FrameBreak()])
+    elements.extend([logo_text, FrameBreak()])
+    elements.extend([account_details, FrameBreak()])
+    elements.extend([branch_title, branch_details, FrameBreak()])
+    elements.extend([personal_title, personal_details, FrameBreak()])
+    elements.extend([balance, FrameBreak()])
+    elements.extend([table, FrameBreak()])
+    elements.extend([small_print, FrameBreak()])
     pdf.build(elements)
 
     response.write(buffer.getvalue())
