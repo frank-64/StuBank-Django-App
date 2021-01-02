@@ -455,7 +455,7 @@ def card_transaction(request):
     # returning the rendered transfer.html with the form inside the context
     return render(request, 'dashboard/customer/spoof_transaction.html', context)
 
-
+@login_required
 def livechat(request, pk):
     """this method returns all the message objects between two users and renders them on livechat.html with the relevant
     context
@@ -471,6 +471,7 @@ def livechat(request, pk):
     return render(request, 'dashboard/customer/livechat.html', {"other_user": other_user, "messages": messages})
 
 
+@login_required
 @csrf_exempt
 # TODO: csrf_exempt must be temporary to prevent cross site scripting attacks
 def message(request, pk):
@@ -509,6 +510,24 @@ def message(request, pk):
         messages.update(seen=True)
         return JsonResponse(results, safe=False)
 
+
+@login_required
+def help_page(request):
+    return render(request, 'dashboard/customer/help.html')
+
+
+@login_required
+def get_helper(request, pk):
+    helpers = Helper.objects.filter(pk=5)
+    helper_object = None
+    #TODO: is_authenticated doesn't work as expected and returns helpers that are not logged in.
+    for helper in helpers:
+        if helper.user.is_authenticated:
+            helper_object = helper
+    if(helper_object!=None):
+        return HttpResponse(helper_object.pk)
+    else:
+        return HttpResponse('None')
 
 '''
 MONEY POT STUFF ( ͡° ͜ʖ ͡°)

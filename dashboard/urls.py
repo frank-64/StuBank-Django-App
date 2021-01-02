@@ -16,6 +16,8 @@ urlpatterns = [
     path('moneypots/<int:pk>/delete', MoneyPotDeleteView.as_view(), name='delete_money_pot'),
     path('moneypots/<int:pk>/update', MoneyPotUpdateView.as_view(), name='update_money_pot'),
     path('moneypots/<int:pk>/deposit', MoneyPotDepositView.as_view(), name='deposit_money_pot'),
+    path('help/', help_page, name='help'),
+    path('gethelper/<int:pk>/', get_helper, name='gethelper'),
     path('livechat/<int:pk>/', livechat, name='livechat'),
     path('message/<int:pk>/', message, name='message')
 ]

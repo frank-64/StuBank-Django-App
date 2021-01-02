@@ -1,1 +1,118 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static '/css/help.css' %}">
+{% endblock css %}
+
+{% block javascript %}
+<script>
+    function getHelp(){
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState === 4 && this.status === 200) {
+                if(xhttp.responseText==='None'){
+                    document.getElementById('helper-status').innerText = "A helper could not be found at the moment.";
+                }else{
+                    document.getElementById('helper-status').innerText = "Helper found with ID:"+xhttp.responseText;
+                }
+            }
+        }
+        xhttp.open("GET", '{% url 'gethelper' request.user.pk%}');
+        xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhttp.send();
+    }
+</script>
+{% endblock javascript %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4 col-centered">
+        <div class="card">
+            <div class="card-header main-header">
+                <h4>FAQ</h4>
+            </div>
+            <div class="card-body cards">
+                <div class="card faq-card">
+                    <div class="card-header">
+                        <span>Header</span>
+                        <span style="float:right;">
+                            <a data-toggle="collapse" href="#card1" title="Read More" aria-controls="card1"><i class="fa extend" aria-hidden="true"></i></a>
+                        </span>
+                    </div>
+                    <div class="collapse" id="card1">
+                        <div class="card-body">
+                            BODY
+                        </div>
+                    </div>
+                </div>
+                <div class="card faq-card">
+                    <div class="card-header">
+                        <span>Header</span>
+                        <span style="float:right;">
+                            <a data-toggle="collapse" href="#card2" title="Read More" aria-controls="card2"><i class="fa extend" aria-hidden="true"></i></a>
+                        </span>
+                    </div>
+                    <div class="collapse" id="card2">
+                        <div class="card-body">
+                            BODY
+                        </div>
+                    </div>
+                </div>
+                <div class="card faq-card">
+                    <div class="card-header">
+                        <span>Header</span>
+                        <span style="float:right;">
+                            <a data-toggle="collapse" href="#card3" title="Read More" aria-controls="card3"><i class="fa extend" aria-hidden="true"></i></a>
+                        </span>
+                    </div>
+                    <div class="collapse" id="card3">
+                        <div class="card-body">
+                            BODY
+                        </div>
+                    </div>
+                </div>
+                <div class="card faq-card">
+                    <div class="card-header">
+                        <span>Header</span>
+                        <span style="float:right;">
+                            <a data-toggle="collapse" href="#card4" title="Read More" aria-controls="card4"><i class="fa extend" aria-hidden="true"></i></a>
+                        </span>
+                    </div>
+                    <div class="collapse" id="card4">
+                        <div class="card-body">
+                            BODY
+                        </div>
+                    </div>
+                </div>
+                <div class="card faq-card">
+                    <div class="card-header">
+                        <span>Header</span>
+                        <span style="float:right;">
+                            <a data-toggle="collapse" href="#card5" title="Read More" aria-controls="card5"><i class="fa extend" aria-hidden="true"></i></a>
+                        </span>
+                    </div>
+                    <div class="collapse" id="card5">
+                        <div class="card-body">
+                            BODY
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-4 col-centered">
+        <div class="card livechat">
+            <div class="card-header">
+                Live Chat
+            </div>
+            <div class="card-body">
+                Need more help? Connect to a helper to discuss account issues and freeze your account or card.<br>
+                <button class="btn" onclick="getHelp()">Get Help</button>
+                <br>
+                <span id="helper-status"></span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
