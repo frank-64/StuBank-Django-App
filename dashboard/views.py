@@ -338,8 +338,10 @@ def payee_transfer(request):
                                             Direction='In', TransactionTime=transaction_time, Comment=comment,
                                             NewBalance=new_balances[1], Termini=customer_termini, Category=category,
                                             Method=method)
+            print(amount)
+            print(new_balances[0])
             try:
-                if (amount < 1.00):
+                if (amount < 1.00 or request.user.customer.balance-amount < 0):
                     raise
                 else:
                     # persisting the transaction object
@@ -453,6 +455,7 @@ def card_transaction(request):
     # returning the rendered transfer.html with the form inside the context
     return render(request, 'dashboard/customer/spoof_transaction.html', context)
 
+
 def livechat(request, pk):
     """this method returns all the message objects between two users and renders them on livechat.html with the relevant
     context
@@ -465,10 +468,11 @@ def livechat(request, pk):
     messages = Message.objects.filter(
         Q(receiver=other_user, sender=request.user) | Q(receiver=request.user, sender=other_user)
     ).order_by("created_at")
-    return render(request, 'dashboard/customer/livechat.html', {"other_user":other_user, "messages":messages})
+    return render(request, 'dashboard/customer/livechat.html', {"other_user": other_user, "messages": messages})
+
 
 @csrf_exempt
-#TODO: csrf_exempt must be temporary to prevent cross site scripting attacks
+# TODO: csrf_exempt must be temporary to prevent cross site scripting attacks
 def message(request, pk):
     """This method creates method objects if the have been POSTed from one of the users in the livechat.
     If the method is GET then the unseen messages are returned.

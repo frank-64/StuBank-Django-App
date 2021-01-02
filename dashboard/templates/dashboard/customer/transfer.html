@@ -1,6 +1,7 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
 {% block javascript %}
 <script>
+    var valid = false;
     const available_balance = {{ user.customer.available_balance }};
      $(document).ready(function(){
           $("input[name='Amount']").keyup(function(){
@@ -11,18 +12,34 @@
                   document.getElementById('submit').disabled = true;
                   document.getElementById("new_balance").innerText = "£"+(sum);
                   document.getElementById("new_balance").style.color='red';
-              }else {
+                  valid = false;
+              }else if (amount<0){
+                  alert("You cannot transfer a negative amount!")
+                  document.getElementById('submit').disabled = true;
+                  document.getElementById("new_balance").innerText = "£"+available_balance+".00";
+                  valid = false;
+              }else if (amount<1.00){
+                  alert("You must transfer an amount more than or equal to £1.00.")
+                  document.getElementById('submit').disabled = true;
+                  document.getElementById("new_balance").innerText = "£"+available_balance+".00";
+                  valid = false;
+              } else {
                   document.getElementById('submit').disabled = false;
                   document.getElementById("new_balance").style.color='black';
                   document.getElementById("new_balance").innerText = "£"+(sum);
+                  valid = true;
               }
           });
         });
+
+     function amountCheck(){
+         return valid;
+     }
 </script>
 {% endblock javascript %}
 {% block content %}
 {% if user.is_authenticated and user.is_customer%}
-    <form method="POST">
+    <form method="POST" onsubmit="return amountCheck()">
         {% csrf_token %}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">Transfer to payee:</legend>
