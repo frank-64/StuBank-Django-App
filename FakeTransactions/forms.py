@@ -1,10 +1,18 @@
 from django import forms
 
-FAKE_CHOICES = (
-    ("1", "Groceries"),
-    ("2", "FastFood")
+TRANSACTION_CHOICES = (
+    ('Food', (
+        ("1", "Groceries"),
+        ("2", "Fast Food"),
+        ("3", "Snack"),
+    )),
+    ('Clothes', (
+        ("1", "Jeans"),
+        ("2", "Shorts"),
+        ("3", "Shirt"),
+    ))
 )
 
 
-class FakeForm(forms.Form):
-    Transactions = forms.MultipleChoiceField(choices=FAKE_CHOICES)
+class TransactionForm(forms.Form):
+    Transactions = forms.ChoiceField(choices=TRANSACTION_CHOICES)

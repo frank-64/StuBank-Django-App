@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views import View
-from FakeTransactions.forms import FakeForm
+from FakeTransactions.forms import *
 from dashboard.models import *
 
 
@@ -9,6 +9,5 @@ class FakeTransactions(View):
 
     def AddNewTransaction(request):
         t = Transaction
-        context = {}
-        context['form'] = FakeForm()
-        return render(request, 'FakeTransactions/transactionPage.html', context)
+        food_context = {'form': TransactionForm()}
+        return render(request, 'FakeTransactions/transactionPage.html', food_context)
