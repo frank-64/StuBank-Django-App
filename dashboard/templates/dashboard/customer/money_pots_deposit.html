@@ -1,4 +1,6 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% load crispy_forms_tags %}
+
 {% block content %}
     <script>
     const available_balance = {{ user.customer.available_balance }};
@@ -26,7 +28,7 @@
         <h1>Deposit money to pot: {{ pot.name }}</h1>
         <h3>Current amount in pot: {{ pot.pot_balance }}</h3>
         <h3>Target: {{ pot.target_balance }}</h3>
-            {{ form.as_p }}
+            {{ form|crispy }}
         <button type="submit" id="submit">Deposit</button>
     </form>
 

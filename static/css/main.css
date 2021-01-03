@@ -81,3 +81,31 @@ a.article-title:hover {
 .account-heading {
   font-size: 2.5rem;
 }
+
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+fieldset{
+  background-color: rgba(150, 150, 150, 0.6);
+}
+
+submitButton{
+  background:    #ffffff;
+  border:        2px solid #000000;
+  border-radius: 0px;
+  box-shadow:    3px 3px #444444;
+  padding:       20px 45px;
+  color:         #000000;
+  display:       inline-block;
+  font:          normal bold 18px/1 "Open Sans", sans-serif;
+  text-align:    center;
+}
+submitButton:hover {
+  border-color:#7a7a7a;
+}

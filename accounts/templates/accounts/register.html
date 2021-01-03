@@ -1,4 +1,5 @@
 {% extends "accounts/base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
 <div class="content-section">
         <form method="POST">
@@ -6,7 +7,7 @@
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Join Today</legend>
                 <table>
-                    {{ form.as_table }}
+                    {{ form|crispy }}
                 </table>
             </fieldset>
             <div class="form-group">

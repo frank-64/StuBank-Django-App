@@ -6,7 +6,7 @@ from django_otp import devices_for_user
 from django.contrib.auth import views as auth_views, authenticate, login, logout
 from django_otp.decorators import otp_required
 from django_otp.plugins.otp_totp.models import TOTPDevice
-from .forms import UserRegisterForm, UserInputQrCodeForm
+from .forms import UserRegisterForm, UserInputQrCodeForm, CustomAuthenticationForm
 from django_otp.forms import OTPAuthenticationForm
 from .models import User, Customer
 import qrcode
@@ -29,7 +29,7 @@ def generate_qr(data, size, border):
 
 class CustomTOTPLoginView(auth_views.LoginView):
     template_name = 'accounts/login.html'
-    form_class = OTPAuthenticationForm
+    form_class = CustomAuthenticationForm
 
 
 class RegisterView(CreateView):
