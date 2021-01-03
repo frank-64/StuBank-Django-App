@@ -21,5 +21,6 @@ urlpatterns = [
     path('statement/', pdf_view, name='statement'),
     path('livechat/<int:pk>/', livechat, name='livechat'),
     path('message/<int:pk>/', message, name='message'),
-    path('helper/chatlist/', get_livechats, name='helper_livechat')
+    path('helper/chatlist/', get_livechats, name='helper_livechat'),
+    path('livechat/helper-perms/<int:pk>/', grant_permission, name='helper_perms')
 ]

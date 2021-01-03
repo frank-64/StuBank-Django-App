@@ -67,7 +67,15 @@
     <div class="row">
         <div class="col-md-4">
             <div class="header"><h3>{{ other_user.username }}</h3></div>
-            <br>
+            {% if not livechat.first.perm_granted %}
+                {{ livechat.first.perm_granted  }}
+                <button class="btn btn-outline-success">View Customer Statements</button> &nbsp; <button class="btn btn-outline-danger">Freeze Account</button> &nbsp; <button class="btn btn-outline-warning">Freeze Card</button>
+                <br>
+                <br>
+            {% else %}
+                {{ livechat.first.perm_granted  }}
+                <p>Customer must provide permission for you to access their statements and freeze cards/accounts..</p>
+            {% endif %}
             <div class="message-area">
                 {% for message in messages %}
                 <div class="message-{% if message.sender == request.user %}right{% else %}left{% endif %}">

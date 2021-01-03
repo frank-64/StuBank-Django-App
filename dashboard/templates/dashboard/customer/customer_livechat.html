@@ -60,6 +60,21 @@
         div.scrollIntoView()
     }
 
+
+    function getPerms(){
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState === 4 && this.status === 200) {
+                if(xhttp.responseText==='Done'){
+                    var div = document.getElementById("perms");
+                    div.innerHTML = `<p>Permission granted to helper.</p>`
+                }
+            }
+        };
+        xhttp.open("GET", '{% url 'helper_perms' other_user.id%}');
+        xhttp.overrideMimeType("application/json");
+        xhttp.send(null);
+    }
     </script>
 {% endblock javascript %}
 
@@ -67,7 +82,15 @@
     <div class="row">
         <div class="col-md-4">
             <div class="header"><h3>{{ other_user.username }}</h3></div>
-            <br>
+            <div id="perms">
+                {% if not livechat.first.perm_granted %}
+                    <button class="btn btn-outline-success" onclick="getPerms()">Grant helper permission</button>
+                    <br>
+                    <br>
+                {% else %}
+                    <p>Helper has permission from you to view statements and freeze your account/card..</p>
+                {% endif %}
+            </div>
             <div class="message-area">
                 {% for message in messages %}
                 <div class="message-{% if message.sender == request.user %}right{% else %}left{% endif %}">

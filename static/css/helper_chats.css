@@ -1,3 +1,7 @@
-.fa-circle{
+#active_circle{
     color: forestgreen;
+}
+
+#inactive_circle{
+    color: darkred;
 }
