@@ -17,8 +17,7 @@
                 {{ form|crispy }}
             </table>
             <div class="submit-row">
-                <submitButton type="submit">Log on</submitButton>
-                {% if form.get_user %}<input type="submit" name="otp_challenge" value="Get Challenge" />{% endif %}
+                <button type="submit">Login</button>
             </div>
     </form>
     <p><a href="{% url 'password_reset' %}">Forgot password?</a></p>
