@@ -1,10 +1,13 @@
 import datetime
+import io
 import random
 from decimal import Decimal
+from functools import partial
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.humanize.templatetags.humanize import naturaltime
+from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
@@ -12,22 +15,32 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.views.generic import DetailView, ListView, CreateView, DeleteView, UpdateView, FormView
+from reportlab.lib import colors, utils
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+
 from .forms import *
 from dashboard.models import *
 from django_otp.decorators import otp_required
 from dashboard.card_gen import credit_card_number
-from django.http.response import JsonResponse
+from django.http.response import JsonResponse, FileResponse
 from django.db.models import Q
 import json
 
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Frame, PageTemplate, FrameBreak, \
+    Image
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch, cm
+
 """
-Request is not a visible parameter with Class-based views because as_view() on the .urls file makes the view callable
+request is not a visible parameter with Class-based views because as_view() on the .urls file makes the view callable
 meaning it takes a request and returns a response
 """
 
 
+@method_decorator(login_required, name='dispatch')
 class UserDashboardView(LoginRequiredMixin, DetailView):
-    """ Redirects the user to dashboard_home if authenticated or the login page otherwise
+    """Redirects the user to dashboard_home if authenticated or the login page otherwise
     Inherits:
         DetailView: inherited class to override the get_object(), get_queryset() and set the Model/template
         LoginRequiredMixin: inherited class used to redirect if not authenticated
@@ -40,13 +53,13 @@ class UserDashboardView(LoginRequiredMixin, DetailView):
     model = Transaction
 
     def get_queryset(self):
-        """ Gets all the transactions as we set the view 'model = Transaction'
+        """gets all the transactions as we set the view 'model = Transaction'
         :return: all transactions
         """
         return super(UserDashboardView, self).get_queryset()
 
     def get_object(self, queryset=None):
-        """ Checks if the current user is a helper or customer and sets the template_name accordingly
+        """ checks if the current user is a helper or customer and sets the template_name accordingly
         :param request: HttpRequest object containing metadata and current user attributes
         """
         if (self.request.user.is_customer):
@@ -55,7 +68,7 @@ class UserDashboardView(LoginRequiredMixin, DetailView):
             UserDashboardView.template_name = 'dashboard/helper/helper_dashboard.html'
 
     def get_context_data(self, **kwargs):
-        """ Gets the transactions in and out of an account adds them to the context
+        """gets the transactions in and out of an account adds them to the context
 
         :param kwargs: used to obtain the queryset
         :return context: dictionary containing the transactions in an out of the account
@@ -69,7 +82,7 @@ class UserDashboardView(LoginRequiredMixin, DetailView):
 
 
 def get_expiry_date():
-    """ Gets the date in 5 years time
+    """gets the date in 5 years time
 
     :return datetime of the date now + 5 years:
     """
@@ -78,7 +91,7 @@ def get_expiry_date():
 
 
 def get_CVC():
-    """ Randomises 3 digits to generate a CVC
+    """randomises 3 digits to generate a CVC
 
     :return string array CVC:
     """
@@ -93,7 +106,7 @@ def get_CVC():
 
 
 def get_card(request):
-    """ Creates a card object for the user that called this method on their dashboard
+    """creates a card object for the user that called this method on their dashboard
 
     :param request: HttpRequest object containing metadata and current user attributes
     :return HttpResponseRedirect: redirects user to the dashboard
@@ -117,7 +130,7 @@ def get_card(request):
 
 
 class PayeeDetailView(LoginRequiredMixin, DetailView):
-    """ Displays all payees related to the current customer's pk
+    """Displays all payees related to the current customer's pk
 
     Inherits:
         DetailView: inherited class to override the get_object(), get_queryset() and set the Model/template
@@ -133,7 +146,7 @@ class PayeeDetailView(LoginRequiredMixin, DetailView):
     template_name = 'dashboard/customer/payee_dashboard.html'
 
     def get_queryset(self):
-        """ Gets the queryset of all the payees
+        """gets the queryset of all the payees
 
         :return:
         """
@@ -149,7 +162,7 @@ class PayeeDetailView(LoginRequiredMixin, DetailView):
 
 @login_required
 def delete_payee(request, pk):
-    """ Deletes a payee
+    """deletes a payee
 
     :param request: HttpRequest object containing metadata and current user attributes
     :param pk: primary key in the payee table used to identify a specific row
@@ -181,7 +194,7 @@ def check_payee(request):
 
 @login_required
 def add_payee(request):
-    """ Adds a payee using the POSTed inputs from the PayeeDetailsForm
+    """adds a payee using the POSTed inputs from the PayeeDetailsForm
 
     :param request: HttpRequest object containing metadata and current user attributes
     :return response: render HttpResponse object which takes request, template name and a dictionary as parameters
@@ -257,7 +270,7 @@ def get_new_balances(customers_customer_id, payees_customer_id, amount):
 
 
 def alter_balance(customers_customer_id, new_balance):
-    """ Changes the balance of the sender/customer and the receiver/payee
+    """ changes the balance of the sender/customer and the receiver/payee
 
     :param customers_customer_id: primary key of the user
     :param new_balance: updated balance
@@ -274,7 +287,7 @@ def alter_balance(customers_customer_id, new_balance):
 
 @login_required
 def payee_transfer(request):
-    """ Transfers a sum of money between a customer and one of their payee's using the POSTed inputs from the TransferForm
+    """transfers a sum of money between a customer and one of their payee's using the POSTed inputs from the TransferForm
 
     :param request: HttpRequest object containing metadata and current user attributes
     :return:
@@ -338,10 +351,8 @@ def payee_transfer(request):
                                             Direction='In', TransactionTime=transaction_time, Comment=comment,
                                             NewBalance=new_balances[1], Termini=customer_termini, Category=category,
                                             Method=method)
-            print(amount)
-            print(new_balances[0])
             try:
-                if (amount < 1.00 or request.user.customer.balance-amount < 0):
+                if (amount < 1.00):
                     raise
                 else:
                     # persisting the transaction object
@@ -380,7 +391,7 @@ def payee_transfer(request):
 
 @login_required
 def card_transaction(request):
-    """ Transfers a sum of money between a customer and one of their payee's using the POSTed inputs from the TransferForm
+    """transfers a sum of money between a customer and one of their payee's using the POSTed inputs from the TransferForm
 
         :param request: HttpRequest object containing metadata and current user attributes
         :return:
@@ -455,52 +466,26 @@ def card_transaction(request):
     # returning the rendered transfer.html with the form inside the context
     return render(request, 'dashboard/customer/spoof_transaction.html', context)
 
-@login_required
+
 def livechat(request, pk):
-    """ This method returns all the message objects between two users and renders them on customer_livechat.html with the
-    relevant context
+    """this method returns all the message objects between two users and renders them on livechat.html with the relevant
+    context
 
     :param request: HttpRequest object containing metadata and current user attributes
     :param pk: the primary key of the other user in the livechat
-    :return render: rendered customer_livechat.html template with messages and other_user as context
+    :return render: rendered livechat.html template with messages and other_user as context
     """
-
-    # this checks if a livechat already exists between the current user (request.user.id) and the user with
-    # primary key = pk
-    livechat_created = LiveChat.objects.filter(customer_id=request.user.id, helper_id=pk, is_active=True).exists()
-
-    # other_user is the other user relative to the current user in the livechat which the current user intends to
-    # communicate with
     other_user = get_object_or_404(User, pk=pk)
-
-    # this obtains all the messages sent and received between the current user and the other user
     messages = Message.objects.filter(
         Q(receiver=other_user, sender=request.user) | Q(receiver=request.user, sender=other_user)
     ).order_by("created_at")
-
-    # this condition redirects the user to the customer_livechat template if they are a customer and have a
-    # LiveChat object with a helper. If the user is a helper they are redirected to the helper template. Otherwise an
-    # error is displayed.
-    if other_user.is_helper and livechat_created:
-        return render(request, 'dashboard/customer/customer_livechat.html',
-                      {"other_user": other_user, "messages": messages})
-    elif not other_user.is_helper:
-        return render(request, 'dashboard/helper/helper_livechat.html',
-                      {"other_user": other_user, "messages": messages})
-    else:
-        error = "The Livechat could not be accessed."
-        resolution = "Have you requested assistance and clicked the link on the Help page?"
-        return render(request, 'dashboard/customer/error.html',
-                      {"error": error, "resolution": resolution})
+    return render(request, 'dashboard/customer/livechat.html', {"other_user": other_user, "messages": messages})
 
 
-
-
-@login_required
 @csrf_exempt
 # TODO: csrf_exempt must be temporary to prevent cross site scripting attacks
 def message(request, pk):
-    """ This method creates method objects if the have been POSTed from one of the users in the livechat.
+    """This method creates method objects if the have been POSTed from one of the users in the livechat.
     If the method is GET then the unseen messages are returned.
 
     :param request: HttpRequest object containing metadata and current user attributes
@@ -509,25 +494,12 @@ def message(request, pk):
     'Added' is returned once the message is persisted into the database if the request method is POST.
     JSON objects of the new unseen messages are returned if the request method is GET.
     """
-
-    # This checks if a livechat already exists between the current user (request.user.id) and the user with
-    # primary key = pk
     other_user = get_object_or_404(User, pk=pk)
-
-    # If the request is POST add the message to the database and return the message the sender needs to see on their
-    # client. If the request is GET then return all the unseen messages where the current user is the receiver.
-
     if request.method == "POST":
         message = json.loads(request.body)
-        m = Message(receiver=other_user, sender=request.user, message=message, created_at=timezone.now())
+        m = Message(receiver=other_user, sender=request.user, message=message)
         m.save()
-        result = {
-            "message": m.message,
-            "sender": m.sender.username,
-            "time": naturaltime(m.created_at),
-            "sent": True
-        }
-        return JsonResponse(result, safe=False)
+        return HttpResponse("Added")
     elif request.method == "GET":
         messages = Message.objects.filter(seen=False, receiver=request.user)
         results = []
@@ -543,51 +515,14 @@ def message(request, pk):
         return JsonResponse(results, safe=False)
 
 
-@login_required
-def help_page(request):
-    """This method renders the help.html page on the dashboard
-
-    :param request:
-    :return:
-    """
-    return render(request, 'dashboard/customer/help.html')
-
-
-@login_required
-def get_helper(request):
-    """ This function gets the primary key of a helper for the customer to use to join the live chat with the helper
-
-    :param request:
-    :return:
-    """
-
-    # If there is an existing and active livechat object with the customer_id as the current user's pk then return
-    # the pk of the existing helper in that livechat
-    if LiveChat.objects.filter(customer_id=request.user.id, is_active=True).exists():
-        existing_chat = LiveChat.objects.get(customer_id=request.user.id)
-        return HttpResponse(existing_chat.helper.pk)
-
-    # If the customer does not have an existing livechat then create a LiveChat object and return the helper's pk
-    else:
-        helpers = Helper.objects.all()
-        random_helper = random.choice(helpers)
-        lc = LiveChat(customer_id=request.user.id, helper_id=random_helper.pk)
-        lc.save()
-        return HttpResponse(random_helper.pk)
-
-
-def get_livechats(request):
-    #TODO: Need to add a way to get user permission to freeze accounts/cards etc
-    livechats = LiveChat.objects.filter(helper_id=request.user.id)
-    return render(request, 'dashboard/helper/helper_chats.html', {"livechats":livechats})
-
-
 '''
 MONEY POT STUFF ( ͡° ͜ʖ ͡°)
 - Money pot displays notice when target has been met
 - Display percentage complete of each pot
 '''
 
+
+@method_decorator(login_required, name='dispatch')
 class MoneyPotListView(LoginRequiredMixin, ListView):
     model = MoneyPot
     template_name = 'dashboard/customer/money_pots.html'
@@ -599,6 +534,7 @@ class MoneyPotListView(LoginRequiredMixin, ListView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class MoneyPotCreateView(LoginRequiredMixin, CreateView):
     template_name = 'dashboard/customer/money_pots_add.html'
     model = MoneyPot
@@ -611,6 +547,7 @@ class MoneyPotCreateView(LoginRequiredMixin, CreateView):
         return super(MoneyPotCreateView, self).form_valid(form)
 
 
+@method_decorator(login_required, name='dispatch')
 class MoneyPotDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'dashboard/customer/money_pots_confirm_delete.html'
     model = MoneyPot
@@ -624,6 +561,7 @@ class MoneyPotDeleteView(LoginRequiredMixin, DeleteView):
         return redirect('money_pots')
 
 
+@method_decorator(login_required, name='dispatch')
 class MoneyPotUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'dashboard/customer/money_pots_update.html'
     model = MoneyPot
@@ -631,6 +569,7 @@ class MoneyPotUpdateView(LoginRequiredMixin, UpdateView):
     success_url = '/dashboard/moneypots/'
 
 
+@method_decorator(login_required, name='dispatch')
 class MoneyPotDepositView(LoginRequiredMixin, FormView):
     template_name = 'dashboard/customer/money_pots_deposit.html'
     form_class = DepositForm
@@ -680,6 +619,147 @@ def update_available_balance(customer):
     available_balance = customer.balance - money_pots_total
     customer.available_balance = available_balance
     customer.save()
+
+
+'''
+BANK STATEMENTS STUFF [̲̅$̲̅(̲̅ιοο̲̅)̲̅$̲̅]
+'''
+
+
+@login_required
+def pdf_view(request):
+    user = request.user
+    customer = Customer.objects.get(user=user)
+    filename = user.username + "_statement.pdf"
+    theme_colour = colors.Color(red=(95 / 255), green=(120 / 255), blue=(138 / 255))
+
+    # Initialise HttpResponse which provides user with pdf download when requested
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=' + filename
+
+    # Create initial pdf document
+    buffer = io.BytesIO()
+    pdf = SimpleDocTemplate(buffer, pagesize=A4)
+    width, height = A4
+
+    # Create frames for use in template
+    margin = 50
+    active_width = (width - margin * 2)
+    frame_padding = 10
+
+    frames = [Frame(margin, height - (margin * 2.5), margin * 2, margin * 1.75, id='logo', showBoundary=0),
+              Frame(margin + (margin * 2.5), height - (margin * 2.5), margin * 3, margin * 1.75, id='logo_text',
+                    showBoundary=0),
+              Frame(width - (margin + margin * 3.5), height - (margin * 2.5), margin * 3.5, margin * 1.75,
+                    id='account_details', showBoundary=0),
+              Frame(margin, height - (margin * 4), margin * 3, margin * 1.75, id='branch_details', showBoundary=0),
+              Frame(margin + (margin * 3 + frame_padding), height - (margin * 4), margin * 3, margin * 1.75,
+                    id='personal_details', showBoundary=0),
+              Frame(margin + (margin * 6 + 2 * frame_padding), height - (margin * 4), (active_width - (frame_padding *
+                                                                                                       2) - (
+                                                                                                   margin * 6)), margin,
+                    id='current_balance', showBoundary=0),
+              Frame(margin, margin * 2, active_width, margin * 11, id='statement', showBoundary=0),
+              Frame(margin, margin * 0.8, active_width, margin * 0.8, id='small_print', showBoundary=0)]
+
+    # Create template and add it to pdf
+    template = PageTemplate(id='main', frames=frames)
+    pdf.addPageTemplates([template])
+
+    # Elements list which will contain all content to be drawn onto the pdf
+    elements = []
+
+    # Create styles that will be assigned to paragraphs for paragraph customisation
+    styles = getSampleStyleSheet()
+    heading1 = ParagraphStyle('Heading1', fontName='Helvetica-Bold', fontSize=25)
+    account_details = ParagraphStyle('details', alignment=2)
+    heading2 = ParagraphStyle('Heading2', backColor=theme_colour, alignment=0, textColor=colors.white, fontSize=12,
+                              leading=16)
+    content1 = ParagraphStyle('content1', alignment=0, fontSize=8)
+    balances = ParagraphStyle('balances', alignment=0, fontSize=10)
+    small_content = ParagraphStyle('small_print', alignment=0, fontSize=6, leading=8)
+
+    '''
+    Add PDF content here
+    '''
+
+    # Logo
+    logo = Image('static/images/monkey.png')
+    logo._restrictSize(margin * 1.75, margin * 1.5)
+
+    # Logo text
+    logo_text = Paragraph("Statement", heading1)
+
+    # Account details
+    account_details = Paragraph('Account number: <b>' + str(customer.account_num) + '</b><br/>Sort code: <b>' +
+                                str(customer.sort_code) + '</b><br/>Username: <b>' + str(user.username) + '</b>',
+                                account_details)
+
+    # Branch details
+    branch_title = Paragraph('Branch Details', heading2)
+    branch_details = Paragraph('StuBank PLC <br/> 21 Canada Crescent <br/> Newcastle upon Tyne <br/> NE2 7BM', content1)
+
+    # Personal Details
+    personal_title = Paragraph('Your current details', heading2)
+    personal_details = Paragraph(str(user.first_name) + ' ' + str(user.last_name) + '<br/>' + str(user.email), content1)
+
+    # Current balance
+    balance = Paragraph('<br/> Current balance: <b>£' + str(customer.balance) + '</b><br/> Available balance: <b>£' +
+                        str(customer.available_balance) + '</b>', balances)
+
+    small_print = Paragraph('StuBank Plc, registered in England and Wales No. 482309. Registered office: Sir Matt Busby'
+                            ' Way, Old Trafford, Stretford, Manchester M16 0RA. Authorised by the Prudential Regulation '
+                            'Authority and regulated by the Financial Conduct Authority and the Prudential Regulation '
+                            'Authority. © StuBank Plc. OK not really, but it sounds cool if we write it anyway.'
+                            ' Downloaded from StuBank Online Statement Service on ' + str(datetime.date.today()) + '.',
+                            small_content)
+
+    # Retrieve all user's transactions
+    transactions = Transaction.objects.filter(Customer_id=user.pk).order_by(
+        '-TransactionTime')
+
+    # Build list of lists containing all transaction data to be inserted into statement table
+    data = [['Date', 'Method', 'Category', 'Comment', 'Direction', 'Termini', 'Amount', 'New balance']]
+    for i in transactions:
+        termini = Paragraph(str(i.Termini), styles['Normal'])
+        amount = Paragraph(str(i.Amount), styles['Normal'])
+        new_balance = Paragraph(str(i.NewBalance), styles['Normal'])
+        direction = Paragraph(str(i.Direction), styles['Normal'])
+        date = Paragraph(str(i.TransactionTime)[:19], styles['Normal'])
+        comment = Paragraph(str(i.Comment), styles['Normal'])
+        method = Paragraph(str(i.Method), styles['Normal'])
+        category = Paragraph(str(i.Category), styles['Normal'])
+
+        data.append([date, method, category, comment, direction, termini, amount, new_balance])
+
+    # Set table properties and styles
+    table = Table(data)
+    table.setStyle(TableStyle([
+        ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
+        ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
+        ('BACKGROUND', (0, 0), (-1, 0), theme_colour),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+    ]))
+
+    '''
+    End PDF content here
+    '''
+
+    # Add the different elements of the PDF to elements list, and use it to build PDF
+    elements.extend([logo, FrameBreak()])
+    elements.extend([logo_text, FrameBreak()])
+    elements.extend([account_details, FrameBreak()])
+    elements.extend([branch_title, branch_details, FrameBreak()])
+    elements.extend([personal_title, personal_details, FrameBreak()])
+    elements.extend([balance, FrameBreak()])
+    elements.extend([table, FrameBreak()])
+    elements.extend([small_print, FrameBreak()])
+    pdf.build(elements)
+
+    response.write(buffer.getvalue())
+    buffer.close()
+
+    return response
 
 # class TransactionListView(ListView):
 #     model = Transaction

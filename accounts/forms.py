@@ -3,6 +3,8 @@ from django import forms
 from django.db import transaction
 from .models import User, Customer
 import random
+from django_otp.forms import OTPAuthenticationForm
+
 
 class UserRegisterForm(UserCreationForm):
     class Meta:
@@ -21,7 +23,7 @@ class UserRegisterForm(UserCreationForm):
         # random account number between 2000000 and 3000000 which only persists
         # if the account number doesn't exists in the database
         account_num = random.randint(2000000, 3000000)
-        while(Customer.objects.filter(account_num=account_num).exists()):
+        while (Customer.objects.filter(account_num=account_num).exists()):
             account_num = random.randint(2000000, 3000000)
         customer.account_num = account_num
         # preset account number
@@ -31,3 +33,12 @@ class UserRegisterForm(UserCreationForm):
 
 class UserInputQrCodeForm(forms.Form):
     code = forms.IntegerField(max_value=999999)
+
+
+class CustomAuthenticationForm(OTPAuthenticationForm):
+
+    def __init__(self, *args, **kwargs):
+        super(CustomAuthenticationForm, self).__init__(*args, **kwargs)
+        self.fields.pop('otp_device')
+        self.fields.pop('otp_challenge')
+

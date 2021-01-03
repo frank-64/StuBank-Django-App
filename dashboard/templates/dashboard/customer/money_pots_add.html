@@ -1,9 +1,11 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% load crispy_forms_tags %}
+
 {% block content %}
     <form method="POST">
         {% csrf_token %}
         <h1>Add money pot:</h1>
-            {{ form.as_p }}
+            {{ form|crispy }}
         <button type="submit">Add</button>
     </form>
 

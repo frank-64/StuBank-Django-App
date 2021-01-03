@@ -10,15 +10,12 @@ urlpatterns = [
     path('transfer/', payee_transfer, name='transfer'),
     path('checkpayee/', check_payee, name='checkpayee'),
     path('getcard/', get_card, name='getcard'),
-    path('transaction/', card_transaction, name='transaction'),
     path('moneypots/', MoneyPotListView.as_view(), name='money_pots'),
     path('moneypots/create/', MoneyPotCreateView.as_view(), name='add_money_pot'),
     path('moneypots/<int:pk>/delete', MoneyPotDeleteView.as_view(), name='delete_money_pot'),
     path('moneypots/<int:pk>/update', MoneyPotUpdateView.as_view(), name='update_money_pot'),
     path('moneypots/<int:pk>/deposit', MoneyPotDepositView.as_view(), name='deposit_money_pot'),
-    path('help/', help_page, name='help'),
-    path('gethelper/', get_helper, name='gethelper'),
+    path('statement/', pdf_view, name='statement'),
     path('livechat/<int:pk>/', livechat, name='livechat'),
     path('message/<int:pk>/', message, name='message'),
-    path('helper/chatlist/', get_livechats, name='helper_livechat')
 ]

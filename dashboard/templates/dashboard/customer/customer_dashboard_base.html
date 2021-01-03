@@ -39,8 +39,8 @@
                     <a class="nav-item nav-link" href="{% url 'transfer' %}">Transfer Money</a>
                     <a class="nav-item nav-link" href="{% url 'viewpayee' %}">View Payees</a>
                     <a class="nav-item nav-link" href="">Expenditure Overview</a>
-                    <a class="nav-item nav-link" href="">Your Statements</a>
-                    <a class="nav-item nav-link" href="{% url 'help' %}">Need Help?</a>
+                    <a class="nav-item nav-link" href="{% url 'statement' %}">Your Statements</a>
+                    <a class="nav-item nav-link" href="">Need Help?</a>
                 </div>
 
                 <!-- Navbar Right Side -->
@@ -61,5 +61,6 @@
 </body>
 </html>
 {% else %}
-    <meta http-equiv="REFRESH" content="0;url=http://{% url 'dashboard_home' %}">
+    <h3>Not authenticated</h3>
+    <a href="{% url 'login' %}">Return to login</a>
 {% endif %}
