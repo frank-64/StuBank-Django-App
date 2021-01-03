@@ -33,14 +33,14 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch, cm
 
 """
-request is not a visible parameter with Class-based views because as_view() on the .urls file makes the view callable
+Request is not a visible parameter with Class-based views because as_view() on the .urls file makes the view callable
 meaning it takes a request and returns a response
 """
 
 
 @method_decorator(login_required, name='dispatch')
 class UserDashboardView(LoginRequiredMixin, DetailView):
-    """Redirects the user to dashboard_home if authenticated or the login page otherwise
+    """ Redirects the user to dashboard_home if authenticated or the login page otherwise
     Inherits:
         DetailView: inherited class to override the get_object(), get_queryset() and set the Model/template
         LoginRequiredMixin: inherited class used to redirect if not authenticated
@@ -53,13 +53,13 @@ class UserDashboardView(LoginRequiredMixin, DetailView):
     model = Transaction
 
     def get_queryset(self):
-        """gets all the transactions as we set the view 'model = Transaction'
+        """ Gets all the transactions as we set the view 'model = Transaction'
         :return: all transactions
         """
         return super(UserDashboardView, self).get_queryset()
 
     def get_object(self, queryset=None):
-        """ checks if the current user is a helper or customer and sets the template_name accordingly
+        """ Checks if the current user is a helper or customer and sets the template_name accordingly
         :param request: HttpRequest object containing metadata and current user attributes
         """
         if (self.request.user.is_customer):
@@ -82,7 +82,7 @@ class UserDashboardView(LoginRequiredMixin, DetailView):
 
 
 def get_expiry_date():
-    """gets the date in 5 years time
+    """ Gets the date in 5 years time
 
     :return datetime of the date now + 5 years:
     """
@@ -91,7 +91,7 @@ def get_expiry_date():
 
 
 def get_CVC():
-    """randomises 3 digits to generate a CVC
+    """ Randomises 3 digits to generate a CVC
 
     :return string array CVC:
     """
@@ -106,7 +106,7 @@ def get_CVC():
 
 
 def get_card(request):
-    """creates a card object for the user that called this method on their dashboard
+    """ Creates a card object for the user that called this method on their dashboard
 
     :param request: HttpRequest object containing metadata and current user attributes
     :return HttpResponseRedirect: redirects user to the dashboard
@@ -130,7 +130,7 @@ def get_card(request):
 
 
 class PayeeDetailView(LoginRequiredMixin, DetailView):
-    """Displays all payees related to the current customer's pk
+    """ Displays all payees related to the current customer's pk
 
     Inherits:
         DetailView: inherited class to override the get_object(), get_queryset() and set the Model/template
@@ -146,7 +146,7 @@ class PayeeDetailView(LoginRequiredMixin, DetailView):
     template_name = 'dashboard/customer/payee_dashboard.html'
 
     def get_queryset(self):
-        """gets the queryset of all the payees
+        """ Gets the queryset of all the payees
 
         :return:
         """
@@ -162,7 +162,7 @@ class PayeeDetailView(LoginRequiredMixin, DetailView):
 
 @login_required
 def delete_payee(request, pk):
-    """deletes a payee
+    """ Deletes a payee
 
     :param request: HttpRequest object containing metadata and current user attributes
     :param pk: primary key in the payee table used to identify a specific row
@@ -194,7 +194,7 @@ def check_payee(request):
 
 @login_required
 def add_payee(request):
-    """adds a payee using the POSTed inputs from the PayeeDetailsForm
+    """ Adds a payee using the POSTed inputs from the PayeeDetailsForm
 
     :param request: HttpRequest object containing metadata and current user attributes
     :return response: render HttpResponse object which takes request, template name and a dictionary as parameters
@@ -270,7 +270,7 @@ def get_new_balances(customers_customer_id, payees_customer_id, amount):
 
 
 def alter_balance(customers_customer_id, new_balance):
-    """ changes the balance of the sender/customer and the receiver/payee
+    """ Changes the balance of the sender/customer and the receiver/payee
 
     :param customers_customer_id: primary key of the user
     :param new_balance: updated balance
@@ -287,7 +287,7 @@ def alter_balance(customers_customer_id, new_balance):
 
 @login_required
 def payee_transfer(request):
-    """transfers a sum of money between a customer and one of their payee's using the POSTed inputs from the TransferForm
+    """ Transfers a sum of money between a customer and one of their payee's using the POSTed inputs from the TransferForm
 
     :param request: HttpRequest object containing metadata and current user attributes
     :return:
@@ -352,7 +352,7 @@ def payee_transfer(request):
                                             NewBalance=new_balances[1], Termini=customer_termini, Category=category,
                                             Method=method)
             try:
-                if (amount < 1.00):
+                if (amount < 1.00 or request.user.customer.balance-amount < 0):
                     raise
                 else:
                     # persisting the transaction object
@@ -391,7 +391,7 @@ def payee_transfer(request):
 
 @login_required
 def card_transaction(request):
-    """transfers a sum of money between a customer and one of their payee's using the POSTed inputs from the TransferForm
+    """ Transfers a sum of money between a customer and one of their payee's using the POSTed inputs from the TransferForm
 
         :param request: HttpRequest object containing metadata and current user attributes
         :return:
@@ -466,26 +466,52 @@ def card_transaction(request):
     # returning the rendered transfer.html with the form inside the context
     return render(request, 'dashboard/customer/spoof_transaction.html', context)
 
-
+@login_required
 def livechat(request, pk):
-    """this method returns all the message objects between two users and renders them on livechat.html with the relevant
-    context
+    """ This method returns all the message objects between two users and renders them on customer_livechat.html with the
+    relevant context
 
     :param request: HttpRequest object containing metadata and current user attributes
     :param pk: the primary key of the other user in the livechat
-    :return render: rendered livechat.html template with messages and other_user as context
+    :return render: rendered customer_livechat.html template with messages and other_user as context
     """
+
+    # this checks if a livechat already exists between the current user (request.user.id) and the user with
+    # primary key = pk
+    livechat_created = LiveChat.objects.filter(customer_id=request.user.id, helper_id=pk, is_active=True).exists()
+
+    # other_user is the other user relative to the current user in the livechat which the current user intends to
+    # communicate with
     other_user = get_object_or_404(User, pk=pk)
+
+    # this obtains all the messages sent and received between the current user and the other user
     messages = Message.objects.filter(
         Q(receiver=other_user, sender=request.user) | Q(receiver=request.user, sender=other_user)
     ).order_by("created_at")
-    return render(request, 'dashboard/customer/livechat.html', {"other_user": other_user, "messages": messages})
+
+    # this condition redirects the user to the customer_livechat template if they are a customer and have a
+    # LiveChat object with a helper. If the user is a helper they are redirected to the helper template. Otherwise an
+    # error is displayed.
+    if other_user.is_helper and livechat_created:
+        return render(request, 'dashboard/customer/customer_livechat.html',
+                      {"other_user": other_user, "messages": messages})
+    elif not other_user.is_helper:
+        return render(request, 'dashboard/helper/helper_livechat.html',
+                      {"other_user": other_user, "messages": messages})
+    else:
+        error = "The Livechat could not be accessed."
+        resolution = "Have you requested assistance and clicked the link on the Help page?"
+        return render(request, 'dashboard/customer/error.html',
+                      {"error": error, "resolution": resolution})
 
 
+
+
+@login_required
 @csrf_exempt
 # TODO: csrf_exempt must be temporary to prevent cross site scripting attacks
 def message(request, pk):
-    """This method creates method objects if the have been POSTed from one of the users in the livechat.
+    """ This method creates method objects if the have been POSTed from one of the users in the livechat.
     If the method is GET then the unseen messages are returned.
 
     :param request: HttpRequest object containing metadata and current user attributes
@@ -494,12 +520,25 @@ def message(request, pk):
     'Added' is returned once the message is persisted into the database if the request method is POST.
     JSON objects of the new unseen messages are returned if the request method is GET.
     """
+
+    # This checks if a livechat already exists between the current user (request.user.id) and the user with
+    # primary key = pk
     other_user = get_object_or_404(User, pk=pk)
+
+    # If the request is POST add the message to the database and return the message the sender needs to see on their
+    # client. If the request is GET then return all the unseen messages where the current user is the receiver.
+
     if request.method == "POST":
         message = json.loads(request.body)
-        m = Message(receiver=other_user, sender=request.user, message=message)
+        m = Message(receiver=other_user, sender=request.user, message=message, created_at=timezone.now())
         m.save()
-        return HttpResponse("Added")
+        result = {
+            "message": m.message,
+            "sender": m.sender.username,
+            "time": naturaltime(m.created_at),
+            "sent": True
+        }
+        return JsonResponse(result, safe=False)
     elif request.method == "GET":
         messages = Message.objects.filter(seen=False, receiver=request.user)
         results = []
@@ -513,6 +552,45 @@ def message(request, pk):
             results.append(result)
         messages.update(seen=True)
         return JsonResponse(results, safe=False)
+
+
+@login_required
+def help_page(request):
+    """This method renders the help.html page on the dashboard
+
+    :param request:
+    :return:
+    """
+    return render(request, 'dashboard/customer/help.html')
+
+
+@login_required
+def get_helper(request):
+    """ This function gets the primary key of a helper for the customer to use to join the live chat with the helper
+
+    :param request:
+    :return:
+    """
+
+    # If there is an existing and active livechat object with the customer_id as the current user's pk then return
+    # the pk of the existing helper in that livechat
+    if LiveChat.objects.filter(customer_id=request.user.id, is_active=True).exists():
+        existing_chat = LiveChat.objects.get(customer_id=request.user.id)
+        return HttpResponse(existing_chat.helper.pk)
+
+    # If the customer does not have an existing livechat then create a LiveChat object and return the helper's pk
+    else:
+        helpers = Helper.objects.all()
+        random_helper = random.choice(helpers)
+        lc = LiveChat(customer_id=request.user.id, helper_id=random_helper.pk)
+        lc.save()
+        return HttpResponse(random_helper.pk)
+
+
+def get_livechats(request):
+    #TODO: Need to add a way to get user permission to freeze accounts/cards etc
+    livechats = LiveChat.objects.filter(helper_id=request.user.id)
+    return render(request, 'dashboard/helper/helper_chats.html', {"livechats":livechats})
 
 
 '''
