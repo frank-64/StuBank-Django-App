@@ -352,7 +352,7 @@ def payee_transfer(request):
                                             NewBalance=new_balances[1], Termini=customer_termini, Category=category,
                                             Method=method)
             try:
-                if (amount < 1.00 or request.user.customer.balance-amount < 0):
+                if (amount < 1.00 or request.user.customer.balance - amount < 0):
                     raise
                 else:
                     # persisting the transaction object
@@ -466,6 +466,7 @@ def card_transaction(request):
     # returning the rendered transfer.html with the form inside the context
     return render(request, 'dashboard/customer/spoof_transaction.html', context)
 
+
 @login_required
 def livechat(request, pk):
     """ This method returns all the message objects between two users and renders them on customer_livechat.html with the
@@ -503,8 +504,6 @@ def livechat(request, pk):
         resolution = "Have you requested assistance and clicked the link on the Help page?"
         return render(request, 'dashboard/customer/error.html',
                       {"error": error, "resolution": resolution})
-
-
 
 
 @login_required
@@ -588,9 +587,9 @@ def get_helper(request):
 
 
 def get_livechats(request):
-    #TODO: Need to add a way to get user permission to freeze accounts/cards etc
+    # TODO: Need to add a way to get user permission to freeze accounts/cards etc
     livechats = LiveChat.objects.filter(helper_id=request.user.id)
-    return render(request, 'dashboard/helper/helper_chats.html', {"livechats":livechats})
+    return render(request, 'dashboard/helper/helper_chats.html', {"livechats": livechats})
 
 
 '''
@@ -735,10 +734,9 @@ def pdf_view(request):
                     id='personal_details', showBoundary=0),
               Frame(margin + (margin * 6 + 2 * frame_padding), height - (margin * 4), (active_width - (frame_padding *
                                                                                                        2) - (
-                                                                                                   margin * 6)), margin,
+                                                                                               margin * 6)), margin,
                     id='current_balance', showBoundary=0),
-              Frame(margin, margin * 2, active_width, margin * 11, id='statement', showBoundary=0),
-              Frame(margin, margin * 0.8, active_width, margin * 0.8, id='small_print', showBoundary=0)]
+              Frame(margin, margin * 2, active_width, margin * 11, id='statement', showBoundary=0)]
 
     # Create template and add it to pdf
     template = PageTemplate(id='main', frames=frames)
@@ -785,13 +783,6 @@ def pdf_view(request):
     balance = Paragraph('<br/> Current balance: <b>£' + str(customer.balance) + '</b><br/> Available balance: <b>£' +
                         str(customer.available_balance) + '</b>', balances)
 
-    small_print = Paragraph('StuBank Plc, registered in England and Wales No. 482309. Registered office: Sir Matt Busby'
-                            ' Way, Old Trafford, Stretford, Manchester M16 0RA. Authorised by the Prudential Regulation '
-                            'Authority and regulated by the Financial Conduct Authority and the Prudential Regulation '
-                            'Authority. © StuBank Plc. OK not really, but it sounds cool if we write it anyway.'
-                            ' Downloaded from StuBank Online Statement Service on ' + str(datetime.date.today()) + '.',
-                            small_content)
-
     # Retrieve all user's transactions
     transactions = Transaction.objects.filter(Customer_id=user.pk).order_by(
         '-TransactionTime')
@@ -811,7 +802,7 @@ def pdf_view(request):
         data.append([date, method, category, comment, direction, termini, amount, new_balance])
 
     # Set table properties and styles
-    table = Table(data)
+    table = Table(data, repeatRows=1)
     table.setStyle(TableStyle([
         ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
         ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
@@ -831,7 +822,6 @@ def pdf_view(request):
     elements.extend([personal_title, personal_details, FrameBreak()])
     elements.extend([balance, FrameBreak()])
     elements.extend([table, FrameBreak()])
-    elements.extend([small_print, FrameBreak()])
     pdf.build(elements)
 
     response.write(buffer.getvalue())
