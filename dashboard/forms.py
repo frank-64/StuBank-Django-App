@@ -28,8 +28,7 @@ class CardTransaction(forms.ModelForm):
         super(CardTransaction, self).__init__(*args, **kwargs)
         try:
             self.fields['Card'].queryset = Card.objects.filter(Customer_id=user.pk)
-        except Payee.DoesNotExist:
-            ### there is not payee corresponding to this user
+        except Card.DoesNotExist:
             pass
     class Meta:
         model = Transaction

@@ -846,6 +846,7 @@ def pdf_view(request):
 
     return response
 
+
 # class TransactionListView(ListView):
 #     model = Transaction
 #     context_object_name = 'transaction_list'
