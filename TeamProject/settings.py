@@ -24,7 +24,7 @@ SECRET_KEY = '*kv2lii!m8k$-50rd)h0+&f^ln$)rsvxml!tgz0m%4#m#duze3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', 'ec2-18-132-15-28.eu-west-2.compute.amazonaws.com']
 
 # Application definition
 
@@ -125,7 +125,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
