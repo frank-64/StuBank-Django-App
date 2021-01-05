@@ -9,20 +9,18 @@
         <div class= "col-sm-4"></div>
             <div class= "col-sm-4">
     
-    <fieldset>
-        <form method="POST" style="text-align:center">
-            <fieldset>
-                {% csrf_token %}
-                <table>
-                    {{ form|crispy }}
-                </table>
-            <br>
-                <div class="submit-row">
-                    <button class="btn" type="submit">Log on</button>
-                    {% if form.get_user %}<input type="submit" name="otp_challenge" value="Get Challenge" />{% endif %}
-                </div>
-        </form>
-        <p><a href="{% url 'password_reset' %}">Forgot password?</a></p>
+    </fieldset>
+    <form method="POST" style="text-align:center">
+        <fieldset>
+            {% csrf_token %}
+            <table>
+                {{ form|crispy }}
+            </table>
+            <div class="submit-row">
+                <button type="submit">Login</button>
+            </div>
+    </form>
+    <p><a href="{% url 'password_reset' %}">Forgot password?</a></p>
     </fieldset>
     </div>
 </div>
