@@ -177,6 +177,7 @@ def delete_payee(request, pk):
 def check_payee(request):
     if request.method == "POST":
         str_details = request.body.decode('UTF-8')
+        print(str_details)
         json_details = json.loads(str_details)
         try:
             payee_customer = Customer.objects.filter(sort_code=json_details['sort_code'],
