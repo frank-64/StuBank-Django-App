@@ -1,5 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.test import TestCase
+from django.urls import reverse
+
 from .models import *
 from .views import *
 
@@ -13,6 +15,7 @@ def setUpUser():
     user.set_password('password')
     user.save()
     return user
+
 
 class SignUpTestCase(TestCase):
 
@@ -73,8 +76,22 @@ class SignInTestCase(TestCase):
         self.assertFalse((user is not None) and user.is_authenticated)
 
 
-class SignInViewTestCase(TestCase):
+class RegisterViewTestCase(TestCase):
 
     def setUp(self):
-        user = setUpUser()
+        pass
 
+    # Test if user is redirected to totp page if they enter valid registration details
+    def test_correct_details(self):
+        response = self.client.post(reverse('register'), data={'username': 'test_customer', 'email': 'test@test.com',
+                                                        'first_name': 'Test', 'last_name': 'User',
+                                                        'password1': 'password', 'password2': 'password'})
+        self.assertRedirects(response, reverse('totp_create'))
+
+    # Test to check if user cannot submit form if they enter invalid registration details
+    def test_wrong_details(self):
+        response = self.client.post(reverse('register'), data={'username': 'test_customer', 'email': 'test@test.com',
+                                                               'first_name': 'Test', 'last_name': 'User',
+                                                               'password1': 'password', 'password2': '#########'})
+        self.assertEqual(response.status_code, 200)
+        self.failIf(response.context['form'].is_valid())
