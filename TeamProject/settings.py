@@ -127,7 +127,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'public')
+STATIC_ROOT = os.path.join(BASE_DIR, 'public/static')
 
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
