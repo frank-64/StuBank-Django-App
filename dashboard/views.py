@@ -604,6 +604,10 @@ def grant_permission(request, pk):
     return HttpResponse('Done')
 
 
+def deactivate_livechat(request, pk):
+    lc = LiveChat.objects.filter(pk=pk).update(is_active=False)
+    return HttpResponseRedirect(reverse('helper_livechat'))
+
 '''
 MONEY POT STUFF ( ͡° ͜ʖ ͡°)
 - Money pot displays notice when target has been met
