@@ -13,7 +13,7 @@
                 <div class="card" style="margin-bottom:40px">
                     <div class="card-header">
                         <span>
-                            {{ livechat.customer.first_name }} {{ livechat.customer.last_name }}
+                            <strong>{{ livechat.customer.first_name }} {{ livechat.customer.last_name }}</strong>
                         </span>
                         <span style="float:right;">
                             {% if livechat.is_active %}
@@ -23,9 +23,19 @@
                             {% endif %}
                         </span>
                         <br>
-                        {% if livechat.is_active %}
-                            <a href="{% url 'livechat' livechat.customer.pk %}">Connect</a>
-                        {% endif %}
+                        <br>
+                        <span>
+                            {% if livechat.is_active %}
+                                <a href="{% url 'livechat' livechat.customer.pk %}">Connect</a>
+                            {% endif %}
+                        </span>
+                        <span style="float:right;">
+                            {% if livechat.perm_granted %}
+                                Permission &nbsp;<i class="fas fa-check"></i>
+                            {% else %}
+                                Permission &nbsp;<i class="fas fa-times"></i>
+                            {% endif %}
+                        </span>
                     </div>
                 </div>
             {% endfor %}

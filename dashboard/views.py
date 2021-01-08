@@ -177,7 +177,6 @@ def delete_payee(request, pk):
 def check_payee(request):
     if request.method == "POST":
         str_details = request.body.decode('UTF-8')
-        print(str_details)
         json_details = json.loads(str_details)
         try:
             payee_customer = Customer.objects.filter(sort_code=json_details['sort_code'],
@@ -205,10 +204,10 @@ def add_payee(request):
 
     if request.method == "POST" and form.is_valid():
         # getting the cleaned data from the form
-        first_name = form.cleaned_data['first_name']
-        last_name = form.cleaned_data['last_name']
-        sort_code = form.cleaned_data['sort_code']
-        account_num = form.cleaned_data['account_num']
+        first_name = form.data['first_name']
+        last_name = form.data['last_name']
+        sort_code = form.data['sort_code']
+        account_num = form.data['account_num']
 
         try:
             # this attempts to find ane existing customer with details matching the form inputs
@@ -253,7 +252,7 @@ def get_new_balances(customers_customer_id, payees_customer_id, amount):
     cust_new_balance = cust_balance - amount
 
     if payees_customer_id != -1:
-        # get the payees's customer object using their primary key
+        # get the payee's customer object using their primary key
         payee = Customer.objects.filter(pk=payees_customer_id)
 
         # payee_balance is the current balance of the payee
@@ -353,7 +352,7 @@ def payee_transfer(request):
                                             NewBalance=new_balances[1], Termini=customer_termini, Category=category,
                                             Method=method)
             try:
-                if (amount < 1.00 or request.user.customer.balance-amount < 0):
+                if (amount < 1.00 or request.user.customer.balance - amount < 0):
                     raise
                 else:
                     # persisting the transaction object
@@ -467,6 +466,7 @@ def card_transaction(request):
     # returning the rendered transfer.html with the form inside the context
     return render(request, 'dashboard/customer/spoof_transaction.html', context)
 
+
 @login_required
 def livechat(request, pk):
     """ This method returns all the message objects between two users and renders them on customer_livechat.html with the
@@ -479,12 +479,17 @@ def livechat(request, pk):
 
     # this checks if a livechat already exists between the current user (request.user.id) and the user with
     # primary key = pk
-    livechat = LiveChat.objects.filter(customer_id=request.user.id, helper_id=pk, is_active=True)
-    livechat_created = livechat.exists()
+    livechat = None
 
     # other_user is the other user relative to the current user in the livechat which the current user intends to
     # communicate with
+    helper = False
     other_user = get_object_or_404(User, pk=pk)
+    if (not other_user.is_helper):
+        livechat = LiveChat.objects.filter(customer_id=other_user.pk, helper_id=request.user.pk, is_active=True)
+        helper = True
+    else:
+        livechat= LiveChat.objects.filter(customer_id=request.user.pk, helper_id=other_user.pk, is_active=True)
 
     # this obtains all the messages sent and received between the current user and the other user
     messages = Message.objects.filter(
@@ -494,7 +499,7 @@ def livechat(request, pk):
     # this condition redirects the user to the customer_livechat template if they are a customer and have a
     # LiveChat object with a helper. If the user is a helper they are redirected to the helper template. Otherwise an
     # error is displayed.
-    if other_user.is_helper and livechat_created:
+    if helper == False and livechat.exists():
         return render(request, 'dashboard/customer/customer_livechat.html',
                       {"other_user": other_user, "messages": messages, "livechat": livechat})
     elif not other_user.is_helper:
@@ -505,8 +510,6 @@ def livechat(request, pk):
         resolution = "Have you requested assistance and clicked the link on the Help page?"
         return render(request, 'dashboard/customer/error.html',
                       {"error": error, "resolution": resolution})
-
-
 
 
 @login_required
@@ -590,9 +593,9 @@ def get_helper(request):
 
 
 def get_livechats(request):
-    #TODO: Need to add a way to get user permission to freeze accounts/cards etc
+    # TODO: Need to add a way to get user permission to freeze accounts/cards etc
     livechats = LiveChat.objects.filter(helper_id=request.user.id)
-    return render(request, 'dashboard/helper/helper_chats.html', {"livechats":livechats})
+    return render(request, 'dashboard/helper/helper_chats.html', {"livechats": livechats})
 
 
 def grant_permission(request, pk):
@@ -743,7 +746,7 @@ def pdf_view(request):
                     id='personal_details', showBoundary=0),
               Frame(margin + (margin * 6 + 2 * frame_padding), height - (margin * 4), (active_width - (frame_padding *
                                                                                                        2) - (
-                                                                                                   margin * 6)), margin,
+                                                                                               margin * 6)), margin,
                     id='current_balance', showBoundary=0),
               Frame(margin, margin * 2, active_width, margin * 11, id='statement', showBoundary=0),
               Frame(margin, margin * 0.8, active_width, margin * 0.8, id='small_print', showBoundary=0)]
@@ -846,7 +849,6 @@ def pdf_view(request):
     buffer.close()
 
     return response
-
 
 # class TransactionListView(ListView):
 #     model = Transaction

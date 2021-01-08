@@ -93,3 +93,6 @@ class LiveChat(models.Model):
     helper = models.ForeignKey(User, related_name='helper_livechat', on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
     perm_granted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"ID:{self.id}, Customer:{self.customer.username}, CustomerID:{self.helper.username}"
