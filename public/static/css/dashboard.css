@@ -1,0 +1,69 @@
+.card_div{
+    text-align: center;
+    padding-right: 50px;
+}
+
+.panel {
+  width: 300px;
+  margin-bottom: 50px;
+  text-align: center;
+  float: right;
+}
+@font-face {
+  font-family: 'CredFont';
+  src:  url('/static/css/kredit back.ttf');
+}
+.stucard {
+  font-size: 20px;
+  width:322px;
+  height: 203px;
+  text-align: left;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-bottom: 40px;
+  color: #474951;
+  border-radius: 20px;
+  background: url('/static/images/card.png')
+}
+
+.card_field_left{
+	padding-top: 10px;
+}
+
+.card_field_right{
+	text-align: right;
+}
+
+.card_num{
+    font-family: CredFont, serif;
+    font-size: 27px;
+    padding-top: 10px;
+}
+
+.card.card_field_central{
+    font-family: CredFont, serif;
+    font-size: 15px;
+}
+
+.card_type{
+    font-size: 15px;
+}
+
+.card_owner_logo{
+    padding-top: 10px;
+}
+
+small{
+    font-size: 15px;
+}
+
+
+.fa-arrow-down{
+  padding-left: 40px;
+  color: #228B22;
+}
+
+.fa-arrow-up{
+  padding-left: 40px;
+  color: #8B0000;
+}

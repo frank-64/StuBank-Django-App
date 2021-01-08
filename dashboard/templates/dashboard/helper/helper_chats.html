@@ -16,11 +16,16 @@
                             {{ livechat.customer.first_name }} {{ livechat.customer.last_name }}
                         </span>
                         <span style="float:right;">
-                            <p>Active&nbsp;&nbsp;<i class="fas fa-circle"></i></p>
+                            {% if livechat.is_active %}
+                                <p>Active&nbsp;&nbsp;<i class="fas fa-circle" id="active_circle"></i></p>
+                            {% else %}
+                                <p>Inactive&nbsp;&nbsp;<i class="fas fa-circle" id="inactive_circle"></i></p>
+                            {% endif %}
                         </span>
-                    </div>
-                    <div class="card-body">
-                        <a href="{% url 'livechat' livechat.customer.pk %}">Connect</a>
+                        <br>
+                        {% if livechat.is_active %}
+                            <a href="{% url 'livechat' livechat.customer.pk %}">Connect</a>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}

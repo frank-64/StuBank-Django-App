@@ -479,7 +479,8 @@ def livechat(request, pk):
 
     # this checks if a livechat already exists between the current user (request.user.id) and the user with
     # primary key = pk
-    livechat_created = LiveChat.objects.filter(customer_id=request.user.id, helper_id=pk, is_active=True).exists()
+    livechat = LiveChat.objects.filter(customer_id=request.user.id, helper_id=pk, is_active=True)
+    livechat_created = livechat.exists()
 
     # other_user is the other user relative to the current user in the livechat which the current user intends to
     # communicate with
@@ -495,10 +496,10 @@ def livechat(request, pk):
     # error is displayed.
     if other_user.is_helper and livechat_created:
         return render(request, 'dashboard/customer/customer_livechat.html',
-                      {"other_user": other_user, "messages": messages})
+                      {"other_user": other_user, "messages": messages, "livechat": livechat})
     elif not other_user.is_helper:
         return render(request, 'dashboard/helper/helper_livechat.html',
-                      {"other_user": other_user, "messages": messages})
+                      {"other_user": other_user, "messages": messages, "livechat": livechat})
     else:
         error = "The Livechat could not be accessed."
         resolution = "Have you requested assistance and clicked the link on the Help page?"
@@ -590,6 +591,12 @@ def get_livechats(request):
     # TODO: Need to add a way to get user permission to freeze accounts/cards etc
     livechats = LiveChat.objects.filter(helper_id=request.user.id)
     return render(request, 'dashboard/helper/helper_chats.html', {"livechats": livechats})
+
+
+def grant_permission(request, pk):
+    helper = get_object_or_404(Helper, pk=pk)
+    lc = LiveChat.objects.filter(customer_id=request.user.id, helper_id=pk, is_active=True).update(perm_granted=True)
+    return HttpResponse('Done')
 
 
 '''
@@ -828,6 +835,7 @@ def pdf_view(request):
     buffer.close()
 
     return response
+
 
 # class TransactionListView(ListView):
 #     model = Transaction

@@ -1,10 +1,13 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
 {% block content %}
+<fieldset style="background: lightblue;">
     <h3>Here are your payees {{ user.first_name }}:</h3>
     <br>
     <h5>Want to add a new payee?</h5><a href="{% url 'addpayee' %}">Add Payee</a>
     <br>
     <br>
+</fieldset>
+    <fieldset>
     <table id="payees_table" class="table-responsive table-hover table-striped" width="50%" style=" width: 100%;font-size: 2vw">
         <tr>
             <th style="padding:0 15px 0 15px;">ID</th>
@@ -29,4 +32,5 @@
             </tr>
         {% endfor %}
     </table>
+    </fieldset>
 {% endblock content %}
