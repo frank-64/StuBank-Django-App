@@ -68,7 +68,7 @@
         <div class="col-md-4">
             <div class="header"><h3>{{ other_user.username }}</h3></div>
             {% if livechat.first.perm_granted %}
-                <a class="btn btn-outline-success" href="{% url 'cust_transactions' livechat.first.customer.pk %}">View Customer Transactions</a> &nbsp; <a class="btn btn-outline-danger" href="{% url %}">Freeze Account</a> &nbsp; <a class="btn btn-outline-warning" href="{% url %}">Freeze Card</a> &nbsp; <a class="btn btn-outline-danger" href="{% url 'deactivate_livechat' livechat.first.pk %}"><i class="fas fa-times"></i></a>
+                <a class="btn btn-outline-success" href="{% url 'cust_transactions' livechat.first.customer.pk %}">View Customer Transactions</a> &nbsp; <a class="btn btn-outline-danger" href="{% url 'freeze_account' livechat.first.customer.pk %}">Freeze Account</a> &nbsp; <a class="btn btn-outline-warning" href="{% url 'freeze_card' livechat.first.customer.pk %}">Freeze Card</a> &nbsp; <a class="btn btn-outline-danger" href="{% url 'deactivate_livechat' livechat.first.pk %}"><i class="fas fa-times"></i></a>
             {% endif %}
             <br>
             <br>

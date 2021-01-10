@@ -607,10 +607,13 @@ def deactivate_livechat(request, pk):
     LiveChat.objects.filter(pk=pk).update(is_active=False)
     return HttpResponseRedirect(reverse('helper_livechat'))
 
-# def freeze_account(request, pk):
-#     user = get_object_or_404(User, pk=pk)
-#     user.is_active = False
+def freeze_account(request, pk):
+    User.objects.filter(pk=pk).update(is_active=False)
+    return HttpResponseRedirect(reverse('helper_livechat'))
 
+def freeze_card(request, pk):
+    Card.objects.filter(Customer_id=pk).update(CardFrozen=True)
+    return HttpResponseRedirect(reverse('helper_livechat'))
 
 class LiveChatTransactions(DetailView):
     model = Transaction
