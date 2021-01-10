@@ -580,8 +580,8 @@ def get_helper(request):
     # If there is an existing and active livechat object with the customer_id as the current user's pk then return
     # the pk of the existing helper in that livechat
     if LiveChat.objects.filter(customer_id=request.user.id, is_active=True).exists():
-        existing_chat = LiveChat.objects.get(customer_id=request.user.id)
-        return HttpResponse(existing_chat.helper.pk)
+        existing_chat = LiveChat.objects.filter(customer_id=request.user.id, is_active=True)
+        return HttpResponse(existing_chat.first().helper.pk)
 
     # If the customer does not have an existing livechat then create a LiveChat object and return the helper's pk
     else:
@@ -599,14 +599,34 @@ def get_livechats(request):
 
 
 def grant_permission(request, pk):
-    helper = get_object_or_404(Helper, pk=pk)
-    lc = LiveChat.objects.filter(customer_id=request.user.id, helper_id=pk, is_active=True).update(perm_granted=True)
+    LiveChat.objects.filter(customer_id=request.user.id, helper_id=pk, is_active=True).update(perm_granted=True)
     return HttpResponse('Done')
 
 
 def deactivate_livechat(request, pk):
-    lc = LiveChat.objects.filter(pk=pk).update(is_active=False)
+    LiveChat.objects.filter(pk=pk).update(is_active=False)
     return HttpResponseRedirect(reverse('helper_livechat'))
+
+# def freeze_account(request, pk):
+#     user = get_object_or_404(User, pk=pk)
+#     user.is_active = False
+
+
+class LiveChatTransactions(DetailView):
+    model = Transaction
+    context_object_name = 'transaction_list'
+    template_name = 'dashboard/customer/transactions.html'
+
+    def get_queryset(self):
+        return super(LiveChatTransactions, self).get_queryset()
+
+    def get_object(self):
+        pk = self.kwargs['pk']
+        livechat_exists = LiveChat.objects.filter(helper_id=self.request.user.pk, customer_id=pk, is_active=True, perm_granted=True).exists()
+        if livechat_exists:
+            return self.get_queryset().filter(Customer_id=pk)
+
+
 
 '''
 MONEY POT STUFF ( ͡° ͜ʖ ͡°)
@@ -860,14 +880,5 @@ def pdf_view(request):
 #     template_name = 'dashboard/customer/transactions.html'
 #
 #
-# class TransactionDetailView(DetailView):
-#     model = Transaction
-#     context_object_name = 'transaction_list'
-#     template_name = 'dashboard/customer/transactions.html'
-#
-#
-#     def get_queryset(self):
-#         return super(TransactionDetailView, self).get_queryset()
-#
-#     def get_object(self):
-#         return self.get_queryset().filter(Customer_id=self.request.user.pk)
+
+

@@ -23,5 +23,8 @@ urlpatterns = [
     path('message/<int:pk>/', message, name='message'),
     path('helper/chatlist/', get_livechats, name='helper_livechat'),
     path('livechat/helper-perms/<int:pk>/', grant_permission, name='helper_perms'),
-    path('livechat/deactivate/<int:pk>/', deactivate_livechat, name='deactivate_livechat')
+    path('livechat/deactivate/<int:pk>/', deactivate_livechat, name='deactivate_livechat'),
+    # path('livechat/freeze-account/<int:pk>/', freeze_account, name='freeze_account'),
+    # path('livechat/freeze-card/<int:pk>/', freeze_card, name='freeze_account'),
+    path('livechat/transactions/<int:pk>/', LiveChatTransactions.as_view(), name='cust_transactions')
 ]
