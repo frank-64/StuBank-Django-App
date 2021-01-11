@@ -159,3 +159,50 @@ class PDFDownloadTestCase(TestCase):
 
         self.assertEquals(response.get('Content-Disposition'), 'attachment; filename=' + self.user.username +
                           '_statement.pdf')
+
+
+# TODO: Test post fail
+class PayeeTransferViewTestCase(TestCase):
+
+    def setUp(self):
+        self.user = setUpUser('test_customer')
+        self.customer = Customer.objects.create(user=self.user)
+        self.client.login(username='test_customer', password='password')
+
+        self.user_2 = setUpUser('test_customer2')
+        self.customer_2 = Customer.objects.create(user=self.user_2)
+
+        self.payee = Payee(PayeeID=self.customer_2, User=self.user)
+        self.payee.save()
+
+    # Test get request for payee transfer view
+    def test_get(self):
+        response = self.client.get(reverse('transfer'))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_post_success(self):
+        response = self.client.post(reverse('transfer'), data={'Payee': self.payee.pk, 'Amount': 15,
+                                                               'Comment': 'Test transfer', 'Category': 'Dining Out'})
+        customer = Customer.objects.get(pk=self.customer.pk)
+        customer_2 = Customer.objects.get(pk=self.customer_2.pk)
+
+        self.assertRedirects(response, reverse('dashboard_home'))
+        self.assertEqual(customer_2.balance, 115)
+        self.assertEqual(customer.balance, 85)
+
+
+class PayeeDetailViewTestCase(TestCase):
+    pass
+
+
+class ExpenditureOverviewViewTestCase(TestCase):
+    pass
+
+
+class HelpPageViewTestCase(TestCase):
+    pass
+
+
+class LiveChatTestCase(TestCase):
+    pass
+
