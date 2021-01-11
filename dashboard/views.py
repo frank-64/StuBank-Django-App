@@ -642,7 +642,7 @@ def freeze_card(request, pk):
         return HttpResponseRedirect(reverse('dashboard_home'))
 
 
-@valid_helper
+@method_decorator(valid_helper, name='dispatch')
 class LiveChatTransactions(DetailView):
     model = Transaction
     context_object_name = 'transaction_list'
