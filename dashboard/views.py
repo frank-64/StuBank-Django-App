@@ -1,6 +1,7 @@
 import datetime
 import io
 import random
+from collections import Counter
 from decimal import Decimal
 from functools import partial
 
@@ -836,6 +837,55 @@ def pdf_view(request):
 
     return response
 
+
+'''
+EXPENDITURE OVERVIEW STUFF ᶘᵒᴥᵒᶅ
+'''
+
+
+def expenditure_overview(request):
+    transactions = Transaction.objects.filter(Customer_id=request.user.pk)
+
+    # Categories
+    category_name = []
+    category_amount = []
+    category_dict = dict()
+
+    # Termini's
+    termini_name = []
+    termini_amount = []
+    termini_dict = dict()
+
+    # Outgoings / Income
+    out_in_labels = ['Outgoing', 'Income']
+    out_in_data = [0, 0]
+
+    for transaction in transactions:
+        if transaction.Direction == 'Out':
+            category_dict[transaction.Category] = category_dict.get(transaction.Category, 0) + float(transaction.Amount)
+            termini_dict[transaction.Termini] = termini_dict.get(transaction.Termini, 0) + float(transaction.Amount)
+            out_in_data[0] += float(transaction.Amount)
+        else:
+            out_in_data[1] += float(transaction.Amount)
+
+    for key, value in category_dict.items():
+        category_name.append(key)
+        category_amount.append(value)
+
+    for key, value in termini_dict.items():
+        termini_name.append(key)
+        termini_amount.append(value)
+
+    print (out_in_data)
+
+    return render(request, 'dashboard/customer/expenditure_overview.html', {
+        'category_labels': category_name,
+        'category_data': category_amount,
+        'termini_labels': termini_name,
+        'termini_data': termini_amount,
+        'out_in_labels': out_in_labels,
+        'out_in_data': out_in_data,
+    })
 
 # class TransactionListView(ListView):
 #     model = Transaction
