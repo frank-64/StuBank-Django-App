@@ -9,8 +9,8 @@ from .models import *
 
 # Create your tests here.
 
-def setUpUser():
-    user = User.objects.create(username='test_customer', email='customer@test.com', first_name='Bobby',
+def setUpUser(username):
+    user = User.objects.create(username=username, email='customer@test.com', first_name='Bobby',
                                last_name='Hummer', is_customer=1)
     user.set_password('password')
     user.save()
@@ -21,7 +21,7 @@ class MoneyPotCreateViewTestCase(TestCase):
 
     # Set up user and customer objects and log in
     def setUp(self):
-        self.user = setUpUser()
+        self.user = setUpUser('test_customer')
         self.customer = Customer.objects.create(user=self.user)
         self.client.login(username='test_customer', password='password')
 
@@ -52,7 +52,7 @@ class MoneyPotDepositViewTestCase(TestCase):
 
     # Set up and login customer, create a test money pot
     def setUp(self):
-        self.user = setUpUser()
+        self.user = setUpUser('test_customer')
         self.customer = Customer.objects.create(user=self.user)
         self.client.login(username='test_customer', password='password')
 
@@ -87,7 +87,7 @@ class MoneyPotDeleteViewTestCase(TestCase):
 
     # Set up and login customer, create a test money pot
     def setUp(self):
-        self.user = setUpUser()
+        self.user = setUpUser('test_customer')
         self.customer = Customer.objects.create(user=self.user)
         self.client.login(username='test_customer', password='password')
 
@@ -113,7 +113,7 @@ class MoneyPotUpdateViewTestCase(TestCase):
 
     # Set up and login customer, create a test money pot
     def setUp(self):
-        self.user = setUpUser()
+        self.user = setUpUser('test_customer')
         self.customer = Customer.objects.create(user=self.user)
         self.client.login(username='test_customer', password='password')
 
@@ -139,7 +139,7 @@ class MoneyPotUpdateViewTestCase(TestCase):
     # Test pot details are not updated if invalid data is input in form
     def test_post_fail(self):
         response = self.client.post(reverse('update_money_pot', kwargs={'pk': self.pk}), data={'name': 'updated_name',
-                                                                                        'target_balance': '#########'})
+                                                                                               'target_balance': '#########'})
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.failIf(response.context['form'].is_valid())
@@ -149,7 +149,7 @@ class PDFDownloadTestCase(TestCase):
 
     # Set up user and customer objects and log in
     def setUp(self):
-        self.user = setUpUser()
+        self.user = setUpUser('test_customer')
         self.customer = Customer.objects.create(user=self.user)
         self.client.login(username='test_customer', password='password')
 
@@ -159,3 +159,44 @@ class PDFDownloadTestCase(TestCase):
 
         self.assertEquals(response.get('Content-Disposition'), 'attachment; filename=' + self.user.username +
                           '_statement.pdf')
+
+
+# TODO: Test post fail
+class PayeeTransferViewTestCase(TestCase):
+
+    def setUp(self):
+        self.user = setUpUser('test_customer')
+        self.customer = Customer.objects.create(user=self.user)
+        self.client.login(username='test_customer', password='password')
+
+        self.user_2 = setUpUser('test_customer2')
+        self.customer_2 = Customer.objects.create(user=self.user_2)
+
+        self.payee = Payee(PayeeID=self.customer_2, User=self.user)
+        self.payee.save()
+
+    # Test get request for payee transfer view
+    def test_get(self):
+        response = self.client.get(reverse('transfer'))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_post_success(self):
+        response = self.client.post(reverse('transfer'), data={'Payee': self.payee.pk, 'Amount': 15,
+                                                               'Comment': 'Test transfer', 'Category': 'Dining Out'})
+        customer = Customer.objects.get(pk=self.customer.pk)
+        customer_2 = Customer.objects.get(pk=self.customer_2.pk)
+
+        self.assertRedirects(response, reverse('dashboard_home'))
+        self.assertEqual(customer_2.balance, 115)
+        self.assertEqual(customer.balance, 85)
+
+
+class PayeeDetailViewTestCase(TestCase):
+    pass
+
+
+
+
+
+
+
