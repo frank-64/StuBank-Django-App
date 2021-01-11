@@ -64,12 +64,29 @@ class AddPayeeTestCase(TestCase):
 
         self.payee = Customer.objects.create(user=self.user_payee, account_num=2222222, sort_code='42-04-20',
                                                  balance=100.00, available_balance=100.00)
+
         self.user.save()
         self.payee.save()
+        self.client.login(username='test_customer', password='password')
 
     def test_add_valid_payee(self):
-        response = self.client.get(reverse(''))
+        print(Customer.objects.all())
+        request = self.request_factory.get(reverse('addpayee'))
+        request.user = self.user
 
+        data = {
+            'first_name': self.payee.user.first_name,
+            'last_name': self.payee.user.last_name,
+            'sort_code': self.payee.sort_code,
+            'account_num': self.payee.account_num
+        }
+        form = PayeeDetailsForm()
+        form.first_name = self.payee.user.first_name
+        form.last_name = self.payee.user.last_name
+        form.sort_code = self.payee.sort_code
+        form.account_num = self.payee.account_num
+        response = self.client.post(reverse('addpayee'), form)
+        self.assertRedirects(response, reverse('viewpayee'))
 
 class DeletePayeeTestCase(TestCase):
     def setUp(self):

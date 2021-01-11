@@ -4,7 +4,8 @@ import random
 from decimal import Decimal
 from functools import partial
 
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from dashboard import decorators
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.files.storage import FileSystemStorage
@@ -19,6 +20,7 @@ from reportlab.lib import colors, utils
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
+from .decorators import valid_helper
 from .forms import *
 from dashboard.models import *
 from django_otp.decorators import otp_required
@@ -172,7 +174,7 @@ def delete_payee(request, pk):
     response = redirect(reverse('viewpayee'))
     return response
 
-
+#TODO: Remove csrf_exempt
 @csrf_exempt
 def check_payee(request):
     if request.method == "POST":
@@ -591,30 +593,56 @@ def get_helper(request):
         lc.save()
         return HttpResponse(random_helper.pk)
 
-
+@login_required
 def get_livechats(request):
     # TODO: Need to add a way to get user permission to freeze accounts/cards etc
     livechats = LiveChat.objects.filter(helper_id=request.user.id)
     return render(request, 'dashboard/helper/helper_chats.html', {"livechats": livechats})
 
-
+@login_required
 def grant_permission(request, pk):
-    LiveChat.objects.filter(customer_id=request.user.id, helper_id=pk, is_active=True).update(perm_granted=True)
-    return HttpResponse('Done')
+    lc = LiveChat.objects.filter(customer_id=request.user.id, helper_id=pk, is_active=True)
+    if lc.exists():
+        lc.update(perm_granted=True)
+        return HttpResponse('Done')
+    else:
+        return HttpResponseRedirect(reverse('dashboard_home'))
 
 
+@valid_helper
 def deactivate_livechat(request, pk):
-    LiveChat.objects.filter(pk=pk).update(is_active=False)
-    return HttpResponseRedirect(reverse('helper_livechat'))
+    livechat_exists = LiveChat.objects.filter(helper_id=request.pk, customer_id=pk, is_active=True,
+                                              perm_granted=True).exists()
+    if livechat_exists:
+        LiveChat.objects.filter(pk=pk).update(is_active=False)
+        return HttpResponseRedirect(reverse('helper_livechat'))
+    else:
+        return HttpResponseRedirect(reverse('dashboard_home'))
 
+
+@valid_helper
 def freeze_account(request, pk):
-    User.objects.filter(pk=pk).update(is_active=False)
-    return HttpResponseRedirect(reverse('helper_livechat'))
+    livechat_exists = LiveChat.objects.filter(helper_id=request.pk, customer_id=pk, is_active=True,
+                                              perm_granted=True).exists()
+    if livechat_exists:
+        User.objects.filter(pk=pk).update(is_active=False)
+        return HttpResponseRedirect(reverse('helper_livechat'))
+    else:
+        return HttpResponseRedirect(reverse('dashboard_home'))
 
+
+@valid_helper
 def freeze_card(request, pk):
-    Card.objects.filter(Customer_id=pk).update(CardFrozen=True)
-    return HttpResponseRedirect(reverse('helper_livechat'))
+    livechat_exists = LiveChat.objects.filter(helper_id=request.pk, customer_id=pk, is_active=True,
+                                              perm_granted=True).exists()
+    if livechat_exists:
+        Card.objects.filter(Customer_id=pk).update(CardFrozen=True)
+        return HttpResponseRedirect(reverse('helper_livechat'))
+    else:
+        return HttpResponseRedirect(reverse('dashboard_home'))
 
+
+@valid_helper
 class LiveChatTransactions(DetailView):
     model = Transaction
     context_object_name = 'transaction_list'
@@ -877,11 +905,7 @@ def pdf_view(request):
 
     return response
 
-# class TransactionListView(ListView):
-#     model = Transaction
-#     context_object_name = 'transaction_list'
-#     template_name = 'dashboard/customer/transactions.html'
-#
-#
+
+
 
 
