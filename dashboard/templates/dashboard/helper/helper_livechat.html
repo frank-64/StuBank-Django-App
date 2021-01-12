@@ -40,7 +40,7 @@
         xhttp.open("GET", '{% url 'message' other_user.id%}');
         xhttp.overrideMimeType("application/json");
         xhttp.send(null);
-        //setTimeout('updateMsg()', 4000)
+        setTimeout('updateMsg()', 4000)
     }
 
     // this function adds a message to the livechat
