@@ -59,31 +59,45 @@
         message_container.appendChild(div)
         div.scrollIntoView()
     }
-
     </script>
 {% endblock javascript %}
 
 {% block content %}
     <div class="row">
-        <div class="col-md-4">
-            <div class="header"><h3>{{ other_user.username }}</h3></div>
-            {% if livechat.first.perm_granted %}
-                <a class="btn btn-outline-success" href="{% url 'cust_transactions' livechat.first.customer.pk %}">View Customer Transactions</a> &nbsp; <a class="btn btn-outline-danger" href="{% url 'freeze_account' livechat.first.customer.pk %}">Freeze Account</a> &nbsp; <a class="btn btn-outline-warning" href="{% url 'freeze_card' livechat.first.customer.pk %}">Freeze Card</a> &nbsp; <a class="btn btn-outline-danger" href="{% url 'deactivate_livechat' livechat.first.pk %}"><i class="fas fa-times"></i></a>
-            {% endif %}
-            <br>
-            <br>
-            <div class="message-area">
-                {% for message in messages %}
-                <div class="message-{% if message.sender == request.user %}right{% else %}left{% endif %}">
-                    <div class="sent-by"><strong>{{ message.sender.username }}</strong><small> - {{ message.created_at|date:"d/m/Y H:i A" }}</small></div>
-                    <div class="content">{{ message.message }}</div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <span>
+                        <strong>{{ other_user.username }} <i class="fas fa-circle" style="color: forestgreen"></i></strong>
+                    </span>
+                    <span style="float:right;">
+                        <a class="btn btn-outline-danger" href="{% url 'deactivate_livechat' livechat.first.customer.pk %}"><i class="fas fa-times"></i></a>
+                    </span>
                 </div>
-                {% endfor %}
+                <div class="card-body">
+                    <div class="message-area">
+                        {% for message in messages %}
+                            <div class="message-{% if message.sender == request.user %}right{% else %}left{% endif %}">
+                                <div class="sent-by"><strong>{{ message.sender.username }}</strong><small> - {{ message.created_at|date:"d/m/Y H:i A" }}</small></div>
+                                <div class="content">{{ message.message }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="input-area">
+                        <input type="text" id="message-input">
+                        <button onclick="sendMsg()" class="btn" id="msg_btn">Send</button>
+                    </div>
+                </div>
             </div>
-            <div class="input-area">
-                <input type="text" id="message-input">
-                <button onclick="sendMsg()" class="btn" id="msg_btn">Send</button>
-            </div>
+        </div>
+        <div class="col-md-4">
+            {% if livechat.first.perm_granted %}
+                <a class="btn btn-outline-success" href="{% url 'cust_transactions' livechat.first.customer.pk %}">View Customer Transactions</a><br>
+                <a class="btn btn-outline-danger" href="{% url 'freeze_account' livechat.first.customer.pk %}">Freeze Account</a><br>
+                <a class="btn btn-outline-warning" href="{% url 'freeze_card' livechat.first.customer.pk %}">Freeze Card</a><br>
+            {% endif %}
         </div>
     </div>
 {% endblock content %}

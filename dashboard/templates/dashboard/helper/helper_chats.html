@@ -8,7 +8,7 @@
 {% block content %}
     <h3>Here are your live chats with customers {{ user.first_name }}</h3>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-4">
             {% for livechat in livechats%}
                 <div class="card" style="margin-bottom:40px">
                     <div class="card-header">
@@ -17,9 +17,9 @@
                         </span>
                         <span style="float:right;">
                             {% if livechat.is_active %}
-                                <p>Active&nbsp;&nbsp;<i class="fas fa-circle" id="active_circle"></i></p>
+                                <span class="badge badge-pill badge-success">Active</span>
                             {% else %}
-                                <p>Inactive&nbsp;&nbsp;<i class="fas fa-circle" id="inactive_circle"></i></p>
+                                <span class="badge badge-pill badge-danger">Inactive</span>
                             {% endif %}
                         </span>
                         <br>

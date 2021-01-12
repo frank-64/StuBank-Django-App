@@ -9,3 +9,19 @@
 .input-area{
     margin-top: 15px;
 }
+
+textarea {
+    resize:both;
+}
+
+.new-btn{
+  position: absolute;
+  top:50%;
+  right: 0;
+  width: 120px;
+  transform: translateY(-50%);
+}
+
+strong{
+    font-size: large;
+}

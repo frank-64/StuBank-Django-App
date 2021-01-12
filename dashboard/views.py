@@ -611,8 +611,8 @@ def grant_permission(request, pk):
 
 @valid_helper
 def deactivate_livechat(request, pk):
-    livechat_exists = LiveChat.objects.filter(helper_id=request.pk, customer_id=pk, is_active=True,
-                                              perm_granted=True).exists()
+    customer = get_object_or_404(Customer, pk=pk)
+    livechat_exists = LiveChat.objects.filter(helper_id=request.pk, customer=customer, is_active=True, perm_granted=True).exists()
     if livechat_exists:
         LiveChat.objects.filter(pk=pk).update(is_active=False)
         return HttpResponseRedirect(reverse('helper_livechat'))
