@@ -1,6 +1,8 @@
+import json
 from http import HTTPStatus
 
 from django.contrib.auth import authenticate
+from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 
@@ -9,8 +11,8 @@ from .models import *
 
 # Create your tests here.
 
-def setUpUser():
-    user = User.objects.create(username='test_customer', email='customer@test.com', first_name='Bobby',
+def setUpUser(username):
+    user = User.objects.create(username=username, email='customer@test.com', first_name='Bobby',
                                last_name='Hummer', is_customer=1)
     user.set_password('password')
     user.save()
@@ -21,7 +23,7 @@ class MoneyPotCreateViewTestCase(TestCase):
 
     # Set up user and customer objects and log in
     def setUp(self):
-        self.user = setUpUser()
+        self.user = setUpUser('test_customer')
         self.customer = Customer.objects.create(user=self.user)
         self.client.login(username='test_customer', password='password')
 
@@ -52,7 +54,7 @@ class MoneyPotDepositViewTestCase(TestCase):
 
     # Set up and login customer, create a test money pot
     def setUp(self):
-        self.user = setUpUser()
+        self.user = setUpUser('test_customer')
         self.customer = Customer.objects.create(user=self.user)
         self.client.login(username='test_customer', password='password')
 
@@ -87,7 +89,7 @@ class MoneyPotDeleteViewTestCase(TestCase):
 
     # Set up and login customer, create a test money pot
     def setUp(self):
-        self.user = setUpUser()
+        self.user = setUpUser('test_customer')
         self.customer = Customer.objects.create(user=self.user)
         self.client.login(username='test_customer', password='password')
 
@@ -113,7 +115,7 @@ class MoneyPotUpdateViewTestCase(TestCase):
 
     # Set up and login customer, create a test money pot
     def setUp(self):
-        self.user = setUpUser()
+        self.user = setUpUser('test_customer')
         self.customer = Customer.objects.create(user=self.user)
         self.client.login(username='test_customer', password='password')
 
@@ -139,7 +141,7 @@ class MoneyPotUpdateViewTestCase(TestCase):
     # Test pot details are not updated if invalid data is input in form
     def test_post_fail(self):
         response = self.client.post(reverse('update_money_pot', kwargs={'pk': self.pk}), data={'name': 'updated_name',
-                                                                                        'target_balance': '#########'})
+                                                                                               'target_balance': '#########'})
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.failIf(response.context['form'].is_valid())
@@ -149,7 +151,7 @@ class PDFDownloadTestCase(TestCase):
 
     # Set up user and customer objects and log in
     def setUp(self):
-        self.user = setUpUser()
+        self.user = setUpUser('test_customer')
         self.customer = Customer.objects.create(user=self.user)
         self.client.login(username='test_customer', password='password')
 
@@ -161,7 +163,8 @@ class PDFDownloadTestCase(TestCase):
                           '_statement.pdf')
 
 
-# TODO: Test post fail
+# TODO: Test post fail and success for all tests below
+
 class PayeeTransferViewTestCase(TestCase):
 
     def setUp(self):
@@ -192,17 +195,76 @@ class PayeeTransferViewTestCase(TestCase):
 
 
 class PayeeDetailViewTestCase(TestCase):
-    pass
+
+    # Set up user and customer objects and log in
+    def setUp(self):
+        self.user = setUpUser('test_customer')
+        self.customer = Customer.objects.create(user=self.user)
+        self.client.login(username='test_customer', password='password')
+
+    # Test get request for payee detail view
+    def test_get(self):
+        response = self.client.get(reverse('viewpayee'))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+
+class AddPayeeViewTestCase(TestCase):
+
+    # Set up user and customer objects and log in
+    def setUp(self):
+        self.user = setUpUser('test_customer')
+        self.customer = Customer.objects.create(user=self.user)
+        self.client.login(username='test_customer', password='password')
+
+        self.user_2 = setUpUser('test_customer2')
+        self.customer_2 = Customer.objects.create(user=self.user_2)
+        self.customer_2.account_num = 123456789
+        self.customer_2.sort_code = '12-34-56'
+        self.customer_2.save()
+
+    # Test get request for add payee view
+    def test_get(self):
+        response = self.client.get(reverse('addpayee'))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
 class ExpenditureOverviewViewTestCase(TestCase):
-    pass
+
+    # Set up user and customer objects and log in
+    def setUp(self):
+        self.user = setUpUser('test_customer')
+        self.customer = Customer.objects.create(user=self.user)
+        self.client.login(username='test_customer', password='password')
+
+    # Test get request for expenditure overview
+    def test_get(self):
+        response = self.client.get(reverse('overview'))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
 class HelpPageViewTestCase(TestCase):
-    pass
+
+    # Set up user and customer objects and log in
+    def setUp(self):
+        self.user = setUpUser('test_customer')
+        self.customer = Customer.objects.create(user=self.user)
+        self.client.login(username='test_customer', password='password')
+
+    # Test get request for help page
+    def test_get(self):
+        response = self.client.get(reverse('help'))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
-class LiveChatTestCase(TestCase):
-    pass
+'''class LiveChatTestCase(TestCase):
 
+    # Set up user and customer objects and log in
+    def setUp(self):
+        self.user = setUpUser()
+        self.customer = Customer.objects.create(user=self.user)
+        self.client.login(username='test_customer', password='password')
+
+    # Test get request for live chat page
+    def test_get(self):
+        response = self.client.get(reverse('help'))
+        self.assertEqual(response.status_code, HTTPStatus.OK)'''

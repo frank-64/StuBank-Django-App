@@ -1,3 +1,6 @@
+from decimal import Decimal
+
+from django.core.validators import MinValueValidator
 from django.utils import timezone
 
 from accounts.models import *
@@ -77,7 +80,8 @@ class Transaction(models.Model):
 class MoneyPot(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     name = models.CharField(blank=False, default='My Money Pot', max_length=100)
-    target_balance = models.DecimalField(blank=False, decimal_places=2, max_digits=10)
+    target_balance = models.DecimalField(blank=False, decimal_places=2, max_digits=10, validators=[MinValueValidator
+                                                                                                   (Decimal('0.01'))])
     pot_balance = models.DecimalField(blank=False, default=0, decimal_places=2, max_digits=10)
 
 
