@@ -9,6 +9,7 @@ urlpatterns = [
     path('transfer/', payee_transfer, name='transfer'),
     path('checkpayee/', check_payee, name='checkpayee'),
     path('getcard/', get_card, name='getcard'),
+    path('freeze-card/', customer_card_frozen, name='card_frozen'),
     path('transaction/', card_transaction, name='transaction'),
     path('moneypots/', MoneyPotListView.as_view(), name='money_pots'),
     path('moneypots/create/', MoneyPotCreateView.as_view(), name='add_money_pot'),

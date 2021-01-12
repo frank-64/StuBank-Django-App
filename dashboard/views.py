@@ -654,6 +654,17 @@ def toggle_card_frozen(request, pk):
     else:
         return HttpResponseRedirect(reverse('dashboard_home'))
 
+@login_required
+def customer_card_frozen(request):
+    pk = request.user.pk
+    card = get_object_or_404(Card, Customer_id=pk)
+    if card.CardFrozen:
+        Card.objects.filter(Customer_id=pk).update(CardFrozen=False)
+        return HttpResponseRedirect(reverse('dashboard_home'))
+    else:
+        Card.objects.filter(Customer_id=pk).update(CardFrozen=True)
+        return HttpResponseRedirect(reverse('dashboard_home'))
+
 
 @method_decorator(valid_helper, name='dispatch')
 class LiveChatTransactions(DetailView):
