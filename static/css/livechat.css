@@ -10,18 +10,20 @@
     margin-top: 15px;
 }
 
-textarea {
-    resize:both;
+#message-input{
+    resize: both;
+    width: 60%;
+    min-width: 200px;
+    max-width: 300px;
+    min-height: 50px;
+    max-height: 200px;
 }
 
-.new-btn{
-  position: absolute;
-  top:50%;
-  right: 0;
-  width: 120px;
-  transform: translateY(-50%);
-}
-
-strong{
-    font-size: large;
+#msg_btn{
+    margin: 0;
+    margin-left: 20px;
+    position: relative;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
 }

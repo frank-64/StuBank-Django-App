@@ -1,4 +1,3 @@
-from django.conf.urls import url
 from django.urls import path
 from dashboard.views import *
 
@@ -24,7 +23,7 @@ urlpatterns = [
     path('helper/chatlist/', get_livechats, name='helper_livechat'),
     path('livechat/helper-perms/<int:pk>/', grant_permission, name='helper_perms'),
     path('livechat/deactivate/<int:pk>/', deactivate_livechat, name='deactivate_livechat'),
-    path('livechat/freeze-account/<int:pk>/', freeze_account, name='freeze_account'),
-    path('livechat/freeze-card/<int:pk>/', freeze_card, name='freeze_card'),
+    path('livechat/freeze-account/<int:pk>/', toggle_account_frozen, name='toggle_account'),
+    path('livechat/freeze-card/<int:pk>/', toggle_card_frozen, name='freeze_card'),
     path('livechat/transactions/<int:pk>/', LiveChatTransactions.as_view(), name='cust_transactions')
 ]

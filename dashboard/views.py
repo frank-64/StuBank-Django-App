@@ -174,7 +174,8 @@ def delete_payee(request, pk):
     response = redirect(reverse('viewpayee'))
     return response
 
-#TODO: Remove csrf_exempt
+
+# TODO: Remove csrf_exempt
 @csrf_exempt
 def check_payee(request):
     if request.method == "POST":
@@ -491,7 +492,7 @@ def livechat(request, pk):
         livechat = LiveChat.objects.filter(customer_id=other_user.pk, helper_id=request.user.pk, is_active=True)
         helper = True
     else:
-        livechat= LiveChat.objects.filter(customer_id=request.user.pk, helper_id=other_user.pk, is_active=True)
+        livechat = LiveChat.objects.filter(customer_id=request.user.pk, helper_id=other_user.pk, is_active=True)
 
     # this obtains all the messages sent and received between the current user and the other user
     messages = Message.objects.filter(
@@ -504,9 +505,10 @@ def livechat(request, pk):
     if helper == False and livechat.exists():
         return render(request, 'dashboard/customer/customer_livechat.html',
                       {"other_user": other_user, "messages": messages, "livechat": livechat})
-    elif not other_user.is_helper:
+    elif not other_user.is_helper and livechat.exists():
+        card = get_object_or_404(Card, Customer_id=other_user.pk)
         return render(request, 'dashboard/helper/helper_livechat.html',
-                      {"other_user": other_user, "messages": messages, "livechat": livechat})
+                      {"card": card, "other_user": other_user, "messages": messages, "livechat": livechat})
     else:
         error = "The Livechat could not be accessed."
         resolution = "Have you requested assistance and clicked the link on the Help page?"
@@ -593,15 +595,17 @@ def get_helper(request):
         lc.save()
         return HttpResponse(random_helper.pk)
 
+
 @login_required
 def get_livechats(request):
     # TODO: Need to add a way to get user permission to freeze accounts/cards etc
     livechats = LiveChat.objects.filter(helper_id=request.user.id)
     return render(request, 'dashboard/helper/helper_chats.html', {"livechats": livechats})
 
+
 @login_required
 def grant_permission(request, pk):
-    lc = LiveChat.objects.filter(customer_id=request.user.id, helper_id=pk, is_active=True)
+    lc = LiveChat.objects.filter(customer_id=request.user.pk, helper_id=pk, is_active=True)
     if lc.exists():
         lc.update(perm_granted=True)
         return HttpResponse('Done')
@@ -611,33 +615,42 @@ def grant_permission(request, pk):
 
 @valid_helper
 def deactivate_livechat(request, pk):
-    customer = get_object_or_404(Customer, pk=pk)
-    livechat_exists = LiveChat.objects.filter(helper_id=request.pk, customer=customer, is_active=True, perm_granted=True).exists()
-    if livechat_exists:
-        LiveChat.objects.filter(pk=pk).update(is_active=False)
-        return HttpResponseRedirect(reverse('helper_livechat'))
+    livechat = LiveChat.objects.filter(helper_id=request.user.pk, customer=pk, is_active=True, perm_granted=True)
+    if livechat.exists():
+        livechat.update(is_active=False)
+        return HttpResponseRedirect(reverse('livechat', args=(pk,)))
     else:
         return HttpResponseRedirect(reverse('dashboard_home'))
 
 
 @valid_helper
-def freeze_account(request, pk):
-    livechat_exists = LiveChat.objects.filter(helper_id=request.pk, customer_id=pk, is_active=True,
+def toggle_account_frozen(request, pk):
+    livechat_exists = LiveChat.objects.filter(helper_id=request.user.pk, customer_id=pk, is_active=True,
                                               perm_granted=True).exists()
     if livechat_exists:
-        User.objects.filter(pk=pk).update(is_active=False)
-        return HttpResponseRedirect(reverse('helper_livechat'))
+        user = get_object_or_404(User, pk=pk)
+        if user.is_active:
+            User.objects.filter(pk=pk).update(is_active=False)
+            return HttpResponseRedirect(reverse('livechat', args=(pk,)))
+        else:
+            User.objects.filter(pk=pk).update(is_active=True)
+            return HttpResponseRedirect(reverse('livechat', args=(pk,)))
     else:
         return HttpResponseRedirect(reverse('dashboard_home'))
 
 
 @valid_helper
-def freeze_card(request, pk):
-    livechat_exists = LiveChat.objects.filter(helper_id=request.pk, customer_id=pk, is_active=True,
+def toggle_card_frozen(request, pk):
+    livechat_exists = LiveChat.objects.filter(helper_id=request.user.pk, customer_id=pk, is_active=True,
                                               perm_granted=True).exists()
     if livechat_exists:
-        Card.objects.filter(Customer_id=pk).update(CardFrozen=True)
-        return HttpResponseRedirect(reverse('helper_livechat'))
+        card = get_object_or_404(Card, Customer_id=pk)
+        if card.CardFrozen:
+            Card.objects.filter(Customer_id=pk).update(CardFrozen=False)
+            return HttpResponseRedirect(reverse('livechat', args=(pk,)))
+        else:
+            Card.objects.filter(Customer_id=pk).update(CardFrozen=True)
+            return HttpResponseRedirect(reverse('livechat', args=(pk,)))
     else:
         return HttpResponseRedirect(reverse('dashboard_home'))
 
@@ -653,10 +666,10 @@ class LiveChatTransactions(DetailView):
 
     def get_object(self):
         pk = self.kwargs['pk']
-        livechat_exists = LiveChat.objects.filter(helper_id=self.request.user.pk, customer_id=pk, is_active=True, perm_granted=True).exists()
+        livechat_exists = LiveChat.objects.filter(helper_id=self.request.user.pk, customer_id=pk, is_active=True,
+                                                  perm_granted=True).exists()
         if livechat_exists:
             return self.get_queryset().filter(Customer_id=pk)
-
 
 
 '''
@@ -904,8 +917,3 @@ def pdf_view(request):
     buffer.close()
 
     return response
-
-
-
-
-
