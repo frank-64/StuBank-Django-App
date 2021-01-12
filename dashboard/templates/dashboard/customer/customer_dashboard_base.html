@@ -24,7 +24,10 @@
     {% block css %}{% endblock %}
 </head>
 {% block javascript %}{% endblock %}
-<body>
+<body style="background-image: url({% static '/images/blur_background.jpg'%});
+background-repeat: no-repeat;
+background-attachment: fixed;
+background-size: 100% 100%;">
 <header class="site-header">
     <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
         <div class="container">
@@ -38,7 +41,7 @@
                     <a class="nav-item nav-link" href="{% url 'money_pots' %}">My Money Pots</a>
                     <a class="nav-item nav-link" href="{% url 'transfer' %}">Transfer Money</a>
                     <a class="nav-item nav-link" href="{% url 'viewpayee' %}">View Payees</a>
-                    <a class="nav-item nav-link" href="">Expenditure Overview</a>
+                    <a class="nav-item nav-link" href="{% url 'overview' %}">Expenditure Overview</a>
                     <a class="nav-item nav-link" href="{% url 'statement' %}">Your Statements</a>
                     <a class="nav-item nav-link" href="{% url 'help' %}">Need Help?</a>
                 </div>

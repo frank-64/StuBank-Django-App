@@ -41,9 +41,10 @@
 {% endblock javascript %}
 {% block content %}
 {% if user.is_authenticated and user.is_customer%}
+<fieldset class="form-group">
     <form method="POST" onsubmit="return amountCheck()">
         {% csrf_token %}
-        <fieldset class="form-group">
+    
             <legend class="border-bottom mb-4">Transfer to payee:</legend>
             <h5>Balance in account: £{{ user.customer.balance }}</h5>
             <h4>Available balance: <p id="new_balance">£{{ user.customer.available_balance }}</p></h4>
