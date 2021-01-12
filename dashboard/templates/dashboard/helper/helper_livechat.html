@@ -40,7 +40,7 @@
         xhttp.open("GET", '{% url 'message' other_user.id%}');
         xhttp.overrideMimeType("application/json");
         xhttp.send(null);
-        setTimeout('updateMsg()', 4000)
+        //setTimeout('updateMsg()', 4000)
     }
 
     // this function adds a message to the livechat
@@ -59,34 +59,49 @@
         message_container.appendChild(div)
         div.scrollIntoView()
     }
-
     </script>
 {% endblock javascript %}
 
 {% block content %}
     <div class="row">
-        <div class="col-md-4">
-            <div class="header"><h3>{{ other_user.username }}</h3></div>
-            {% if not livechat.first.perm_granted %}
-                {{ livechat.first.perm_granted  }}
-                <button class="btn btn-outline-success">View Customer Statements</button> &nbsp; <button class="btn btn-outline-danger">Freeze Account</button> &nbsp; <button class="btn btn-outline-warning">Freeze Card</button>
-                <br>
-                <br>
-            {% else %}
-                {{ livechat.first.perm_granted  }}
-                <p>Customer must provide permission for you to access their statements and freeze cards/accounts..</p>
-            {% endif %}
-            <div class="message-area">
-                {% for message in messages %}
-                <div class="message-{% if message.sender == request.user %}right{% else %}left{% endif %}">
-                    <div class="sent-by"><strong>{{ message.sender.username }}</strong><small> - {{ message.created_at|date:"d/m/Y H:i A" }}</small></div>
-                    <div class="content">{{ message.message }}</div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{{ other_user.first_name }} {{ other_user.last_name }}</h5>
+                    <div>
+                        {% if livechat.first.perm_granted %}
+                            <a class="badge badge-success" href="{% url 'cust_transactions' livechat.first.customer.pk %}">View Transactions</a>
+                            {% if other_user.is_active %}
+                                <a class="badge badge-danger" href="{% url 'toggle_account' livechat.first.customer.pk %}">Freeze Account</a>
+                            {% else %}
+                                <a class="badge badge-success" href="{% url 'toggle_account' livechat.first.customer.pk %}">Activate Account</a>
+                            {% endif %}
+                            {% if card.CardFrozen %}
+                                <a class="badge badge-success" href="{% url 'freeze_card' livechat.first.customer.pk %}">Activate Card</a>
+                            {% else %}
+                                <a class="badge badge-danger" href="{% url 'freeze_card' livechat.first.customer.pk %}">Freeze Card</a>
+                            {% endif %}
+
+                            <a class="badge badge-danger" href="{% url 'deactivate_livechat' livechat.first.customer.pk %}">Deactivate Live Chat</a>
+                        {% endif %}
+                     </div>
                 </div>
-                {% endfor %}
-            </div>
-            <div class="input-area">
-                <input type="text" id="message-input">
-                <button onclick="sendMsg()" class="btn" id="msg_btn">Send</button>
+                <div class="card-body">
+                    <div class="message-area">
+                        {% for message in messages %}
+                            <div class="message-{% if message.sender == request.user %}right{% else %}left{% endif %}">
+                                <div class="sent-by"><strong>{{ message.sender.first_name }}</strong><small> - {{ message.created_at|date:"d/m/Y H:i A" }}</small></div>
+                                <div class="content">{{ message.message }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="input-area">
+                        <textarea type="text" id="message-input" style="width: 60%;"></textarea>
+                        <button onclick="sendMsg()" class="btn" id="msg_btn">Send</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

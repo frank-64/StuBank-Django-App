@@ -30,25 +30,37 @@
             <div class="col-md-4 card_div">
                 <h6>Last login: {{ user.last_login|date:"l dS F, h:m A" }}</h6>
                 {% if card %}
-                    <div class="panel">
-                      <div class="card stucard">
-                        <div class="card_field_right card_company_name">StuBank</div>
-                        <div class="card_field_right card_type">Digital Debit Card</div>
-                        <div class="card_field_left card_num">{{ card.first.MaskCardNum }}</div>
-                        <div class="card_field_central" id="card_num_id">
-                            {{ user.customer.sort_code }}
-                            <span style="float:right;">
-                                {{ user.customer.account_num }}
-                            </span>
+                        <div class="panel">
+                          <div class="card stucard">
+                            <div class="card_field_right card_company_name">StuBank</div>
+                            <div class="card_field_right card_type">Digital Debit Card</div>
+                            <div class="card_field_left card_num">{{ card.first.MaskCardNum }}</div>
+                            <div class="card_field_central" id="card_num_id">
+                                {{ user.customer.sort_code }}
+                                <span style="float:right;">
+                                    {{ user.customer.account_num }}
+                                </span>
+                            </div>
+                            <div class="card_field_left card_owner_logo">
+                                {{ user.first_name }} {{ user.last_name }}
+                                <span style="float:right;">
+                                    <small class="fab fa-cc-visa fa-lg"></small>
+                                </span>
+                            </div>
+                                {% if card.first.CardFrozen %}
+                                    <div>
+                                        <p class="badge">Your card is frozen &nbsp;  &nbsp; <a class="badge badge-success" href="{% url 'card_frozen' %}">Activate Card</a></p>
+
+                                    </div>
+
+                                {% else %}
+                                    <div>
+                                        <a class="badge badge-danger" href="{% url 'card_frozen' %}">Freeze Card</a>
+                                    </div>
+                                {% endif %}
+                          </div>
                         </div>
-                        <div class="card_field_left card_owner_logo">
-                            {{ user.first_name }} {{ user.last_name }}
-                            <span style="float:right;">
-                                <i class="fab fa-cc-visa fa-lg"></i>
-                            </span>
-                        </div>
-                      </div>
-                    </div>
+
                 {% else %}
                     <a href="{% url 'getcard' %}">Get your card here!</a>
                 {% endif %}
