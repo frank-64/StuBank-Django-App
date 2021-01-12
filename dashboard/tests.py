@@ -9,8 +9,8 @@ from .models import *
 
 # Create your tests here.
 
-def setUpUser(username):
-    user = User.objects.create(username=username, email='customer@test.com', first_name='Bobby',
+def setUpUser():
+    user = User.objects.create(username='test_customer', email='customer@test.com', first_name='Bobby',
                                last_name='Hummer', is_customer=1)
     user.set_password('password')
     user.save()
@@ -21,7 +21,7 @@ class MoneyPotCreateViewTestCase(TestCase):
 
     # Set up user and customer objects and log in
     def setUp(self):
-        self.user = setUpUser('test_customer')
+        self.user = setUpUser()
         self.customer = Customer.objects.create(user=self.user)
         self.client.login(username='test_customer', password='password')
 
@@ -52,7 +52,7 @@ class MoneyPotDepositViewTestCase(TestCase):
 
     # Set up and login customer, create a test money pot
     def setUp(self):
-        self.user = setUpUser('test_customer')
+        self.user = setUpUser()
         self.customer = Customer.objects.create(user=self.user)
         self.client.login(username='test_customer', password='password')
 
@@ -87,7 +87,7 @@ class MoneyPotDeleteViewTestCase(TestCase):
 
     # Set up and login customer, create a test money pot
     def setUp(self):
-        self.user = setUpUser('test_customer')
+        self.user = setUpUser()
         self.customer = Customer.objects.create(user=self.user)
         self.client.login(username='test_customer', password='password')
 
@@ -113,7 +113,7 @@ class MoneyPotUpdateViewTestCase(TestCase):
 
     # Set up and login customer, create a test money pot
     def setUp(self):
-        self.user = setUpUser('test_customer')
+        self.user = setUpUser()
         self.customer = Customer.objects.create(user=self.user)
         self.client.login(username='test_customer', password='password')
 
@@ -139,7 +139,7 @@ class MoneyPotUpdateViewTestCase(TestCase):
     # Test pot details are not updated if invalid data is input in form
     def test_post_fail(self):
         response = self.client.post(reverse('update_money_pot', kwargs={'pk': self.pk}), data={'name': 'updated_name',
-                                                                                               'target_balance': '#########'})
+                                                                                        'target_balance': '#########'})
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.failIf(response.context['form'].is_valid())
@@ -149,7 +149,7 @@ class PDFDownloadTestCase(TestCase):
 
     # Set up user and customer objects and log in
     def setUp(self):
-        self.user = setUpUser('test_customer')
+        self.user = setUpUser()
         self.customer = Customer.objects.create(user=self.user)
         self.client.login(username='test_customer', password='password')
 
@@ -195,8 +195,14 @@ class PayeeDetailViewTestCase(TestCase):
     pass
 
 
+class ExpenditureOverviewViewTestCase(TestCase):
+    pass
 
 
+class HelpPageViewTestCase(TestCase):
+    pass
 
 
+class LiveChatTestCase(TestCase):
+    pass
 

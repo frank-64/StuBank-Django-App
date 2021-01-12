@@ -886,21 +886,3 @@ def expenditure_overview(request):
         'out_in_labels': out_in_labels,
         'out_in_data': out_in_data,
     })
-
-# class TransactionListView(ListView):
-#     model = Transaction
-#     context_object_name = 'transaction_list'
-#     template_name = 'dashboard/customer/transactions.html'
-#
-#
-# class TransactionDetailView(DetailView):
-#     model = Transaction
-#     context_object_name = 'transaction_list'
-#     template_name = 'dashboard/customer/transactions.html'
-#
-#
-#     def get_queryset(self):
-#         return super(TransactionDetailView, self).get_queryset()
-#
-#     def get_object(self):
-#         return self.get_queryset().filter(Customer_id=self.request.user.pk)
