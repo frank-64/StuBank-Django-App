@@ -1,6 +1,7 @@
 import datetime
 import io
 import random
+from collections import Counter
 from decimal import Decimal
 from functools import partial
 
@@ -827,8 +828,7 @@ def pdf_view(request):
                                                                                                        2) - (
                                                                                                margin * 6)), margin,
                     id='current_balance', showBoundary=0),
-              Frame(margin, margin * 2, active_width, margin * 11, id='statement', showBoundary=0),
-              Frame(margin, margin * 0.8, active_width, margin * 0.8, id='small_print', showBoundary=0)]
+              Frame(margin, margin * 2, active_width, margin * 11, id='statement', showBoundary=0)]
 
     # Create template and add it to pdf
     template = PageTemplate(id='main', frames=frames)
@@ -875,13 +875,6 @@ def pdf_view(request):
     balance = Paragraph('<br/> Current balance: <b>£' + str(customer.balance) + '</b><br/> Available balance: <b>£' +
                         str(customer.available_balance) + '</b>', balances)
 
-    small_print = Paragraph('StuBank Plc, registered in England and Wales No. 482309. Registered office: Sir Matt Busby'
-                            ' Way, Old Trafford, Stretford, Manchester M16 0RA. Authorised by the Prudential Regulation '
-                            'Authority and regulated by the Financial Conduct Authority and the Prudential Regulation '
-                            'Authority. © StuBank Plc. OK not really, but it sounds cool if we write it anyway.'
-                            ' Downloaded from StuBank Online Statement Service on ' + str(datetime.date.today()) + '.',
-                            small_content)
-
     # Retrieve all user's transactions
     transactions = Transaction.objects.filter(Customer_id=user.pk).order_by(
         '-TransactionTime')
@@ -901,7 +894,7 @@ def pdf_view(request):
         data.append([date, method, category, comment, direction, termini, amount, new_balance])
 
     # Set table properties and styles
-    table = Table(data)
+    table = Table(data, repeatRows=1)
     table.setStyle(TableStyle([
         ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
         ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
@@ -921,10 +914,59 @@ def pdf_view(request):
     elements.extend([personal_title, personal_details, FrameBreak()])
     elements.extend([balance, FrameBreak()])
     elements.extend([table, FrameBreak()])
-    elements.extend([small_print, FrameBreak()])
     pdf.build(elements)
 
     response.write(buffer.getvalue())
     buffer.close()
 
     return response
+
+
+'''
+EXPENDITURE OVERVIEW STUFF ᶘᵒᴥᵒᶅ
+'''
+
+
+def expenditure_overview(request):
+    transactions = Transaction.objects.filter(Customer_id=request.user.pk)
+
+    # Categories
+    category_name = []
+    category_amount = []
+    category_dict = dict()
+
+    # Termini's
+    termini_name = []
+    termini_amount = []
+    termini_dict = dict()
+
+    # Outgoings / Income
+    out_in_labels = ['Outgoing', 'Income']
+    out_in_data = [0, 0]
+
+    for transaction in transactions:
+        if transaction.Direction == 'Out':
+            category_dict[transaction.Category] = category_dict.get(transaction.Category, 0) + float(transaction.Amount)
+            termini_dict[transaction.Termini] = termini_dict.get(transaction.Termini, 0) + float(transaction.Amount)
+            out_in_data[0] += float(transaction.Amount)
+        else:
+            out_in_data[1] += float(transaction.Amount)
+
+    for key, value in category_dict.items():
+        category_name.append(key)
+        category_amount.append(value)
+
+    for key, value in termini_dict.items():
+        termini_name.append(key)
+        termini_amount.append(value)
+
+    print (out_in_data)
+
+    return render(request, 'dashboard/customer/expenditure_overview.html', {
+        'category_labels': category_name,
+        'category_data': category_amount,
+        'termini_labels': termini_name,
+        'termini_data': termini_amount,
+        'out_in_labels': out_in_labels,
+        'out_in_data': out_in_data,
+    })
