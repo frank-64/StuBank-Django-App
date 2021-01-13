@@ -6,7 +6,8 @@
         {% csrf_token %}
         <h1>Update Money Pot:</h1>
             {{ form|crispy }}
-        <button type="submit">Update</button>
+        <br>
+        <button type="submit" class="btn btn-primary">Update</button>
     </form>
 
 {% endblock content %}

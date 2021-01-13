@@ -82,7 +82,6 @@ class AddPayeeTestCase(TestCase):
         self.client.login(username='test_customer', password='password')
 
     def test_add_valid_payee(self):
-        print(Customer.objects.all())
         request = self.request_factory.get(reverse('addpayee'))
         request.user = self.user
 

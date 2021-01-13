@@ -9,21 +9,36 @@
 
 <h3>Balance in account: £{{ user.customer.balance }}</h3>
 <h1>Available balance: £{{ user.customer.available_balance }}</h1>
-<h5>Want to add a new money pot?</h5><a href="{% url 'add_money_pot' %}">Add Money Pot</a>
+<h5>Want to add a new money pot?</h5>
+<a href="{% url 'add_money_pot' %}" class="btn btn-success" role="button" >
+    <span class="align-middle">Add Money Pot</span>
+    <i class="bi bi-plus-square" aria-hidden="true"></i>
+</a>
 <br>
 <br>
-<h5>YOUR MONEY POTS</h5>
-{%  for pot in money_pots %}
-    <article class="media content-section">
-        <div class="media-body">
-            <h2>{{ pot.name }}</h2>
-            <p>POT BALANCE: {{ pot.pot_balance }}</p>
-            <p>TARGET BALANCE: {{ pot.target_balance }}</p>
-            <a href="{% url 'deposit_money_pot' pot.id %}">Deposit</a>
-            <a href="{% url 'delete_money_pot' pot.id %}">Delete</a>
-            <a href="{% url 'update_money_pot' pot.id %}">Update</a>
-        </div>
-    </article>
-{% endfor %}
+
+<div class="row">
+    <div class="col-md-2">
+    </div>
+
+    <div class="col-md-8">
+        <h5>YOUR MONEY POTS</h5>
+        {%  for pot in money_pots %}
+            <div class="card">
+                <h5 class="card-header">{{ pot.name }}</h5>
+                <div class="card-body">
+                    <p class="card-text">POT BALANCE: {{ pot.pot_balance }}</p>
+                    <p class="card-text">TARGET BALANCE: {{ pot.target_balance }}</p>
+                    <a href="{% url 'deposit_money_pot' pot.id %}" class="btn btn-primary" role="button">Deposit</a>
+                    <a href="{% url 'update_money_pot' pot.id %}" class="btn btn-primary" role="button">Update</a>
+                    <a href="{% url 'delete_money_pot' pot.id %}" class="btn btn-danger" role="button"
+                       style="float:right;">Delete</a>
+                </div>
+            </div>
+            <br>
+        {% endfor %}
+    </div>
+
+</div>
 
 {% endblock content %}

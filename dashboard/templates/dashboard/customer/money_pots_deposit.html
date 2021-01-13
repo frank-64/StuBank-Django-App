@@ -29,7 +29,8 @@
         <h3>Current amount in pot: {{ pot.pot_balance }}</h3>
         <h3>Target: {{ pot.target_balance }}</h3>
             {{ form|crispy }}
-        <button type="submit" id="submit">Deposit</button>
+        <br>
+        <button type="submit" id="submit" class="btn btn-primary">Deposit</button>
     </form>
 
 {% endblock content %}
