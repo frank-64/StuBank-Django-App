@@ -876,8 +876,6 @@ def expenditure_overview(request):
         termini_name.append(key)
         termini_amount.append(value)
 
-    print(out_in_data)
-
     return render(request, 'dashboard/customer/expenditure_overview.html', {
         'category_labels': category_name,
         'category_data': category_amount,

@@ -1,4 +1,10 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static '/css/money_pot.css' %}">
+{% endblock css %}
+
 {% block content %}
 
 <h3>Balance in account: £{{ user.customer.balance }}</h3>
