@@ -1,4 +1,3 @@
-from django.conf.urls import url
 from django.urls import path
 from dashboard.views import *
 
@@ -10,6 +9,7 @@ urlpatterns = [
     path('transfer/', payee_transfer, name='transfer'),
     path('checkpayee/', check_payee, name='checkpayee'),
     path('getcard/', get_card, name='getcard'),
+    path('freeze-card/', customer_card_frozen, name='card_frozen'),
     path('transaction/', card_transaction, name='transaction'),
     path('moneypots/', MoneyPotListView.as_view(), name='money_pots'),
     path('moneypots/create/', MoneyPotCreateView.as_view(), name='add_money_pot'),
@@ -23,5 +23,9 @@ urlpatterns = [
     path('livechat/<int:pk>/', livechat, name='livechat'),
     path('message/<int:pk>/', message, name='message'),
     path('helper/chatlist/', get_livechats, name='helper_livechat'),
-    path('livechat/helper-perms/<int:pk>/', grant_permission, name='helper_perms')
+    path('livechat/helper-perms/<int:pk>/', grant_permission, name='helper_perms'),
+    path('livechat/deactivate/<int:pk>/', deactivate_livechat, name='deactivate_livechat'),
+    path('livechat/freeze-account/<int:pk>/', toggle_account_frozen, name='toggle_account'),
+    path('livechat/freeze-card/<int:pk>/', toggle_card_frozen, name='freeze_card'),
+    path('livechat/transactions/<int:pk>/', LiveChatTransactions.as_view(), name='cust_transactions')
 ]

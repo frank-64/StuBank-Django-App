@@ -5,7 +5,8 @@ from collections import Counter
 from decimal import Decimal
 from functools import partial
 
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from dashboard import decorators
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.files.storage import FileSystemStorage
@@ -20,6 +21,7 @@ from reportlab.lib import colors, utils
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
+from .decorators import valid_helper
 from .forms import *
 from dashboard.models import *
 from django_otp.decorators import otp_required
@@ -174,6 +176,7 @@ def delete_payee(request, pk):
     return response
 
 
+# TODO: Remove csrf_exempt
 @csrf_exempt
 def check_payee(request):
     if request.method == "POST":
@@ -205,10 +208,10 @@ def add_payee(request):
 
     if request.method == "POST" and form.is_valid():
         # getting the cleaned data from the form
-        first_name = form.cleaned_data['first_name']
-        last_name = form.cleaned_data['last_name']
-        sort_code = form.cleaned_data['sort_code']
-        account_num = form.cleaned_data['account_num']
+        first_name = form.data['first_name']
+        last_name = form.data['last_name']
+        sort_code = form.data['sort_code']
+        account_num = form.data['account_num']
 
         try:
             # this attempts to find ane existing customer with details matching the form inputs
@@ -253,7 +256,7 @@ def get_new_balances(customers_customer_id, payees_customer_id, amount):
     cust_new_balance = cust_balance - amount
 
     if payees_customer_id != -1:
-        # get the payees's customer object using their primary key
+        # get the payee's customer object using their primary key
         payee = Customer.objects.filter(pk=payees_customer_id)
 
         # payee_balance is the current balance of the payee
@@ -480,12 +483,17 @@ def livechat(request, pk):
 
     # this checks if a livechat already exists between the current user (request.user.id) and the user with
     # primary key = pk
-    livechat = LiveChat.objects.filter(customer_id=request.user.id, helper_id=pk, is_active=True)
-    livechat_created = livechat.exists()
+    livechat = None
 
     # other_user is the other user relative to the current user in the livechat which the current user intends to
     # communicate with
+    helper = False
     other_user = get_object_or_404(User, pk=pk)
+    if (not other_user.is_helper):
+        livechat = LiveChat.objects.filter(customer_id=other_user.pk, helper_id=request.user.pk, is_active=True)
+        helper = True
+    else:
+        livechat = LiveChat.objects.filter(customer_id=request.user.pk, helper_id=other_user.pk, is_active=True)
 
     # this obtains all the messages sent and received between the current user and the other user
     messages = Message.objects.filter(
@@ -495,12 +503,13 @@ def livechat(request, pk):
     # this condition redirects the user to the customer_livechat template if they are a customer and have a
     # LiveChat object with a helper. If the user is a helper they are redirected to the helper template. Otherwise an
     # error is displayed.
-    if other_user.is_helper and livechat_created:
+    if helper == False and livechat.exists():
         return render(request, 'dashboard/customer/customer_livechat.html',
                       {"other_user": other_user, "messages": messages, "livechat": livechat})
-    elif not other_user.is_helper:
+    elif not other_user.is_helper and livechat.exists():
+        card = get_object_or_404(Card, Customer_id=other_user.pk)
         return render(request, 'dashboard/helper/helper_livechat.html',
-                      {"other_user": other_user, "messages": messages, "livechat": livechat})
+                      {"card": card, "other_user": other_user, "messages": messages, "livechat": livechat})
     else:
         error = "The Livechat could not be accessed."
         resolution = "Have you requested assistance and clicked the link on the Help page?"
@@ -576,8 +585,8 @@ def get_helper(request):
     # If there is an existing and active livechat object with the customer_id as the current user's pk then return
     # the pk of the existing helper in that livechat
     if LiveChat.objects.filter(customer_id=request.user.id, is_active=True).exists():
-        existing_chat = LiveChat.objects.get(customer_id=request.user.id)
-        return HttpResponse(existing_chat.helper.pk)
+        existing_chat = LiveChat.objects.filter(customer_id=request.user.id, is_active=True)
+        return HttpResponse(existing_chat.first().helper.pk)
 
     # If the customer does not have an existing livechat then create a LiveChat object and return the helper's pk
     else:
@@ -588,16 +597,91 @@ def get_helper(request):
         return HttpResponse(random_helper.pk)
 
 
+@login_required
 def get_livechats(request):
     # TODO: Need to add a way to get user permission to freeze accounts/cards etc
     livechats = LiveChat.objects.filter(helper_id=request.user.id)
     return render(request, 'dashboard/helper/helper_chats.html', {"livechats": livechats})
 
 
+@login_required
 def grant_permission(request, pk):
-    helper = get_object_or_404(Helper, pk=pk)
-    lc = LiveChat.objects.filter(customer_id=request.user.id, helper_id=pk, is_active=True).update(perm_granted=True)
-    return HttpResponse('Done')
+    lc = LiveChat.objects.filter(customer_id=request.user.pk, helper_id=pk, is_active=True)
+    if lc.exists():
+        lc.update(perm_granted=True)
+        return HttpResponse('Done')
+    else:
+        return HttpResponseRedirect(reverse('dashboard_home'))
+
+
+@valid_helper
+def deactivate_livechat(request, pk):
+    livechat = LiveChat.objects.filter(helper_id=request.user.pk, customer=pk, is_active=True, perm_granted=True)
+    if livechat.exists():
+        livechat.update(is_active=False)
+        return HttpResponseRedirect(reverse('livechat', args=(pk,)))
+    else:
+        return HttpResponseRedirect(reverse('dashboard_home'))
+
+
+@valid_helper
+def toggle_account_frozen(request, pk):
+    livechat_exists = LiveChat.objects.filter(helper_id=request.user.pk, customer_id=pk, is_active=True,
+                                              perm_granted=True).exists()
+    if livechat_exists:
+        user = get_object_or_404(User, pk=pk)
+        if user.is_active:
+            User.objects.filter(pk=pk).update(is_active=False)
+            return HttpResponseRedirect(reverse('livechat', args=(pk,)))
+        else:
+            User.objects.filter(pk=pk).update(is_active=True)
+            return HttpResponseRedirect(reverse('livechat', args=(pk,)))
+    else:
+        return HttpResponseRedirect(reverse('dashboard_home'))
+
+
+@valid_helper
+def toggle_card_frozen(request, pk):
+    livechat_exists = LiveChat.objects.filter(helper_id=request.user.pk, customer_id=pk, is_active=True,
+                                              perm_granted=True).exists()
+    if livechat_exists:
+        card = get_object_or_404(Card, Customer_id=pk)
+        if card.CardFrozen:
+            Card.objects.filter(Customer_id=pk).update(CardFrozen=False)
+            return HttpResponseRedirect(reverse('livechat', args=(pk,)))
+        else:
+            Card.objects.filter(Customer_id=pk).update(CardFrozen=True)
+            return HttpResponseRedirect(reverse('livechat', args=(pk,)))
+    else:
+        return HttpResponseRedirect(reverse('dashboard_home'))
+
+@login_required
+def customer_card_frozen(request):
+    pk = request.user.pk
+    card = get_object_or_404(Card, Customer_id=pk)
+    if card.CardFrozen:
+        Card.objects.filter(Customer_id=pk).update(CardFrozen=False)
+        return HttpResponseRedirect(reverse('dashboard_home'))
+    else:
+        Card.objects.filter(Customer_id=pk).update(CardFrozen=True)
+        return HttpResponseRedirect(reverse('dashboard_home'))
+
+
+@method_decorator(valid_helper, name='dispatch')
+class LiveChatTransactions(DetailView):
+    model = Transaction
+    context_object_name = 'transaction_list'
+    template_name = 'dashboard/customer/transactions.html'
+
+    def get_queryset(self):
+        return super(LiveChatTransactions, self).get_queryset()
+
+    def get_object(self):
+        pk = self.kwargs['pk']
+        livechat_exists = LiveChat.objects.filter(helper_id=self.request.user.pk, customer_id=pk, is_active=True,
+                                                  perm_granted=True).exists()
+        if livechat_exists:
+            return self.get_queryset().filter(Customer_id=pk)
 
 
 '''

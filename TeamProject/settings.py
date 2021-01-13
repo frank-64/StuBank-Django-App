@@ -24,7 +24,7 @@ SECRET_KEY = '*kv2lii!m8k$-50rd)h0+&f^ln$)rsvxml!tgz0m%4#m#duze3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'ec2-18-132-15-28.eu-west-2.compute.amazonaws.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'stubank.tk']
 
 # Application definition
 
