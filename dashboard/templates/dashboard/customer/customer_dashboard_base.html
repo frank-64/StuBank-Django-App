@@ -46,10 +46,7 @@
                     <a class="nav-link" aria-current="page" href="{% url 'dashboard_home' %}">Dashboard</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-item nav-link" href="{% url 'money_pots' %}">My Money Pots</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-item nav-link" href="{% url 'transfer' %}">Transfer Money</a>
+                    <a class="nav-item nav-link" href="{% url 'money_pots' %}">Money Pots</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-item nav-link" href="{% url 'viewpayee' %}">View Payees</a>
@@ -76,8 +73,12 @@
   </nav>
 </header>
 
+
 <!-- Begin page content -->
 <main class="flex-shrink-0">
+    <div class="jumbotron" style="height: 50px">
+        {% block header %}{% endblock %}
+    </div>
     <div class="container">
         {% block content %}{% endblock %}
     </div>
@@ -100,9 +101,9 @@
     <meta http-equiv="REFRESH" content="0;url=http://{% url 'dashboard_home' %}">
 {% endif %}
 
-<!--
+
 <body style="background-image: url({% static '/images/blur_background.jpg'%});
 background-repeat: no-repeat;
 background-attachment: fixed;
-background-size: 100% 100%;">-->
+background-size: 100% 100%;">
 
