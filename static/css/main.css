@@ -49,3 +49,23 @@ html {
   position: relative;
   min-height: 100%;
 }
+
+main > .container {
+  padding: 70px 15px 0;
+}
+
+.navbar-custom{
+  background-color: #d3d3d3;
+  font-family: 'Poppins', sans-serif;
+}
+
+.navbar-custom li a {
+    color: black !important;
+}
+
+.navbar-custom .navbar-brand{
+    font-weight: bold;
+    font-size: 25px;
+}
+
+
