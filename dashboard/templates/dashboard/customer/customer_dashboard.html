@@ -21,8 +21,8 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-5 col-xl-6">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-5 col-xl-6">
                 <div class="jumbotron detail-jumbotron details-jumbo">
                     <h4>StuBank Account</h4>
                     <span style="float: right">
@@ -35,24 +35,11 @@
                     <p >£{{ user.customer.available_balance }}&nbsp;&nbsp;<small style="font-style: italic">Available Balance</small></p>
                 </div>
             </div>
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-7 col-xl-6">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-7 col-xl-6">
                 <div class="jumbotron detail-jumbotron card-jumbo">
                     <h4>StuCard</h4>
                     <div class="row">
-                        <div class="col-md-3 card-state">
-                            <div>
-                                <p id="card-p">This is your digital StuCard which can be used in the StuShop for card purchases.</p>
-                                {% if card.first.CardFrozen %}
-                                    <p style="margin-bottom: 0; font-weight: bold">Your card is frozen</p>
-                                    <a class="badge badge-success" href="{% url 'card_frozen' %}">Activate Card</a>
-                                {% else %}
-                                    <div>
-                                        <a class="badge badge-danger" href="{% url 'card_frozen' %}">Freeze Card</a>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-9">
+                        <div class="col-xs-12 col-sm-12 col-md-7 col-lg-8 col-xl-9">
                             {% if card %}
                                 <div class="panel card-panel">
                                   <div class="card stucard">
@@ -73,54 +60,67 @@
                                             <small class="fab fa-cc-visa fa-lg"></small>
                                         </span>
                                     </div>
-
                                   </div>
                                 </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-5 col-lg-4 col-xl-3 card-state">
+                                <div>
+                                    <p id="card-p">This is your digital StuCard which can be used in the StuShop for card purchases.</p>
+                                    {% if card.first.CardFrozen %}
+                                        <p style="margin-bottom: 0; font-weight: bold">Your card is frozen</p>
+                                        <a class="badge badge-success" href="{% url 'card_frozen' %}">Activate Card</a>
+                                    {% else %}
+                                        <div>
+                                            <a class="badge badge-danger" href="{% url 'card_frozen' %}">Freeze Card</a>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
                             {% else %}
                                 <a href="{% url 'getcard' %}">Get your card here!</a>
                             {% endif %}
                         </div>
                     </div>
                 </div>
-            </div>
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
-            <div class="jumbotron detail-jumbotron details-jumbo">
-                <h4>Your transactions</h4>
-                {% for i in customer_transactions %}
-                    <div class="card transaction_card" style="margin-bottom: 10px">
-                      <div class="card-header">
-                          <span style="font-weight: bold">{{ i.Termini }}</span>
-                          <span style="float:right; font-weight: bold" >
-                            £{{ i.Amount }}
-                            <small>(£{{ i.NewBalance }})</small>
-                                {% if i.Direction == 'In' %}
-                                    <i class="fas fa-arrow-down fa-lg"></i>
-                                {% else %}
-                                    <i class="fas fa-arrow-up fa-lg"></i>
-                                {% endif %}
-                          </span>
-                            <br>
-                            <small>{{ i.TransactionTime|date:"d/m/Y h:m A" }}</small>
-                      </div>
-                      <div class="card-body">
-                        <p class="card-text">
-                            {{ i.Comment }}
-                            <span style="float:right;">
-                                {{ i.Method }}
+
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                <div class="jumbotron detail-jumbotron details-jumbo">
+                    <h4>Your transactions</h4>
+                    {% for i in customer_transactions %}
+                        <div class="card transaction_card" style="margin-bottom: 10px">
+                          <div class="card-header">
+                              <span style="font-weight: bold">{{ i.Termini }}</span>
+                              <span style="float:right; font-weight: bold" >
+                                £{{ i.Amount }}
+                                <small>(£{{ i.NewBalance }})</small>
+                                    {% if i.Direction == 'In' %}
+                                        <i class="fas fa-arrow-down fa-lg"></i>
+                                    {% else %}
+                                        <i class="fas fa-arrow-up fa-lg"></i>
+                                    {% endif %}
+                              </span>
                                 <br>
-                                {% if i.Method == 'Card Transaction' %}
-                                    <small>{{ i.Card.MaskCardNum }}</small>
-                                {% elif i.Method == 'Bank Transfer' and i.Direction == 'Out'%}
-                                    <small>{{ i.Payee.customer.sort_code }} {{ i.Payee.customer.account_num }}</small>
-                                {% endif %}
-                            </span>
-                            <br>
-                            <small>{{ i.Category }}</small>
-                        </p>
-                      </div>
-                    </div>
-                {% endfor %}
+                                <small>{{ i.TransactionTime|date:"d/m/Y h:m A" }}</small>
+                          </div>
+                          <div class="card-body">
+                            <p class="card-text">
+                                {{ i.Comment }}
+                                <span style="float:right;">
+                                    {{ i.Method }}
+                                    <br>
+                                    {% if i.Method == 'Card Transaction' %}
+                                        <small>{{ i.Card.MaskCardNum }}</small>
+                                    {% elif i.Method == 'Bank Transfer' and i.Direction == 'Out'%}
+                                        <small>{{ i.Payee.customer.sort_code }} {{ i.Payee.customer.account_num }}</small>
+                                    {% endif %}
+                                </span>
+                                <br>
+                                <small>{{ i.Category }}</small>
+                            </p>
+                          </div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-    </div>
 {% endblock %}

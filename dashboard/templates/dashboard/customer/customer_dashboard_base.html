@@ -76,9 +76,6 @@
 
 <!-- Begin page content -->
 <main class="flex-shrink-0">
-    <div class="jumbotron" style="height: 50px">
-        {% block header %}{% endblock %}
-    </div>
     <div class="container">
         {% block content %}{% endblock %}
     </div>
@@ -105,5 +102,6 @@
 <body style="background-image: url({% static '/images/blur_background.jpg'%});
 background-repeat: no-repeat;
 background-attachment: fixed;
-background-size: 100% 100%;">
+background-size: cover;
+padding-top: 90px;">
 

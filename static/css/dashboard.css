@@ -1,14 +1,3 @@
-@import url('https://fonts.googleapis.com/css?family=Raleway|Roboto+Slab');
-.currency{
-  font-family: 'Curr', serif;
-  color: black;
-}
-
-h3,h4{
-    font-family: 'Roboto Slab', serif;
-    color: black;
-}
-
 .card-panel {
     width: 300px;
     text-align: center;
