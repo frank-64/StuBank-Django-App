@@ -1,36 +1,37 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static '/css/payee.css' %}">
+{% endblock %}
+
 {% block content %}
-<fieldset style="background: lightblue;">
-    <h3>Here are your payees {{ user.first_name }}:</h3>
-    <br>
-    <h5>Want to add a new payee?</h5><a href="{% url 'addpayee' %}">Add Payee</a>
-    <br>
-    <br>
-</fieldset>
-    <fieldset>
-    <table id="payees_table" class="table-responsive table-hover table-striped" width="50%" style=" width: 100%;font-size: 2vw">
-        <tr>
-            <th style="padding:0 15px 0 15px;">ID</th>
-            <th style="padding:0 15px 0 15px;">PayeeID</th>
-            <th style="padding:0 15px 0 15px;">Username</th>
-            <th style="padding:0 15px 0 15px;">First Name</th>
-            <th style="padding:0 15px 0 15px;">Last Name</th>
-            <th style="padding:0 15px 0 15px;">Sort Code</th>
-            <th style="padding:0 15px 0 15px;">Account Number</th>
-            <th style="padding:0 15px 0 15px;">Remove Payee</th>
-        </tr>
-        {% for p in payee_list %}
-            <tr>
-              <td style="padding:0 15px 0 15px;">{{ p.id }}</td>
-              <td style="padding:0 15px 0 15px;">{{ p.PayeeID.user.id }}</td>
-              <td style="padding:0 15px 0 15px;">{{ p.PayeeID.user.username }}</td>
-              <td style="padding:0 15px 0 15px;">{{ p.PayeeID.user.first_name }}</td>
-              <td style="padding:0 15px 0 15px;">{{ p.PayeeID.user.last_name }}</td>
-              <td style="padding:0 15px 0 15px;">{{ p.PayeeID.sort_code }}</td>
-              <td style="padding:0 15px 0 15px;">{{ p.PayeeID.account_num }}</td>
-              <td style="padding:0 15px 0 15px; text-align: center"><a href="{% url 'removepayee' pk=p.id%}">Delete</a></td>
-            </tr>
-        {% endfor %}
-    </table>
-    </fieldset>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8 col-xl-8">
+            <div class="jumbotron payee-jumbo">
+                <span style="float: right;">
+                    <a class="badge badge-primary" href="{% url 'addpayee' %}">Add Payee</a>
+                </span>
+                <h4>Your Payees</h4>
+                <br>
+                <br>
+                {% for p in payee_list %}
+                    <div class="card payee-card">
+                      <div class="card-body payee-card-body">
+                          <span style="float: right">
+                            <a class="badge badge-secondary" href="{% url 'transfer' %}">Make a transfer</a>
+                            <a class="badge badge-danger" href="{% url 'removepayee' pk=p.id%}">Remove Payee</a>
+                          </span>
+                          <span>
+                              <strong>{{ p.PayeeID.user.first_name }} {{ p.PayeeID.user.last_name }}</strong><br><br>
+                          </span>
+                          <p>{{ p.PayeeID.sort_code }}&nbsp;&nbsp;<small style="font-style: italic;">Sort code</small></p>
+                          <p>{{ p.PayeeID.account_num }}&nbsp;&nbsp;<small style="font-style: italic;">Account number</small></p>
+                      </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
 {% endblock content %}
