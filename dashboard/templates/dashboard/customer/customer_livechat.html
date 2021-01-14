@@ -75,7 +75,7 @@
 {% endblock javascript %}
 
 {% block content %}
-    <div class="row">
+    <div class="row" style="margin-bottom: 50px">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
@@ -97,7 +97,7 @@
                         <br>
                         {% for message in messages %}
                         <div class="message-{% if message.sender == request.user %}right{% else %}left{% endif %}">
-                            <div class="sent-by"><strong>{{ message.sender.username }}</strong><small> - {{ message.created_at|date:"d/m/Y H:i A" }}</small></div>
+                            <div class="sent-by"><strong>{{ message.sender.first_name }}</strong><small> - {{ message.created_at|date:"d/m/Y H:i A" }}</small></div>
                             <div class="content">{{ message.message }}</div>
                         </div>
                         {% endfor %}
