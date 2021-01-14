@@ -1,29 +1,30 @@
-.card_div{
+.card-panel {
+    width: 300px;
     text-align: center;
-    padding-right: 50px;
 }
 
-.panel {
-  width: 300px;
-  margin-bottom: 50px;
-  text-align: center;
-  float: right;
-}
 @font-face {
-  font-family: 'CredFont';
-  src:  url('/static/css/kredit back.ttf');
+    font-family: 'CredFont';
+    src:  url('/static/css/kredit back.ttf');
 }
+
+@font-face {
+    font-family: 'Curr';
+    src:  url('/static/css/Archivo-Regular.ttf');
+}
+
 .stucard {
-  font-size: 20px;
-  width:322px;
-  height: 203px;
-  text-align: left;
-  padding-left: 40px;
-  padding-right: 40px;
-  padding-bottom: 40px;
-  color: #474951;
-  border-radius: 20px;
-  background: url('/static/images/card.png')
+    margin-left: 20px;
+    font-size: 20px;
+    width:322px;
+    height: 210px;
+    text-align: left;
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-bottom: 40px;
+    color: #474951;
+    border-radius: 20px;
+    background: url('/static/images/card.png');
 }
 
 .card_field_left{
@@ -66,4 +67,47 @@ small{
 .fa-arrow-up{
   padding-left: 40px;
   color: #8B0000;
+}
+
+body {
+    padding-top: 35px;
+  }
+
+.jumbo1{
+  background: transparent;
+}
+
+.detail-jumbotron{
+  background: #FFFFFF;
+  box-shadow: 10px 10px 10px rgba(0,0,0, 0.5);
+  min-width: 356px;
+}
+
+.card-jumbo{
+    padding: 20px;
+    text-align: center;
+}
+
+.details-jumbo{
+    padding-top: 20px;
+}
+
+.alignleft {
+	float: left;
+}
+.alignright {
+	float: right;
+}
+
+.balances{
+    display: inline-block;
+}
+
+.card-state{
+    padding-right: 0;
+    margin-bottom: 10px;
+}
+
+#card-p{
+    font-size: 14px;
 }
