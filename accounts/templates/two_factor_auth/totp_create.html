@@ -1,13 +1,52 @@
 {% extends 'accounts/create_base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
-{% block content %}
 
-<img class="" src="{{ user.customer.qrcode_file.url }}">
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/totp_create.css' %}">
+
+<h3>Enable Two-Factor Authentication in 3 Easy steps</h3>
+<hr>
+<div class="row">
+    <div class="col-sm-4">
+        <div>
+            <img src="{% static 'images/google_auth_logo.jpg' %}" id="auth-logo">
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <h4>Download an authenticator app</h4>
+        <p>We recommend Google Authenticator.</p>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-sm-4">
+        <div>
+            <img class="" src="{{ user.customer.qrcode_file.url }}" id="qr-code">
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <h4>Scan the QR code</h4>
+        <p>Open the authentication app and scan the image to the left using your phone's camera.</p>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-sm-4">
+        <div>
+            <img src="{% static 'images/mobile_phone1.jpg' %}" id="mobile-phone">
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <h4>Enter your 6-digit code</h4>
+        <p>Enter the code generated to login.</p>
+    </div>
+</div>
 
 <form method="post">
     {% csrf_token %}
     {{ form|crispy }}
-    <input type="submit" value="Confirm code">
+    <button type="submit" class="btn btn-primary">Activate</button>
 </form>
 
 {% endblock content %}
