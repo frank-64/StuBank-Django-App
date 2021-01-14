@@ -27,16 +27,11 @@
 {% block javascript %}{% endblock %}
 
 <body class="d-flex flex-column h-100">
-<body style="background-image: url({% static '/images/blur_background.jpg'%});
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: 100% 100%;">
-
 <header>
   <!-- Fixed navbar -->
   <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'index' %}">StuBank</a>
+        <a class="navbar-brand" href="{% url 'totp_create' %}">StuBank</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -53,7 +48,7 @@
 
 <footer class="footer mt-auto py-3 bg-light">
   <div class="container">
-    <span class="text-muted">Place footer content here.</span>
+    <span class="text-muted">Copyright © StuBank plc 2021</span>
   </div>
 </footer>
 
