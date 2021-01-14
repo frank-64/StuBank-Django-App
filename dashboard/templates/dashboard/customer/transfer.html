@@ -1,5 +1,10 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% load static %}
 {% load crispy_forms_tags %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static '/css/transfer.css' %}">
+{% endblock css %}
 
 {% block javascript %}
 <script>
@@ -40,20 +45,24 @@
 </script>
 {% endblock javascript %}
 {% block content %}
-{% if user.is_authenticated and user.is_customer%}
-    <form method="POST" onsubmit="return amountCheck()">
-        {% csrf_token %}
-        <legend class="border-bottom mb-4">Transfer to payee:</legend>
-        <h5>Balance in account: £{{ user.customer.balance }}</h5>
-        <h4>Available balance: <p id="new_balance">£{{ user.customer.available_balance }}</p></h4>
-        <table>
-            {{ form|crispy }}
-        </table>
-        <div class="form-group">
-            <button class="btn btn-outline-info" type="submit" id="submit">Transfer</button>
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8 col-xl-8">
+        <div class="jumbotron transfer-jumbo">
+            <form method="POST" onsubmit="return amountCheck()">
+                {% csrf_token %}
+                <h4>Transfer to payee</h4>
+                <hr>
+                <h3>£{{ user.customer.available_balance }} &nbsp;<small style="font-style: italic;">Available Balance</small></h3>
+                <table>
+                    {{ form|crispy }}
+                </table>
+                <div class="form-group">
+                    <button class="btn btn-outline-success" type="submit" id="submit">Transfer</button>
+                </div>
+            </form>
         </div>
-    </form>
-{% else %}
-    <h3>Not authenticated</h3>
-{% endif %}
+    </div>
+</div>
+
+
 {% endblock content %}

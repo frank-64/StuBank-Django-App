@@ -11,7 +11,7 @@ class Payee(models.Model):
     PayeeID = models.ForeignKey(Customer, on_delete=models.PROTECT)
 
     def __str__(self):
-        return f"Username: {self.PayeeID.user.username}, Name:{self.PayeeID.user.first_name} {self.PayeeID.user.last_name}"
+        return f"{self.PayeeID.user.first_name} {self.PayeeID.user.last_name}: {self.PayeeID.sort_code} {self.PayeeID.account_num}"
 
 
 class Card(models.Model):
