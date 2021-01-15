@@ -55,9 +55,8 @@ main > .container {
 }
 
 .navbar-custom{
-  background-color: #d3d3d3;
-  font-family: 'Poppins', sans-serif;
-}
+    background-color: #457b9d;
+    }
 
 .navbar-custom li a {
     color: black !important;
@@ -66,6 +65,11 @@ main > .container {
 .navbar-custom .navbar-brand{
     font-weight: bold;
     font-size: 25px;
+}
+
+.navbar img {
+    width: 80px;
+    height: auto;
 }
 
 
