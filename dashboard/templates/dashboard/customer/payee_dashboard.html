@@ -1,0 +1,37 @@
+{% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static '/css/payee.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8 col-xl-8">
+            <div class="jumbotron payee-jumbo">
+                <span style="float: right;">
+                    <a class="badge badge-primary" href="{% url 'addpayee' %}">Add Payee</a>
+                </span>
+                <h4>Your Payees</h4>
+                <br>
+                <br>
+                {% for p in payee_list %}
+                    <div class="card payee-card">
+                      <div class="card-body payee-card-body">
+                          <span style="float: right">
+                            <a class="badge badge-secondary" href="{% url 'transfer' %}">Make a transfer</a>
+                            <a class="badge badge-danger" href="{% url 'removepayee' pk=p.id%}">Remove Payee</a>
+                          </span>
+                          <span>
+                              <strong>{{ p.PayeeID.user.first_name }} {{ p.PayeeID.user.last_name }}</strong><br><br>
+                          </span>
+                          <p>{{ p.PayeeID.sort_code }}&nbsp;&nbsp;<small style="font-style: italic;">Sort code</small></p>
+                          <p>{{ p.PayeeID.account_num }}&nbsp;&nbsp;<small style="font-style: italic;">Account number</small></p>
+                      </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

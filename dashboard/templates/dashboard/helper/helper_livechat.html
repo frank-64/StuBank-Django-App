@@ -1,0 +1,108 @@
+{% extends "dashboard/helper/helper_dashboard_base.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static '/css/livechat.css' %}">
+{% endblock css %}
+
+{% block javascript %}
+    <script>
+    window.onload = function() {
+      updateMsg()
+    };
+    // AJAX function which POSTs the message to the message() view which adds it to the database.
+    function sendMsg(){
+        var message = document.getElementById("message-input").value;
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState === 4 && this.status === 200) {
+                document.getElementById("message-input").value = ""
+                var messages = JSON.parse(xhttp.responseText)
+                addMsg(messages)
+            }
+        }
+        xhttp.open("POST", '{% url 'message' other_user.id%}');
+        xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhttp.send(JSON.stringify(message));
+    }
+
+    // this function is called once the page loads and calls itself every 4 seconds to check for new messages
+    function updateMsg(){
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState === 4 && this.status === 200) {
+                var messages = JSON.parse(xhttp.responseText)
+                for (let i = 0; i < messages.length; i++) {
+                    addMsg(messages[i])
+                }
+            }
+        };
+        xhttp.open("GET", '{% url 'message' other_user.id%}');
+        xhttp.overrideMimeType("application/json");
+        xhttp.send(null);
+        setTimeout('updateMsg()', 4000)
+    }
+
+    // this function adds a message to the livechat
+    function addMsg(message){
+        let message_container = document.querySelector(".message-area");
+        let class_name = "message-left";
+        if (message.sent === true) {
+            class_name = "message-right";
+        }
+        let div = document.createElement("div");
+        div.classList.add("message", class_name)
+        div.innerHTML = `
+        <div class="sent-by"><strong>${ message.sender }</strong><small> - ${ message.time }</small></div>
+                    <div class="content">${ message.message }</div>
+        `
+        message_container.appendChild(div)
+        div.scrollIntoView()
+    }
+    </script>
+{% endblock javascript %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{{ other_user.first_name }} {{ other_user.last_name }}</h5>
+                    <div>
+                        {% if livechat.first.perm_granted %}
+                            <a class="badge badge-success" href="{% url 'cust_transactions' livechat.first.customer.pk %}">View Transactions</a>
+                            {% if other_user.is_active %}
+                                <a class="badge badge-danger" href="{% url 'toggle_account' livechat.first.customer.pk %}">Freeze Account</a>
+                            {% else %}
+                                <a class="badge badge-success" href="{% url 'toggle_account' livechat.first.customer.pk %}">Activate Account</a>
+                            {% endif %}
+                            {% if card.CardFrozen %}
+                                <a class="badge badge-success" href="{% url 'freeze_card' livechat.first.customer.pk %}">Activate Card</a>
+                            {% else %}
+                                <a class="badge badge-danger" href="{% url 'freeze_card' livechat.first.customer.pk %}">Freeze Card</a>
+                            {% endif %}
+
+                            <a class="badge badge-danger" href="{% url 'deactivate_livechat' livechat.first.customer.pk %}">Deactivate Live Chat</a>
+                        {% endif %}
+                     </div>
+                </div>
+                <div class="card-body">
+                    <div class="message-area">
+                        {% for message in messages %}
+                            <div class="message-{% if message.sender == request.user %}right{% else %}left{% endif %}">
+                                <div class="sent-by"><strong>{{ message.sender.first_name }}</strong><small> - {{ message.created_at|date:"d/m/Y H:i A" }}</small></div>
+                                <div class="content">{{ message.message }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="input-area">
+                        <textarea type="text" id="message-input" style="width: 60%;"></textarea>
+                        <button onclick="sendMsg()" class="btn" id="msg_btn">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

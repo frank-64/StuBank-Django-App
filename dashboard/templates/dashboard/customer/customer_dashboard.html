@@ -1,0 +1,126 @@
+{% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static '/css/dashboard.css' %}">
+{% endblock css %}
+
+{% block javascript %}
+{% endblock javascript %}
+
+{% block header %}
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-xs-12">
+            <h4>Welcome back {{ user.first_name }}!</h4>
+            <h6>Last login: {{ user.last_login|date:"l dS F, h:m A" }}</h6>
+        </div>
+        <div class="col-lg-6 col-md-6 col-xs-12">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-5 col-xl-6">
+                <div class="jumbotron detail-jumbotron details-jumbo">
+                    <h4>StuBank Account</h4>
+                    <span style="float: right">
+                        <a class="badge badge-secondary" href="{% url 'transfer' %}">Make a transfer</a>
+                    </span>
+                    <p >{{ user.customer.sort_code }} &nbsp;{{ user.customer.account_num }}</p>
+                    <hr>
+                    <h3 >£{{ user.customer.balance }} &nbsp;<small style="font-style: italic;">Balance</small></h3>
+                    <hr>
+                    <p >£{{ user.customer.available_balance }}&nbsp;&nbsp;<small style="font-style: italic">Available Balance</small></p>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-7 col-xl-6">
+                <div class="jumbotron detail-jumbotron card-jumbo">
+                    <h4>StuCard</h4>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-7 col-lg-8 col-xl-9">
+                            {% if card %}
+                                <div class="panel card-panel">
+                                  <div class="card stucard">
+                                    <div class="card_field_right card_company_name">StuBank</div>
+                                    <div class="card_field_right card_type">Digital Debit Card</div>
+                                    <div class="card_field_left card_num">{{ card.first.MaskCardNum }}</div>
+                                    <div class="card_field_central" id="card_num_id">
+                                        <span>
+                                            {{ user.customer.sort_code }}
+                                        </span>
+                                        <span style="float:right;">
+                                            {{ user.customer.account_num }}
+                                        </span>
+                                    </div>
+                                    <div class="card_field_left card_owner_logo">
+                                        {{ user.first_name }} {{ user.last_name }}
+                                        <span style="float:right;">
+                                            <small class="fab fa-cc-visa fa-lg"></small>
+                                        </span>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-5 col-lg-4 col-xl-3 card-state">
+                                <div>
+                                    <p id="card-p">This is your digital StuCard which can be used in the StuShop for card purchases.</p>
+                                    {% if card.first.CardFrozen %}
+                                        <p style="margin-bottom: 0; font-weight: bold">Your card is frozen</p>
+                                        <a class="badge badge-success" href="{% url 'card_frozen' %}">Activate Card</a>
+                                    {% else %}
+                                        <div>
+                                            <a class="badge badge-danger" href="{% url 'card_frozen' %}">Freeze Card</a>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% else %}
+                                <a href="{% url 'getcard' %}">Get your card here!</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                <div class="jumbotron detail-jumbotron details-jumbo">
+                    <h4>Your transactions</h4>
+                    {% for i in customer_transactions %}
+                        <div class="card transaction_card" style="margin-bottom: 10px">
+                          <div class="card-header">
+                              <span style="font-weight: bold">{{ i.Termini }}</span>
+                              <span style="float:right; font-weight: bold" >
+                                £{{ i.Amount }}
+                                <small>(£{{ i.NewBalance }})</small>
+                                    {% if i.Direction == 'In' %}
+                                        <i class="fas fa-arrow-down fa-lg"></i>
+                                    {% else %}
+                                        <i class="fas fa-arrow-up fa-lg"></i>
+                                    {% endif %}
+                              </span>
+                                <br>
+                                <small>{{ i.TransactionTime|date:"d/m/Y h:m A" }}</small>
+                          </div>
+                          <div class="card-body">
+                            <p class="card-text">
+                                {{ i.Comment }}
+                                <span style="float:right;">
+                                    {{ i.Method }}
+                                    <br>
+                                    {% if i.Method == 'Card Transaction' %}
+                                        <small>{{ i.Card.MaskCardNum }}</small>
+                                    {% elif i.Method == 'Bank Transfer' and i.Direction == 'Out'%}
+                                        <small>{{ i.Payee.customer.sort_code }} {{ i.Payee.customer.account_num }}</small>
+                                    {% endif %}
+                                </span>
+                                <br>
+                                <small>{{ i.Category }}</small>
+                            </p>
+                          </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+{% endblock %}

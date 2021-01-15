@@ -1,0 +1,29 @@
+.message-right{
+    text-align: right;
+}
+
+.message-left{
+    text-align: left;
+}
+
+.input-area{
+    margin-top: 15px;
+}
+
+#message-input{
+    resize: both;
+    width: 60%;
+    min-width: 200px;
+    max-width: 300px;
+    min-height: 50px;
+    max-height: 200px;
+}
+
+#msg_btn{
+    margin: 0;
+    margin-left: 20px;
+    position: relative;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}

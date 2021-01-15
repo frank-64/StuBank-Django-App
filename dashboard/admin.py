@@ -5,3 +5,5 @@ from .models import *
 admin.site.register(Transaction)
 admin.site.register(Payee)
 admin.site.register(Card)
+admin.site.register(Message)
+admin.site.register(LiveChat)

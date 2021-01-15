@@ -1,0 +1,46 @@
+body{
+        background-image: url('login bgblur.jpg');
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+MonkeyButton{
+    background:    #ffffff;
+    border:        2px solid #000000;
+    border-radius: 0px;
+    box-shadow:    3px 3px #444444;
+    width:         200px;
+    height:        50px;
+    color:         #000000;
+    display:       inline-block;
+    font:          normal bold 18px/50px "Open Sans", sans-serif;
+    text-align:    center;
+}
+MonkeyButton2{
+    background:    #ffffff;
+    border:        2px solid #000000;
+    border-radius: 0px;
+    box-shadow:    3px 3px #444444;
+    padding:       20px 45px;
+    color:         #000000;
+    display:       inline-block;
+    font:          normal bold 18px/1 "Open Sans", sans-serif;
+    text-align:    center;
+}
+MonkeyButton2:hover {
+    border-color:#7a7a7a;
+}
+MonkeyButton:hover {
+    border-color:#7a7a7a;
+}
+.center {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+fieldset{
+    background-color: rgba(150, 150, 150, 0.5);
+}
+/* https://dabuttonfactory.com/button.png?t=Log+in&f=Open+Sans-Bold&ts=21&tc=000&hp=45&vp=20&c=0&bgt=unicolored&bgc=fff&bs=2&bc=000&shs=3&shc=444&sho=se */

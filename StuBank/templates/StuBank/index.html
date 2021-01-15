@@ -1,6 +1,32 @@
-{% extends "StuBank/base.html" %}
+{% extends "accounts/base.html" %}
 {% load static %}
+
 {% block content %}
-<h3>INSERT COMPANY INFO</h3>
+<style>
+.backgroundStyle {
+    border-radius: 9px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 15px 19px;
+    background-color: #fff;
+    box-shadow: 0 0 10px 0 rgba(0,0,0,.25);
+    border: none
+}
+</style>
+
+<body style="background-image: url({% static '/images/blur_background.jpg'%});
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: 100% 100%;">
+
+<p>StuBank is a secure and easy way to store you money, and start saving today!</p>
+
+<div class="backgroundStyle">
+<p>Got a problem? <br> 
+    See our <a href="FAQ">FAQ's </a>page,<br>
+    or <a href="login">login</a> and press support
+</p>
+
+</div>
 <img src="{% static 'images/monkey.png' %}" alt="Monkey">
 {% endblock %}

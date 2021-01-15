@@ -1,0 +1,43 @@
+{% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static '/css/money_pot.css' %}">
+{% endblock css %}
+
+{% block content %}
+<h1>Money Pots</h1>
+<h3>Balance: £{{ user.customer.balance }}</h3>
+<h5 class="text-muted">Available balance: £{{ user.customer.available_balance }}</h5>
+<hr>
+<a href="{% url 'add_money_pot' %}" class="btn btn-success" role="button" >
+    <span class="align-middle">Add Money Pot</span>
+    <i class="bi bi-plus-square" aria-hidden="true"></i>
+</a>
+<br>
+<br>
+
+<div class="row">
+
+
+    <div class="col-md-12">
+        <h5>YOUR MONEY POTS</h5>
+        {%  for pot in money_pots %}
+            <div class="card">
+                <h5 class="card-header">{{ pot.name }}</h5>
+                <div class="card-body">
+                    <p class="card-text">Pot Balance: <b>£{{ pot.pot_balance }}</b></p>
+                    <p class="card-text">Target Balance: <b>£{{ pot.target_balance }}</b></p>
+                    <a href="{% url 'deposit_money_pot' pot.id %}" class="btn btn-primary" role="button">Deposit</a>
+                    <a href="{% url 'update_money_pot' pot.id %}" class="btn btn-primary" role="button">Update</a>
+                    <a href="{% url 'delete_money_pot' pot.id %}" class="btn btn-danger" role="button"
+                       style="float:right;">Delete</a>
+                </div>
+            </div>
+            <br>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock content %}

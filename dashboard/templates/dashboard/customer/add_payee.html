@@ -1,0 +1,66 @@
+{% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{% block javascript %}
+<script>
+    // This function stops the user from submitting if they change the field values after checking the payee
+    $(document).ready(function(){
+          $("input[name='first_name'], input[name='last_name'], input[name='account_num'], input[name='sort_code']").keyup(function(){
+                document.getElementById("payee_check").hidden = true;
+                document.getElementById("submit").hidden = true;
+                document.getElementById("payee_btn").hidden = false;
+          });
+        });
+
+    // AJAX method which posts the field values to the check_payee() view which returns a HttpResponse if a payee exists
+    function check_function(){
+        var firstname = $("input[name='first_name']").val();
+        var lastname = $("input[name='last_name']").val();
+        var account_num = $("input[name='account_num']").val();
+        var sort_code = $("input[name='sort_code']").val();
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                if(xhttp.response === 'Exists'){
+                    document.getElementById("payee_check").hidden = false;
+                    document.getElementById("payee_check").innerHTML = "Payee Exists!"
+                    document.getElementById("submit").hidden = false;
+                    document.getElementById("payee_btn").hidden = true;
+                }else if (xhttp.response === 'Same') {
+                    alert("You cannot add yourself as a payee!")
+                }else if (xhttp.response === 'None') {
+                    document.getElementById("payee_check").hidden = false;
+                    document.getElementById("payee_check").innerHTML = "Payee does not exist!"
+                }
+            }
+        };
+        var json_account = {
+            'firstname':firstname,
+            'lastname':lastname,
+            'account_num':account_num,
+            'sort_code':sort_code
+        }
+        xhttp.open("POST", '/dashboard/checkpayee/');
+        xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhttp.send(JSON.stringify(json_account));
+    }
+</script>
+{% endblock javascript %}
+
+{% block content %}
+    <legend class="border-bottom mb-4">Add payee:</legend>
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <table>
+                {{ form|crispy }}
+            </table>
+        </fieldset>
+        <p hidden id="payee_check"></p>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit" id="submit" hidden >Add</button>
+        </div>
+    </form>
+    <button onclick="check_function()" class="btn" id="payee_btn">Check Payee</button>
+{% endblock content %}

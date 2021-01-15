@@ -1,0 +1,22 @@
+#auth-logo {
+    position: relative;
+    left: 20px;
+    width: 40%;
+    height: 40%
+}
+
+#qr-code {
+    width:50%;
+    height:50%;
+}
+
+#mobile-phone {
+    position: relative;
+    left: 12px;
+    width: 40%;
+    height: 40%;
+}
+
+.btn {
+    margin-top: 15px;
+}

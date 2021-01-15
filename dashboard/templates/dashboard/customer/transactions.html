@@ -1,0 +1,38 @@
+{% extends "dashboard/helper/helper_dashboard_base.html" %}
+{% block content %}
+{% if user.is_authenticated and user.is_helper%}
+    {% if transaction_list %}
+        <h3>Here are the transactions for {{ transaction_list.Customer.user.username }}</h3>
+        <br>
+        <br>
+        <table id="movie_smash" class="table-responsive table-hover table-striped" width="50%" style=" width: 100%;font-size: 2vw">
+            <tr>
+                <th style="padding:0 15px 0 15px;">ID</th>
+                <th style="padding:0 15px 0 15px;">Date Time</th>
+                <th style="padding:0 15px 0 15px;">Amount</th>
+                <th style="padding:0 15px 0 15px;">New Balance</th>
+                <th style="padding:0 15px 0 15px;">Destination</th>
+                <th style="padding:0 15px 0 15px;">Category</th>
+                <th style="padding:0 15px 0 15px;">Direction</th>
+                <th style="padding:0 15px 0 15px;">Comment</th>
+            </tr>
+            {% for t in transaction_list %}
+                <tr>
+                  <td style="padding:0 15px 0 15px;">{{ t.id }}</td>
+                  <td style="padding:0 15px 0 15px;">{{ t.TransactionTime }}</td>
+                  <td style="padding:0 15px 0 15px;">{{ t.Amount }}</td>
+                  <td style="padding:0 15px 0 15px;">{{ t.NewBalance }}</td>
+                  <td style="padding:0 15px 0 15px;">{{ t.Destination }}</td>
+                  <td style="padding:0 15px 0 15px;">{{ t.Category }}</td>
+                  <td style="padding:0 15px 0 15px;">{{ t.Direction }}</td>
+                  <td style="padding:0 15px 0 15px;">{{ t.Comment }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <h4>No transactions available. Have you been granted permission by the customer?</h4>
+    {% endif %}
+{% else %}
+    <h3>Not authenticated</h3>
+{% endif %}
+{% endblock content %}

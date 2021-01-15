@@ -24,7 +24,7 @@ SECRET_KEY = '*kv2lii!m8k$-50rd)h0+&f^ln$)rsvxml!tgz0m%4#m#duze3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'stubank.tk']
 
 # Application definition
 
@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dashboard.apps.DashboardConfig',
     'StuBank.apps.StubankConfig',
-    'FakeTransactions.apps.FaketransactionsConfig'
+    'django_otp',
+    'django_otp.plugins.otp_totp',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_otp.middleware.OTPMiddleware',
 ]
 
 ROOT_URLCONF = 'TeamProject.urls'
@@ -124,6 +127,8 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'public/static')
+
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 
@@ -133,3 +138,13 @@ LOGOUT_REDIRECT_URL = 'login'
 AUTH_USER_MODEL = 'accounts.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
+
+# Directory where uploaded files are saved
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+# Expire session after 10 minutes of inactivity
+'''SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 600
+SESSION_SAVE_EVERY_REQUEST = True
+'''

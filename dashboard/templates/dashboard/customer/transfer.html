@@ -1,0 +1,68 @@
+{% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static '/css/transfer.css' %}">
+{% endblock css %}
+
+{% block javascript %}
+<script>
+    var valid = false;
+    const available_balance = {{ user.customer.available_balance }};
+     $(document).ready(function(){
+          $("input[name='Amount']").keyup(function(){
+              let amount = this.value;
+              let sum = available_balance-amount;
+              if (sum<0){
+                  alert("You do not have £"+amount+" in your bank account.")
+                  document.getElementById('submit').disabled = true;
+                  document.getElementById("new_balance").innerText = "£"+(sum);
+                  document.getElementById("new_balance").style.color='red';
+                  valid = false;
+              }else if (amount<0){
+                  alert("You cannot transfer a negative amount!")
+                  document.getElementById('submit').disabled = true;
+                  document.getElementById("new_balance").innerText = "£"+available_balance+".00";
+                  valid = false;
+              }else if (amount<1.00){
+                  alert("You must transfer an amount more than or equal to £1.00.")
+                  document.getElementById('submit').disabled = true;
+                  document.getElementById("new_balance").innerText = "£"+available_balance+".00";
+                  valid = false;
+              } else {
+                  document.getElementById('submit').disabled = false;
+                  document.getElementById("new_balance").style.color='black';
+                  document.getElementById("new_balance").innerText = "£"+(sum);
+                  valid = true;
+              }
+          });
+        });
+
+     function amountCheck(){
+         return valid;
+     }
+</script>
+{% endblock javascript %}
+{% block content %}
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8 col-xl-8">
+        <div class="jumbotron transfer-jumbo">
+            <form method="POST" onsubmit="return amountCheck()">
+                {% csrf_token %}
+                <h4>Transfer to payee</h4>
+                <hr>
+                <h3>£{{ user.customer.available_balance }} &nbsp;<small style="font-style: italic;">Available Balance</small></h3>
+                <table>
+                    {{ form|crispy }}
+                </table>
+                <div class="form-group">
+                    <button class="btn btn-outline-success" type="submit" id="submit">Transfer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
