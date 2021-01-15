@@ -619,7 +619,7 @@ def deactivate_livechat(request, pk):
     livechat = LiveChat.objects.filter(helper_id=request.user.pk, customer=pk, is_active=True, perm_granted=True)
     if livechat.exists():
         livechat.update(is_active=False)
-        return HttpResponseRedirect(reverse('livechat', args=(pk,)))
+        return HttpResponseRedirect(reverse('helper_livechat'))
     else:
         return HttpResponseRedirect(reverse('dashboard_home'))
 
@@ -788,6 +788,8 @@ def update_available_balance(customer):
     available_balance = customer.balance - money_pots_total
     customer.available_balance = available_balance
     customer.save()
+
+
 
 
 '''
@@ -968,3 +970,4 @@ def expenditure_overview(request):
         'out_in_labels': out_in_labels,
         'out_in_data': out_in_data,
     })
+

@@ -28,11 +28,11 @@
                     <span style="float: right">
                         <a class="badge badge-secondary" href="{% url 'transfer' %}">Make a transfer</a>
                     </span>
-                    <p >{{ user.customer.sort_code }} &nbsp;{{ user.customer.account_num }}</p>
+                    <p>{{ user.customer.sort_code }} &nbsp;{{ user.customer.account_num }}</p>
                     <hr>
-                    <h3 >£{{ user.customer.balance }} &nbsp;<small style="font-style: italic;">Balance</small></h3>
+                    <h3>£{{ user.customer.balance }} &nbsp;<small style="font-style: italic;">Balance</small></h3>
                     <hr>
-                    <p >£{{ user.customer.available_balance }}&nbsp;&nbsp;<small style="font-style: italic">Available Balance</small></p>
+                    <p>£{{ user.customer.available_balance }}&nbsp;&nbsp;<small style="font-style: italic">Available Balance</small></p>
                 </div>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-7 col-xl-6">
@@ -54,7 +54,7 @@
                                             {{ user.customer.account_num }}
                                         </span>
                                     </div>
-                                    <div class="card_field_left card_owner_logo">
+                                    <div class="card_field_left temp card_owner_logo">
                                         {{ user.first_name }} {{ user.last_name }}
                                         <span style="float:right;">
                                             <small class="fab fa-cc-visa fa-lg"></small>
