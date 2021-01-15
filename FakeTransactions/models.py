@@ -2,10 +2,8 @@ from django.db import models
 from django.http import request
 from django.urls.base import reverse
 
-from FakeTransactions import costs
-
-
 # Create your models here.
+from accounts.models import Customer
 
 
 class Category(models.Model):
@@ -28,11 +26,9 @@ class Product(models.Model):
     category = models.ForeignKey(Category, related_name='FakeProducts', on_delete=models.CASCADE)
     name = models.CharField(max_length=200, db_index=True)
     price = models.FloatField(max_length=10)
-    created = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(max_length=200, db_index=True)
 
     class Meta:
-        ordering = ('-created',)
         index_together = (('id', 'slug'),)
 
     def __str__(self):

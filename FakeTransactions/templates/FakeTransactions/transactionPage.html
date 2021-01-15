@@ -1,12 +1,49 @@
 {% extends "FakeTransactions/base.html" %}
 {% block content %}
+<script>
+    $(document).ready(function()
+    {
+        $('.checkvalues').click(function()
+        {
+            var txt=""
+            $('.checkvalues:checked').each(function()
+            {
+                txt+=$(this).val()+",";
+            })
+            $('#txtdisplay').val(txt)
+        });
+    });
+</script>
   <title>Make Transactions</title>
 <body>
 <form method="POST">
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" name= "addTransaction" value="Submit">
+    {% for i in products %}
+        <h3>{{ i.category }}</h3><br>
 
+            {{ i.name }} £{{ i.price }}<br>
+        <label for="{{ i.name }}"></label>
+        <input type="checkbox" name='{{ i.name }}' value="{{ i.name }}" id="{{ i.name }}"><br>
+        {% endfor %}
+
+    <input type="submit" name= "addTransaction" value="Submit"><br><br>
+
+</form>
+<form>
+{% csrf_token %}
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="Select-Transactions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Select Transactions
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    {% for i in products %}
+        <input type = 'checkbox' value="{{ i.name }}" class="checkvalues" >{{ i.name }} £{{ i.price }}0 <br>
+        {% endfor %}
+    </div>
+    <input type="text" id="txtdisplay" readonly name="price">
+    <input type="submit" name="addtransaction" class="btn btn-secondary">
+</div>
 </form>
 </body>
 
