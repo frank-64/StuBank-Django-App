@@ -55,12 +55,7 @@ main > .container {
 }
 
 .navbar-custom{
-    background-color: #457b9d;
     }
-
-.navbar-custom li a {
-    color: black !important;
-}
 
 .navbar-custom .navbar-brand{
     font-weight: bold;
