@@ -245,6 +245,23 @@ def add_payee(request):
     return render(request, 'dashboard/customer/add_payee.html', {'form': form})
 
 
+# TODO: Remove csrf_exempt
+@csrf_exempt
+def card_verification(request):
+    if request.method == "POST":
+        str_details = request.body.decode('UTF-8')
+        json_details = json.loads(str_details)
+        try:
+            customer_card = get_object_or_404(Card, Customer_id=request.user.pk)
+            verify_card = Card.objects.filter(CVC=json_details['CVC'], ExpiryDate=json_details['expiry_date'])
+
+            if verify_card[0] == customer_card:
+                print('Valid')
+                return HttpResponse('Valid')
+        except:
+            return HttpResponse('None')
+
+
 def get_new_balances(customers_customer_id, payees_customer_id, amount):
     # get the customer's customer object using their primary key
     customer = Customer.objects.filter(pk=customers_customer_id)

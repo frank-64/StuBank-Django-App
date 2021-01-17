@@ -42,27 +42,86 @@
      function amountCheck(){
          return valid;
      }
+
+     function modal_start(){
+        var amount = document.getElementById("id_Amount").value;
+        if (amount >= 100){
+            $("#cardDetails").modal()
+        }else {
+            document.getElementById("transfer-form").submit();
+        }
+    }
+
+    function verify_card_details(){
+        var expiry_date = document.getElementById('expDate').value;
+        var CVC = document.getElementById('CVC').value;
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                if(xhttp.response === 'Valid'){
+                    $("#cardDetails").modal('hide');
+                    document.getElementById("transfer-form").submit();
+                }else {
+                    var status = document.getElementById("verification-status");
+                    status.hidden = false;
+                    status.innerText = "Your card details were incorrect please try again.";
+                }
+            }
+        };
+        var json_card_details = {
+            'expiry_date':expiry_date,
+            'CVC':CVC,
+        }
+        xhttp.open("POST", '/dashboard/verify-card/');
+        xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhttp.send(JSON.stringify(json_card_details));
+    }
 </script>
 {% endblock javascript %}
 {% block content %}
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8 col-xl-8">
         <div class="jumbotron transfer-jumbo">
-            <form method="POST" onsubmit="return amountCheck()">
+            <form method="POST" onsubmit="return amountCheck()" id="transfer-form">
                 {% csrf_token %}
                 <h4>Transfer to payee</h4>
                 <hr>
                 <h3 id="new_balance">£{{ user.customer.available_balance }}</h3><small style="font-style: italic;">Available Balance</small>
+                <hr>
                 <table>
                     {{ form|crispy }}
                 </table>
-                <div class="form-group">
-                    <button class="btn btn-outline-success" type="submit" id="submit">Transfer</button>
-                </div>
             </form>
+            <div class="form-group">
+                <button class="btn btn-outline-success" id="submit" onclick="modal_start()">Transfer</button>
+            </div>
         </div>
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="cardDetails" tabindex="-1" role="dialog" aria-labelledby="cardDetailsModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cardDetailsLabel">Verify Your Card Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label for="CVC">CVC</label><br>
+        <input type="text" id="CVC"><br>
 
+        <label for="expDate">Expiry Date</label><br>
+        <input type="date" id="expDate"><br>
+
+          <p id="verification-status" hidden></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="verify_card_details()">Verify</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}

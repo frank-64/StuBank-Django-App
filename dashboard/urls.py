@@ -8,6 +8,7 @@ urlpatterns = [
     path('addpayee/', add_payee, name='addpayee'),
     path('transfer/', payee_transfer, name='transfer'),
     path('checkpayee/', check_payee, name='checkpayee'),
+    path('verify-card/', card_verification, name='verifycard'),
     path('getcard/', get_card, name='getcard'),
     path('freeze-card/', customer_card_frozen, name='card_frozen'),
     path('transaction/', card_transaction, name='transaction'),

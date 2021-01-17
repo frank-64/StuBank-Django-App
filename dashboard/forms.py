@@ -20,6 +20,7 @@ class TransferForm(forms.ModelForm):
         model = Transaction
         exclude = ['Direction', 'Termini', 'TransactionTime', 'NewBalance', 'Customer', 'Method', 'Card']
 
+
     #Payee = forms.ModelChoiceField(required=True, queryset=None, help_text="Who would you like to transfer to?")
 
 
