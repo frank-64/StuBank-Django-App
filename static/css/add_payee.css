@@ -1,0 +1,10 @@
+.payee-jumbo{
+  background: #FFFFFF;
+  box-shadow: 10px 10px 10px rgba(0,0,0, 0.5);
+  min-width: 356px;
+  padding:35px;
+}
+
+.form-group{
+  margin-top: 20px;
+}

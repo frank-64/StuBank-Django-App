@@ -52,7 +52,7 @@
                 {% csrf_token %}
                 <h4>Transfer to payee</h4>
                 <hr>
-                <h3>£{{ user.customer.available_balance }} &nbsp;<small style="font-style: italic;">Available Balance</small></h3>
+                <h3 id="new_balance">£{{ user.customer.available_balance }}</h3><small style="font-style: italic;">Available Balance</small>
                 <table>
                     {{ form|crispy }}
                 </table>
