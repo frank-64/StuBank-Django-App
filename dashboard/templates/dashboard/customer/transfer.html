@@ -36,8 +36,9 @@
                   document.getElementById("new_balance").innerText = "£"+(sum);
                   valid = true;
               }
+              displayRoundUp(amount);
           });
-        });
+     });
 
      function amountCheck(){
          return valid;
@@ -86,9 +87,26 @@
         }
     }
 
+    function displayRoundUp(amount) {
+        var checkbox_div = document.getElementById("check-box");
+        rounded_amount = Math.ceil(amount);
+        round = Math.round((rounded_amount - amount) * 100) / 100;
+
+        if (round > 0) {
+            checkbox_div.style.display = "block";
+        } else {
+            checkbox_div.style.display = "none";
+        }
+        document.getElementById('round-up-text').innerText = "Round up transaction by £" + round + "?";
+    }
+
     window.onload = function() {
         var pot_div = document.getElementById("pot-form");
+        var checkbox_div = document.getElementById("check-box");
+
         pot_div.style.display = "none";
+        checkbox_div.style.display = "none";
+
         document.getElementById("transfer-form").reset();
     }
 </script>
@@ -112,13 +130,15 @@
                     {{ form.Comment }}
                     <h3>Category</h3>
                     {{ form.Category }}<br><br>
-                    <input type="checkbox" id="pot_select" name="pot_select" onclick="checkCheckBox(this)">
-                    <label for="pot_select"> Round up transaction?</label><br>
                 </div>
-                <div id="pot-form">
-                    <h3>Select Money Pot</h3>
-                    {{ form.pot }}
-                </div>
+                    <div id="check-box">
+                        <input type="checkbox" id="pot_check_box" name="pot_check_box" onclick="checkCheckBox(this)">
+                        <label for="pot_check_box" id="round-up-text"></label>
+                    </div>
+                    <div id="pot-form">
+                        <h3>Select Money Pot</h3>
+                        {{ form.pot }}
+                    </div>
             </form>
             <div class="form-group">
                 <button class="btn btn-outline-success" id="submit" onclick="modal_start()">Transfer</button>
