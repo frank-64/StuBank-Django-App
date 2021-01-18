@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django_otp',
     'django_otp.plugins.otp_totp',
     'crispy_forms',
+    'FakeTransactions.apps.FaketransactionsConfig'
 ]
 
 MIDDLEWARE = [

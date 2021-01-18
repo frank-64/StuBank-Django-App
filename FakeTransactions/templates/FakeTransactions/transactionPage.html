@@ -1,50 +1,83 @@
 {% extends "FakeTransactions/base.html" %}
 {% block content %}
-<script>
-    $(document).ready(function()
-    {
-        $('.checkvalues').click(function()
-        {
-            var txt=""
-            $('.checkvalues:checked').each(function()
-            {
-                txt+=$(this).val()+",";
-            })
-            $('#txtdisplay').val(txt)
-        });
-    });
-</script>
-  <title>Make Transactions</title>
+
 <body>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    {% for i in products %}
-        <h3>{{ i.category }}</h3><br>
 
-            {{ i.name }} £{{ i.price }}<br>
-        <label for="{{ i.name }}"></label>
-        <input type="checkbox" name='{{ i.name }}' value="{{ i.name }}" id="{{ i.name }}"><br>
-        {% endfor %}
+{% if user.is_authenticated and user.is_customer%}
 
-    <input type="submit" name= "addTransaction" value="Submit"><br><br>
+<title>StuShop</title><br>
 
-</form>
-<form>
-{% csrf_token %}
-<div class="dropdown">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="Select-Transactions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Select Transactions
-    </button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    {% for i in products %}
-        <input type = 'checkbox' value="{{ i.name }}" class="checkvalues" >{{ i.name }} £{{ i.price }}0 <br>
-        {% endfor %}
-    </div>
-    <input type="text" id="txtdisplay" readonly name="price">
-    <input type="submit" name="addtransaction" class="btn btn-secondary">
-</div>
-</form>
-</body>
+    <section class="container content-section">
+            <h2 class="section-header">StuFood</h2>
+            <div class="StuItems">
+                <div class="StuItem">
+                    <span class="StuTitle">Groceries</span>
+                        <span class="StuPrice">£20.16</span>
+                        <button class="StuAdd" type="button">Add</button>
 
+                </div>
+                <div class="StuItems">
+                <div class="StuItem">
+                    <span class="StuTitle">FastFood</span>
+
+                        <span class="StuPrice">£10.72</span>
+                        <button class="StuAdd" type="button">Add</button>
+                    </div>
+                </div>
+                <div class="StuItems">
+                <div class="StuItem">
+                    <span class="StuTitle">Snack</span>
+
+                        <span class="StuPrice">£5.31</span>
+                        <button class="StuAdd" type="button">Add</button>
+                    </div>
+                </div>
+            </div>
+
+    </section>
+        <section class="container content-section">
+            <h2 class="section-header">StuClothes</h2>
+            <div class="StuItems">
+                <div class="StuItem">
+                    <span class="StuTitle">Jeans</span>
+                        <span class="StuPrice">£</span>
+                        <button class="StuAdd" type="button">Add</button>
+                    </div>
+                </div>
+                <div class="StuItems">
+                <div class="StuItem">
+                    <span class="StuTitle">Shorts</span>
+                        <span class="StuPrice">£</span>
+                        <button class="StuAdd" type="button">Add</button>
+                    </div>
+                </div>
+                <div class="StuItems">
+                <div class="StuItem">
+                    <span class="StuTitle">Shirts</span>
+                        <span class="StuPrice">£</span>
+                        <button class="StuAdd" type="button">Add</button>
+                    </div>
+                </div>
+
+    </section>
+    <section class="container content-section">
+            <h2 class="section-header">StuCart</h2>
+            <div class="StuCart">
+                <span class="CartItem">Item</span>
+                <span class="CartPrice">Price</span>
+            </div>
+            <div class="StuTable">
+            </div>
+            <div class="StuTotal">
+                <strong class="StuFinalTotal">Total</strong>
+                <span class="StuFinalPrice">£0</span>
+            </div>
+            <button class="StuBuy" type="button">Purchase</button>
+    </section>
+
+    <script src="../../../static/javascript/StuShopButtons.js"></script>
+
+{% else %}
+    <h3>Not authenticated</h3>
+{% endif %}
 {% endblock content %}
