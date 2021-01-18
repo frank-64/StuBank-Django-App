@@ -14,14 +14,14 @@ class TransferForm(forms.ModelForm):
 
     class Meta:
         model = Transaction
-        fields = ('Payee', 'Amount', 'Comment', 'Category')
+        fields = ['Payee', 'Amount', 'Comment', 'Category']
 
     def __init__(self, user, *args, **kwargs):
         super(TransferForm, self).__init__(*args, **kwargs)
         try:
             customer = Customer.objects.get(user=user)
-            # pot = forms.ModelChoiceField(queryset=MoneyPot.objects.filter(customer=customer))
-            self.fields['pot'].queryset = MoneyPot.objects.filter(customer=customer)
+            pots = MoneyPot.objects.filter(customer_id=customer.pk)
+            self.fields['pot'].queryset = pots
             self.fields['Payee'].queryset = Payee.objects.filter(User_id=user.pk)
         except Payee.DoesNotExist:
             ### there is not payee corresponding to this user
