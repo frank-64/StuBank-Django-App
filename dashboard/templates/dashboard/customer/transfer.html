@@ -76,6 +76,21 @@
         xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhttp.send(JSON.stringify(json_card_details));
     }
+
+    function checkCheckBox(checkbox) {
+        var pot_div = document.getElementById("pot-form");
+        if (checkbox.checked) {
+            pot_div.style.display = "block";
+        } else {
+            pot_div.style.display = "none";
+        }
+    }
+
+    window.onload = function() {
+        var pot_div = document.getElementById("pot-form");
+        pot_div.style.display = "none";
+        document.getElementById("transfer-form").reset();
+    }
 </script>
 {% endblock javascript %}
 {% block content %}
@@ -88,9 +103,22 @@
                 <hr>
                 <h3 id="new_balance">£{{ user.customer.available_balance }}</h3><small style="font-style: italic;">Available Balance</small>
                 <hr>
-                <table>
-                    {{ form|crispy }}
-                </table>
+                <div id="main-form">
+                    <h3>Payee</h3>
+                    {{ form.Payee }}
+                    <h3>Amount</h3>
+                    {{ form.Amount }}
+                    <h3>Comment</h3>
+                    {{ form.Comment }}
+                    <h3>Category</h3>
+                    {{ form.Category }}<br><br>
+                    <input type="checkbox" id="pot_select" name="pot_select" onclick="checkCheckBox(this)">
+                    <label for="pot_select"> Round up transaction?</label><br>
+                </div>
+                <div id="pot-form">
+                    <h3>Select Money Pot</h3>
+                    {{ form.pot }}
+                </div>
             </form>
             <div class="form-group">
                 <button class="btn btn-outline-success" id="submit" onclick="modal_start()">Transfer</button>

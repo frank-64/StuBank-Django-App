@@ -1,6 +1,7 @@
 from django import forms
 from dashboard.models import *
 
+
 class PayeeDetailsForm(forms.Form):
     first_name = forms.CharField(required=True, max_length=20)
     last_name = forms.CharField(required=True, max_length=20)
@@ -9,19 +10,22 @@ class PayeeDetailsForm(forms.Form):
 
 
 class TransferForm(forms.ModelForm):
+    pot = forms.ModelChoiceField(queryset=MoneyPot.objects.none())
+
+    class Meta:
+        model = Transaction
+        fields = ('Payee', 'Amount', 'Comment', 'Category')
+
     def __init__(self, user, *args, **kwargs):
         super(TransferForm, self).__init__(*args, **kwargs)
         try:
+            customer = Customer.objects.get(user=user)
+            # pot = forms.ModelChoiceField(queryset=MoneyPot.objects.filter(customer=customer))
+            self.fields['pot'].queryset = MoneyPot.objects.filter(customer=customer)
             self.fields['Payee'].queryset = Payee.objects.filter(User_id=user.pk)
         except Payee.DoesNotExist:
             ### there is not payee corresponding to this user
             pass
-    class Meta:
-        model = Transaction
-        exclude = ['Direction', 'Termini', 'TransactionTime', 'NewBalance', 'Customer', 'Method', 'Card']
-
-
-    #Payee = forms.ModelChoiceField(required=True, queryset=None, help_text="Who would you like to transfer to?")
 
 
 class CardTransaction(forms.ModelForm):
@@ -31,11 +35,12 @@ class CardTransaction(forms.ModelForm):
             self.fields['Card'].queryset = Card.objects.filter(Customer_id=user.pk)
         except Card.DoesNotExist:
             pass
+
     class Meta:
         model = Transaction
         exclude = ['Direction', 'TransactionTime', 'NewBalance', 'Customer', 'Method', 'Payee']
 
-    #Payee = forms.ModelChoiceField(required=True, queryset=None, help_text="Who would you like to transfer to?")
+    # Payee = forms.ModelChoiceField(required=True, queryset=None, help_text="Who would you like to transfer to?")
 
 
 class DepositForm(forms.Form):
