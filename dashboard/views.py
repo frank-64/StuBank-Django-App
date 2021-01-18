@@ -306,6 +306,7 @@ def alter_balance(customers_customer_id, new_balance):
     update_available_balance(user)
 
 
+# 990 > 987.50
 @login_required
 def payee_transfer(request):
     """ Transfers a sum of money between a customer and one of their payee's using the POSTed inputs from the TransferForm
@@ -315,8 +316,6 @@ def payee_transfer(request):
     """
     # if this is a POST request then process the Form data
     if request.method == 'POST':
-
-        round_up_amount = request.POST.get('amount')
 
         # create a form instance and populate it with data from the request
         form = TransferForm(request.user, data=request.POST)
@@ -378,6 +377,8 @@ def payee_transfer(request):
                 if (amount < 1.00 or request.user.customer.balance - amount < 0):
                     raise
                 else:
+
+
                     # persisting the transaction object
                     customer_transaction.save()
                     payee_transaction.save()
@@ -385,6 +386,20 @@ def payee_transfer(request):
                     # changing the balance for both the customer and payee
                     alter_balance(customers_customer_id, new_balances[0])
                     alter_balance(payees_customer_id, new_balances[1])
+
+                    # Add the rounded up amount to the money pot
+                    round_up_amount = request.POST.get('amount')
+                    if round_up_amount != "0":
+                        pot_id = form.data['pot']
+
+                        pot = MoneyPot.objects.get(pk=pot_id)
+                        pot.pot_balance += Decimal(round_up_amount)
+                        pot.save()
+
+                        customer = Customer.objects.get(pk=customers_customer_id)
+                        payee = Customer.objects.get(pk=payees_customer_id)
+                        update_available_balance(customer)
+                        update_available_balance(payee)
 
                     # redirecting the user to the dashboard to view the transaction
                     return HttpResponseRedirect(reverse('dashboard_home'))
@@ -674,6 +689,7 @@ def toggle_card_frozen(request, pk):
     else:
         return HttpResponseRedirect(reverse('dashboard_home'))
 
+
 @login_required
 def customer_card_frozen(request):
     pk = request.user.pk
@@ -807,8 +823,6 @@ def update_available_balance(customer):
     available_balance = customer.balance - money_pots_total
     customer.available_balance = available_balance
     customer.save()
-
-
 
 
 '''
@@ -989,4 +1003,3 @@ def expenditure_overview(request):
         'out_in_labels': out_in_labels,
         'out_in_data': out_in_data,
     })
-

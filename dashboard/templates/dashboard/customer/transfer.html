@@ -97,6 +97,7 @@
         rounded_amount = Math.ceil(amount);
         round = Math.round((rounded_amount - amount) * 100) / 100;
         check_box = document.getElementById('pot_check_box');
+        document.getElementById('amount').value = 0;
 
         if (round > 0) {
             checkbox_div.style.display = "block";
