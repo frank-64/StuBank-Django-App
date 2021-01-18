@@ -10,10 +10,12 @@
 <script>
     var valid = false;
     const available_balance = {{ user.customer.available_balance }};
+    var round = 0
      $(document).ready(function(){
           $("input[name='Amount']").keyup(function(){
               let amount = this.value;
               let sum = available_balance-amount;
+              let check_box = document.getElementById('pot_check_box');
               if (sum<0){
                   alert("You do not have £"+amount+" in your bank account.")
                   document.getElementById('submit').disabled = true;
@@ -37,6 +39,7 @@
                   valid = true;
               }
               displayRoundUp(amount);
+              checkCheckBox(checkbox);
           });
      });
 
@@ -82,8 +85,10 @@
         var pot_div = document.getElementById("pot-form");
         if (checkbox.checked) {
             pot_div.style.display = "block";
+            document.getElementById('amount').value = round;
         } else {
             pot_div.style.display = "none";
+            document.getElementById('amount').value = 0;
         }
     }
 
@@ -91,6 +96,7 @@
         var checkbox_div = document.getElementById("check-box");
         rounded_amount = Math.ceil(amount);
         round = Math.round((rounded_amount - amount) * 100) / 100;
+        check_box = document.getElementById('pot_check_box');
 
         if (round > 0) {
             checkbox_div.style.display = "block";
@@ -98,6 +104,10 @@
             checkbox_div.style.display = "none";
         }
         document.getElementById('round-up-text').innerText = "Round up transaction by £" + round + "?";
+    }
+
+    function toggleCheckBox() {
+        var checkbox_div = document.getElementById("check-box");
     }
 
     window.onload = function() {
@@ -138,6 +148,7 @@
                     <div id="pot-form">
                         <h3>Select Money Pot</h3>
                         {{ form.pot }}
+                        <input type="hidden" id="amount" name="amount" value="">
                     </div>
             </form>
             <div class="form-group">

@@ -316,6 +316,8 @@ def payee_transfer(request):
     # if this is a POST request then process the Form data
     if request.method == 'POST':
 
+        round_up_amount = request.POST.get('amount')
+
         # create a form instance and populate it with data from the request
         form = TransferForm(request.user, data=request.POST)
         # check if the form is valid before accessing the data
