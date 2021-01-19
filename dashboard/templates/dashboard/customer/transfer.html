@@ -14,7 +14,7 @@
      $(document).ready(function(){
           $("input[name='Amount']").keyup(function(){
               let amount = this.value;
-              let sum = available_balance-amount;
+              let sum = (Math.round((available_balance-amount) * 100) / 100).toFixed(2);
               let check_box = document.getElementById('pot_check_box');
               if (sum<0){
                   alert("You do not have £"+amount+" in your bank account.")
@@ -95,11 +95,11 @@
     function displayRoundUp(amount) {
         var checkbox_div = document.getElementById("check-box");
         rounded_amount = Math.ceil(amount);
-        round = Math.round((rounded_amount - amount) * 100) / 100;
+        round = (Math.round((rounded_amount - amount) * 100) / 100).toFixed(2);
         check_box = document.getElementById('pot_check_box');
         document.getElementById('amount').value = 0;
 
-        if (round > 0) {
+        if ((round > 0) && ({{num_pots}} > 0)) {
             checkbox_div.style.display = "block";
         } else {
             checkbox_div.style.display = "none";

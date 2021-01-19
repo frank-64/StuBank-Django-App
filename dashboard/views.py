@@ -314,6 +314,10 @@ def payee_transfer(request):
     :param request: HttpRequest object containing metadata and current user attributes
     :return:
     """
+
+    customer = Customer.objects.get(user=request.user)
+    num_pots = MoneyPot.objects.filter(customer=customer).count()
+
     # if this is a POST request then process the Form data
     if request.method == 'POST':
 
@@ -421,6 +425,7 @@ def payee_transfer(request):
     # setting the context to the form
     context = {
         'form': form,
+        'num_pots': num_pots
     }
 
     # returning the rendered transfer.html with the form inside the context
@@ -435,6 +440,7 @@ def card_transaction(request):
         :return:
         """
     # if this is a POST request then process the Form data
+
     if request.method == 'POST':
 
         # create a form instance and populate it with data from the request
@@ -829,13 +835,13 @@ def update_available_balance(customer):
 BANK STATEMENTS STUFF [̲̅$̲̅(̲̅ιοο̲̅)̲̅$̲̅]
 '''
 
-
+#52,58,64)
 @login_required
 def pdf_view(request):
     user = request.user
     customer = Customer.objects.get(user=user)
     filename = user.username + "_statement.pdf"
-    theme_colour = colors.Color(red=(95 / 255), green=(120 / 255), blue=(138 / 255))
+    theme_colour = colors.Color(red=(52 / 255), green=(58 / 255), blue=(64 / 255))
 
     # Initialise HttpResponse which provides user with pdf download when requested
     response = HttpResponse(content_type='application/pdf')
