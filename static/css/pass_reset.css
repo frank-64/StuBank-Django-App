@@ -1,0 +1,17 @@
+.reset-jumbo{
+    border: 1px solid rgba(0,0,0,.125);
+    background: #FFFFFF;
+    box-shadow: 10px 10px 10px rgba(0,0,0, 0.5);
+    min-width: 356px;
+    padding-top: 25px;
+    padding-bottom: 35px;
+}
+
+.col-centered{
+    float: none;
+    margin: 0 auto;
+}
+
+.submit{
+    margin-top: 15px;
+}

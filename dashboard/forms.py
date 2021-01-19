@@ -24,7 +24,6 @@ class TransferForm(forms.ModelForm):
             self.fields['pot'].queryset = pots
             self.fields['Payee'].queryset = Payee.objects.filter(User_id=user.pk)
         except Payee.DoesNotExist:
-            ### there is not payee corresponding to this user
             pass
 
 
