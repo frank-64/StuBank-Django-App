@@ -1,31 +1,29 @@
 {% extends "accounts/base.html" %}
+{% load static %}
 {% load crispy_forms_tags %}
-{% block content %}
 
-<script>
- 
-</script>
-    <div class="row">
-        <div class= "col-sm-4"></div>
-            <div class= "col-sm-4">
-    
-    <fieldset>
-    <form method="POST" style="text-align:center">
-        <fieldset>
-            {% csrf_token %}
-            <table>
-                {{ form|crispy }}
-            </table>
-            <div class="submit-row">
-                <button type="submit">Login</button>
-            </div>
-    </form>
-    <p><a href="{% url 'password_reset' %}">Forgot password?</a></p>
-    <p>Don’t have an account?<a href="{% url 'register' %}">Sign up</a></p>
-    </fieldset>
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static '/css/login.css' %}">
+{% endblock css %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xs-8 col-sm-8 col-md-6 col-lg-5 col-xl-5 col-centered">
+        <div class="jumbotron login-jumbo">
+            <h4>Login</h4>
+            <hr>
+            <form method="POST" style="text-align:center">
+                    {% csrf_token %}
+                    <table>
+                        {{ form|crispy }}
+                    </table>
+                    <div class="submit-row">
+                        <button type="submit" class="btn">Login</button>
+                    </div>
+            </form>
+            <p><a href="{% url 'password_reset' %}">Forgot password?</a></p>
+            <p>Don’t have an account? &nbsp;<a href="{% url 'register' %}">Sign up</a></p>
+        </div>
     </div>
 </div>
-    
-
-
 {% endblock content %}
