@@ -21,9 +21,11 @@
 
 
     <div class="col-md-12">
-        <h5>YOUR MONEY POTS</h5>
         {%  for pot in money_pots %}
-            <div class="card">
+            <div id="card" class="card" style="background-color: #ff7f00;">
+                {% if pot.pot_balance >= pot.target_balance %}
+                <script>document.getElementById("card").style.backgroundColor="green";</script>
+                {% endif %}
                 <h5 class="card-header">{{ pot.name }}</h5>
                 <div class="card-body">
                     <p class="card-text">Pot Balance: <b>£{{ pot.pot_balance }}</b></p>
