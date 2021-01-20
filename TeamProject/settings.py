@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,10 +20,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '*kv2lii!m8k$-50rd)h0+&f^ln$)rsvxml!tgz0m%4#m#duze3'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', cast=bool)
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'stubank.tk']
 
@@ -81,10 +82,10 @@ WSGI_APPLICATION = 'TeamProject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'studatabase',
-        'USER': 'team20',
-        'PASSWORD': 'Monkey20?',
-        'HOST': 'canadamonkeys.cbrra2yz2pox.eu-west-2.rds.amazonaws.com',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASS'),
+        'HOST': config('DB_HOST'),
         'PORT': '3306',
     }
 }
@@ -137,7 +138,11 @@ LOGOUT_REDIRECT_URL = 'login'
 
 AUTH_USER_MODEL = 'accounts.User'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
+EMAIL_BACKEND = 'django_ses.SESBackend'
+AWS_ACCESS_KEY_ID = 'AKIAQZ2PZHDHGYOWPWYO'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_SES_REGION_NAME = 'eu-west-2'
+AWS_SES_REGION_ENDPOINT = 'email-smtp.eu-west-2.amazonaws.com'
 
 # Directory where uploaded files are saved
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
