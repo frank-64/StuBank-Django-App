@@ -6,6 +6,11 @@ from django.utils import timezone
 from accounts.models import *
 
 class Payee(models.Model):
+    """
+        Written by: Frankie
+        Purpose:
+    """
+
     # customerID that added the payee
     User = models.ForeignKey(User, on_delete=models.PROTECT)
     PayeeID = models.ForeignKey(Customer, on_delete=models.PROTECT)
@@ -15,6 +20,11 @@ class Payee(models.Model):
 
 
 class Card(models.Model):
+    """
+        Written by: Frankie
+        Purpose:
+    """
+
     Customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
     CardFrozen = models.BooleanField(default=False)
     CardNum = models.BigIntegerField(blank=False, unique=True)
@@ -27,6 +37,11 @@ class Card(models.Model):
 
 
 class Transaction(models.Model):
+    """
+        Written by: Frankie
+        Purpose:
+    """
+
     CATEGORY = (
         ('Dining Out', 'Dining Out'),
         ('Food Shopping', 'Food Shopping'),
@@ -78,6 +93,10 @@ class Transaction(models.Model):
 
 
 class MoneyPot(models.Model):
+    """
+        Written by: Ed
+        Purpose:
+    """
 
     def __str__(self):
         return str(self.name) + " - (£" + str(self.pot_balance) + ")"
@@ -90,6 +109,11 @@ class MoneyPot(models.Model):
 
 
 class Message(models.Model):
+    """
+        Written by: Frankie
+        Purpose:
+    """
+
     sender = models.ForeignKey(User, related_name='sent', on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name='received', on_delete=models.CASCADE)
     seen = models.BooleanField(default=False)
@@ -97,6 +121,11 @@ class Message(models.Model):
     created_at = models.DateTimeField()
 
 class LiveChat(models.Model):
+    """
+        Written by: Frankie
+        Purpose:
+    """
+
     customer = models.ForeignKey(User, related_name='customer_livechat', on_delete=models.CASCADE)
     helper = models.ForeignKey(User, related_name='helper_livechat', on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)

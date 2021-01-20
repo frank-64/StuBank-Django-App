@@ -306,7 +306,7 @@ def alter_balance(customers_customer_id, new_balance):
     update_available_balance(user)
 
 
-# 990 > 987.50
+
 @login_required
 def payee_transfer(request):
     """ Transfers a sum of money between a customer and one of their payee's using the POSTed inputs from the TransferForm
@@ -727,13 +727,16 @@ class LiveChatTransactions(DetailView):
 
 '''
 MONEY POT STUFF ( ͡° ͜ʖ ͡°)
-- Money pot displays notice when target has been met
-- Display percentage complete of each pot
 '''
 
 
 @method_decorator(login_required, name='dispatch')
 class MoneyPotListView(LoginRequiredMixin, ListView):
+    """
+        Written by: Ed
+        Purpose:
+    """
+
     model = MoneyPot
     template_name = 'dashboard/customer/money_pots.html'
 
@@ -746,6 +749,11 @@ class MoneyPotListView(LoginRequiredMixin, ListView):
 
 @method_decorator(login_required, name='dispatch')
 class MoneyPotCreateView(LoginRequiredMixin, CreateView):
+    """
+        Written by: Ed
+        Purpose:
+    """
+
     template_name = 'dashboard/customer/money_pots_add.html'
     model = MoneyPot
     fields = ['name', 'target_balance']
@@ -759,6 +767,11 @@ class MoneyPotCreateView(LoginRequiredMixin, CreateView):
 
 @method_decorator(login_required, name='dispatch')
 class MoneyPotDeleteView(LoginRequiredMixin, DeleteView):
+    """
+        Written by: Ed
+        Purpose:
+    """
+
     template_name = 'dashboard/customer/money_pots_confirm_delete.html'
     model = MoneyPot
     success_url = '/dashboard/moneypots/'
@@ -773,6 +786,11 @@ class MoneyPotDeleteView(LoginRequiredMixin, DeleteView):
 
 @method_decorator(login_required, name='dispatch')
 class MoneyPotUpdateView(LoginRequiredMixin, UpdateView):
+    """
+        Written by: Ed
+        Purpose:
+    """
+
     template_name = 'dashboard/customer/money_pots_update.html'
     model = MoneyPot
     fields = ['name', 'target_balance']
@@ -781,6 +799,11 @@ class MoneyPotUpdateView(LoginRequiredMixin, UpdateView):
 
 @method_decorator(login_required, name='dispatch')
 class MoneyPotDepositView(LoginRequiredMixin, FormView):
+    """
+        Written by: Ed
+        Purpose:
+    """
+
     template_name = 'dashboard/customer/money_pots_deposit.html'
     form_class = DepositForm
     success_url = '/dashboard/moneypots/'
@@ -818,6 +841,11 @@ class MoneyPotDepositView(LoginRequiredMixin, FormView):
 
 # Update the available balance of the customer. Any money not in a money pot is available to spend
 def update_available_balance(customer):
+    """
+        Written by: Ed
+        Purpose:
+    """
+
     money_pots_total = 0
     money_pots = MoneyPot.objects.filter(customer=customer)
 
@@ -838,6 +866,11 @@ BANK STATEMENTS STUFF [̲̅$̲̅(̲̅ιοο̲̅)̲̅$̲̅]
 #52,58,64)
 @login_required
 def pdf_view(request):
+    """
+        Written by: Ed
+        Purpose:
+    """
+
     user = request.user
     customer = Customer.objects.get(user=user)
     filename = user.username + "_statement.pdf"
@@ -969,6 +1002,11 @@ EXPENDITURE OVERVIEW STUFF ᶘᵒᴥᵒᶅ
 
 
 def expenditure_overview(request):
+    """
+        Written by: Ed
+        Purpose:
+    """
+
     transactions = Transaction.objects.filter(Customer_id=request.user.pk)
 
     # Categories
