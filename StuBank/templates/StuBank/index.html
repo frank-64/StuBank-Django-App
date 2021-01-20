@@ -5,28 +5,43 @@
 <style>
 .backgroundStyle {
     border-radius: 9px;
-    margin-top: 5px;
+    margin-top:20px;
     margin-bottom: 5px;
     padding: 15px 19px;
     background-color: #fff;
     box-shadow: 0 0 10px 0 rgba(0,0,0,.25);
-    border: none
+    border: none;
 }
 </style>
-
-<body style="background-image: url({% static '/images/blur_background.jpg'%});
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: 100% 100%;">
-
-<p>StuBank is a secure and easy way to store you money, and start saving today!</p>
-
-<div class="backgroundStyle">
-<p>Got a problem? <br> 
-    See our <a href="FAQ">FAQ's </a>page,<br>
-    or <a href="login">login</a> and press support
-</p>
-
-</div>
-<img src="{% static 'images/monkey.png' %}" alt="Monkey">
+    <div class="col">
+        <img src={% static "images/monkey.png" %} alt="Monkey">
+        <h1>Welcome to Stubank</h1>
+    </div>
+    <div class="backgroundStyle col-sm-12" >
+        <p>StuBank is a secure and easy way to store you money, and start saving today!</p>
+        <form action="register">
+            <input type="submit" value="Get a Stubank account">
+        </form>
+    </div>
+    <div class="row">
+            <div style="background-color: #fff;" onmouseover="this.style.background='#eee'"  onmouseout="this.style.background='#fff';" class="jumbotron col-sm m-2">
+                <h3>Not sure if StuBank is for you?</h3> 
+                <p>
+                    Find out the <a href="info"> benefits</a> of having a StuBank account.
+                </p>
+                </div>
+            <div style="background-color: #fff;" onmouseover="this.style.background='#eee'"  onmouseout="this.style.background='#fff';" class="jumbotron col-sm m-2">
+                <h3>Got a problem?</h3>
+                <p>
+                    See our <a href="info">FAQ's </a>page,<br>
+                    or <a href="login">login</a> to chat to one of our team.
+                </p>
+            </div>
+            <div style="background-color: #fff;" onmouseover="this.style.background='#eee'"  onmouseout="this.style.background='#fff';" class="jumbotron col-sm m-2">
+                <h3>Interested in us?</h3>
+                <p>
+                    Click <a href="info">here</a> to find out more about us!
+                </p>
+        </div>
+    </div>
 {% endblock %}

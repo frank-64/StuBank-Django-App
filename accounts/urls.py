@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
-from .views import RegisterView, TOTPCreateView, CustomTOTPLoginView
+from .views import RegisterView, TOTPCreateView, CustomTOTPLoginView,infoView
 from django.contrib.auth.views import LogoutView, PasswordResetView, PasswordResetDoneView, \
     PasswordResetConfirmView, PasswordResetCompleteView
 
@@ -14,5 +14,5 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(template_name="registration/password_reset_confirm.html"), name='password_reset_confirm'),
     path('reset/done/', PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
     path('totp/create', TOTPCreateView.as_view(), name='totp_create'),
-
+    path('info/',infoView.as_view(), name='info'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
