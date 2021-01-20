@@ -14,6 +14,11 @@ from django.core.files.base import ContentFile, File
 
 
 def get_user_totp_device(self, user, confirmed=None):
+    """
+        Written by: Ed
+        Purpose: Retrieve all TOTP devices registered with the user
+    """
+
     devices = devices_for_user(user, confirmed=confirmed)
     for device in devices:
         if isinstance(device, TOTPDevice):
@@ -21,6 +26,11 @@ def get_user_totp_device(self, user, confirmed=None):
 
 
 def generate_qr(data, size, border):
+    """
+        Written by: Ed
+        Purpose: Generate a .png QR code image file from the 'data' parameter. To be used for verifying a TOTP device
+    """
+
     qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=size, border=border)
     qr.add_data(data)
     qr.make(fit=True)
@@ -28,6 +38,11 @@ def generate_qr(data, size, border):
 
 
 class CustomTOTPLoginView(auth_views.LoginView):
+    """
+        Written by: Ed
+        Purpose: Custom login view displaying the CustomAuthenticationForm which allows for login using the TOTP
+    """
+
     template_name = 'accounts/login.html'
     form_class = CustomAuthenticationForm
 
@@ -37,6 +52,12 @@ class infoView(auth_views.LoginView):
 
 
 class RegisterView(CreateView):
+    """
+        Written by: Ed
+        Purpose: Registration view page allowing user to register an account. Displays registration form and redirects
+                user to TOTPCreateView
+    """
+
     model = User
     form_class = UserRegisterForm
     template_name = 'accounts/register.html'
@@ -54,6 +75,12 @@ class RegisterView(CreateView):
 
 # Create TOTP QR code and ask for user code input
 class TOTPCreateView(FormView):
+    """
+        Written by: Ed
+        Purpose: Create QR code from the TOTP authentication link and display it to user to allow for confirmation of
+                device and completion of the registration process.
+    """
+
     model = Customer
     template_name = 'two_factor_auth/totp_create.html'
     form_class = UserInputQrCodeForm

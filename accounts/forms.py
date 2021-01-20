@@ -7,6 +7,12 @@ from django_otp.forms import OTPAuthenticationForm
 
 
 class UserRegisterForm(UserCreationForm):
+    """
+        Written by: Ed
+        Purpose: Template for form to allow user to register an account. User account_num and sort_code is set
+                upon saving of form.
+    """
+
     class Meta:
         model = User
         fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2']
@@ -32,10 +38,19 @@ class UserRegisterForm(UserCreationForm):
 
 
 class UserInputQrCodeForm(forms.Form):
+    """
+        Written by: Ed
+        Purpose: Template for form asking user to enter 6 digit TOTP confirmation code
+    """
+
     code = forms.IntegerField(max_value=999999)
 
 
 class CustomAuthenticationForm(OTPAuthenticationForm):
+    """
+        Written by: Ed
+        Purpose: Template for custom TOTP authentication form, removing unnecessary fields
+    """
 
     def __init__(self, *args, **kwargs):
         super(CustomAuthenticationForm, self).__init__(*args, **kwargs)

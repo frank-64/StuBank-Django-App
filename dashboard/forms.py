@@ -3,6 +3,11 @@ from dashboard.models import *
 
 
 class PayeeDetailsForm(forms.Form):
+    """
+        Written by: Frankie
+        Purpose:
+    """
+
     first_name = forms.CharField(required=True, max_length=20)
     last_name = forms.CharField(required=True, max_length=20)
     sort_code = forms.CharField(required=True, max_length=20)
@@ -10,6 +15,11 @@ class PayeeDetailsForm(forms.Form):
 
 
 class TransferForm(forms.ModelForm):
+    """
+        Written by: Frankie and Ed
+        Purpose:
+    """
+
     pot = forms.ModelChoiceField(queryset=MoneyPot.objects.none())
 
     class Meta:
@@ -28,6 +38,10 @@ class TransferForm(forms.ModelForm):
 
 
 class CardTransaction(forms.ModelForm):
+    """
+        Written by: Frankie
+        Purpose:
+    """
     def __init__(self, user, *args, **kwargs):
         super(CardTransaction, self).__init__(*args, **kwargs)
         try:
@@ -43,4 +57,9 @@ class CardTransaction(forms.ModelForm):
 
 
 class DepositForm(forms.Form):
+    """
+        Written by: Frankie
+        Purpose:
+    """
+
     amount = forms.DecimalField(required=True, decimal_places=2, max_digits=10)

@@ -10,6 +10,11 @@ from .views import *
 # subclasses of django.test.TestCase rather than unittest.TestCase.
 
 def setUpUser():
+    """
+        Written by: Ed
+        Purpose: Setup and return a user for use during testing
+    """
+
     user = User.objects.create(username='test_customer', email='customer@test.com', first_name='Bobby',
                                last_name='Hummer', is_customer=1)
     user.set_password('password')
@@ -18,6 +23,10 @@ def setUpUser():
 
 
 class SignUpTestCase(TestCase):
+    """
+        Written by: Ed
+        Purpose: Test the sign up process successfully creates a user
+    """
 
     # Create the customer and helper objects in the database for testing
     def setUp(self):
@@ -55,6 +64,10 @@ class SignUpTestCase(TestCase):
 
 
 class SignInTestCase(TestCase):
+    """
+        Written by: Ed
+        Purpose: Test the Sign in process successfully signs a user in
+    """
 
     # Create the user object in the database for testing
     def setUp(self):
@@ -77,6 +90,10 @@ class SignInTestCase(TestCase):
 
 
 class RegisterViewTestCase(TestCase):
+    """
+        Written by: Ed
+        Purpose: Test the register page successfully allows valid details and rejects invalid details
+    """
 
     def setUp(self):
         pass

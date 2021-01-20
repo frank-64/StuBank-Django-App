@@ -5,6 +5,12 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
+    """
+        Written by: Ed
+        Purpose: Create a User model to be stored in the database with additional fields to differentiate between
+                customer and helper
+    """
+
     is_customer = models.BooleanField(default=False)
     is_helper = models.BooleanField(default=False)
 
@@ -13,6 +19,11 @@ class User(AbstractUser):
 
 
 class Customer(models.Model):
+    """
+        Written by: Ed
+        Purpose: Create a Customer user model in the database containing all fields specific to a customer
+    """
+
     default_bal = 100
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     account_num = models.IntegerField(null=True, blank=True, unique=True)
@@ -28,6 +39,11 @@ class Customer(models.Model):
 
 
 class Helper(models.Model):
+    """
+        Written by: Ed
+        Purpose: Create a Helper user model in the database containing all fields specific to a Helper
+    """
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):

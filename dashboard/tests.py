@@ -18,6 +18,11 @@ from dashboard import forms
 
 
 def setUpUser(username):
+    """
+        Written by: Ed
+        Purpose:
+    """
+
     user = User.objects.create(username=username, email='customer@test.com', first_name='Bobby',
                                last_name='Hummer', is_customer=1)
     user.set_password('password')
@@ -26,6 +31,11 @@ def setUpUser(username):
 
 
 class CheckPayeeTestCase(TestCase):
+    """
+        Written by: Ed
+        Purpose:
+    """
+
     # Create the customer and helper objects in the database for testing
     def setUp(self):
         self.request_factory = RequestFactory()
@@ -64,6 +74,11 @@ class CheckPayeeTestCase(TestCase):
 
 
 class AddPayeeTestCase(TestCase):
+    """
+        Written by: Ed
+        Purpose:
+    """
+
     def setUp(self):
         self.request_factory = RequestFactory()
         self.user = User.objects.create(username='test_customer', email='customer@test.com', first_name='Bobby',
@@ -87,6 +102,10 @@ class AddPayeeTestCase(TestCase):
 
 
 class MoneyPotCreateViewTestCase(TestCase):
+    """
+        Written by: Ed
+        Purpose:
+    """
 
     # Set up user and customer objects and log in
     def setUp(self):
@@ -118,6 +137,10 @@ class MoneyPotCreateViewTestCase(TestCase):
 
 
 class MoneyPotDepositViewTestCase(TestCase):
+    """
+        Written by: Ed
+        Purpose:
+    """
 
     # Set up and login customer, create a test money pot
     def setUp(self):
@@ -153,6 +176,10 @@ class MoneyPotDepositViewTestCase(TestCase):
 
 
 class MoneyPotDeleteViewTestCase(TestCase):
+    """
+        Written by: Ed
+        Purpose:
+    """
 
     # Set up and login customer, create a test money pot
     def setUp(self):
@@ -179,6 +206,10 @@ class MoneyPotDeleteViewTestCase(TestCase):
 
 
 class MoneyPotUpdateViewTestCase(TestCase):
+    """
+        Written by: Ed
+        Purpose:
+    """
 
     # Set up and login customer, create a test money pot
     def setUp(self):
@@ -215,6 +246,10 @@ class MoneyPotUpdateViewTestCase(TestCase):
 
 
 class PDFDownloadTestCase(TestCase):
+    """
+        Written by: Ed
+        Purpose:
+    """
 
     # Set up user and customer objects and log in
     def setUp(self):
@@ -233,6 +268,10 @@ class PDFDownloadTestCase(TestCase):
 # TODO: Test post fail and success for all tests below
 
 class PayeeTransferViewTestCase(TestCase):
+    """
+        Written by: Ed
+        Purpose:
+    """
 
     def setUp(self):
         self.user = setUpUser('test_customer')
@@ -262,6 +301,10 @@ class PayeeTransferViewTestCase(TestCase):
 
 
 class PayeeDetailViewTestCase(TestCase):
+    """
+        Written by: Ed
+        Purpose:
+    """
 
     # Set up user and customer objects and log in
     def setUp(self):
@@ -276,6 +319,10 @@ class PayeeDetailViewTestCase(TestCase):
 
 
 class AddPayeeViewTestCase(TestCase):
+    """
+        Written by: Ed
+        Purpose:
+    """
 
     # Set up user and customer objects and log in
     def setUp(self):
@@ -296,6 +343,10 @@ class AddPayeeViewTestCase(TestCase):
 
 
 class ExpenditureOverviewViewTestCase(TestCase):
+    """
+        Written by: Ed
+        Purpose:
+    """
 
     # Set up user and customer objects and log in
     def setUp(self):
@@ -310,6 +361,10 @@ class ExpenditureOverviewViewTestCase(TestCase):
 
 
 class HelpPageViewTestCase(TestCase):
+    """
+        Written by: Ed
+        Purpose:
+    """
 
     # Set up user and customer objects and log in
     def setUp(self):
