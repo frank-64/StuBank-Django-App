@@ -1,6 +1,6 @@
 {% extends "FakeTransactions/base.html" %}
 {% block content %}
-
+<script src="../../../static/javascript/StuShopButtons.js" async></script>
 <body>
 
 {% if user.is_authenticated and user.is_customer%}
@@ -62,19 +62,22 @@
     </section>
     <section class="container content-section">
             <h2>StuCart</h2>
+        <span class="CartItem"><h5>Item/s</h5></span>
             <div class="StuCart">
-                <span class="CartItem"><h5>Item/s</h5></span>
-            </div>
+
             <div class="StuTable">
-            </div>
+
+                </div>
+
             <div class="StuTotal">
                 <strong class="StuFinalTotal">Total</strong>
                 <span class="StuFinalPrice">£0</span>
             </div>
+                </div>
             <button class="StuBuy" type="button">Purchase</button>
     </section>
+        <button onclick="spoofTransaction()">Test</button>
 
-    <script src="../../../static/javascript/StuShopButtons.js"></script>
 
 {% else %}
     <h3>Not authenticated</h3>
