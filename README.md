@@ -12,7 +12,7 @@ py manage.py runserver
 ```
 Click the link provided in the terminal
 
-Alternatively, you can access the online version here at [https://stubank.tk](stubank.tk)
+Alternatively, you can access the online version here at [stubank.tk](https://stubank.tk)
 
 ## Example Customer Account
 We have created a pre-populated customer account specifically for marking purposes containing a 
