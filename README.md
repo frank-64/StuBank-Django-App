@@ -24,5 +24,11 @@ Authenticator app to retrieve a six digit code for the Otp token section.
 
 Username: <b>bigstu22</b> 
 Password: <b>xVy2Lbzj?</b> 
-![qrcode](https://github.com/frank-64/Team20/blob/main/media/qr_codes/bigstu22.png "TOTP QR code")
+
+<p align="center">
+<img src="https://github.com/frank-64/Team20/blob/main/media/qr_codes/bigstu22.png" width="200" height="200">
+</p>
+
+
+
  
