@@ -26,8 +26,11 @@ Username: <b>bigstu22</b>
 Password: <b>xVy2Lbzj?</b> 
 
 <p align="center">
-<img src="https://github.com/frank-64/Team20/blob/main/media/qr_codes/bigstu22.png" width="200" height="200">
+<img src="media/qr_codes/bigstu22.png" width="200" height="200">
 </p>
+
+Follow this link to retrieve the QR code if the above image isn't loading:
+https://imgur.com/3Nea4CU
 
 
 
