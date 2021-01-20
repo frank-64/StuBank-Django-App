@@ -1,4 +1,12 @@
-.transfer-jumbo{
+#active_circle{
+    color: forestgreen;
+}
+
+#inactive_circle{
+    color: darkred;
+}
+
+.chats-jumbo{
   background: #FFFFFF;
   box-shadow: 10px 10px 10px rgba(0,0,0, 0.5);
   min-width: 356px;
@@ -6,11 +14,6 @@
   border: 1px solid rgba(0,0,0,.125);
 }
 
-.form-group{
-  margin-top: 20px;
+#title{
+    margin-bottom: 20px;
 }
-
-small{
-    font-size: 15px;
-}
-

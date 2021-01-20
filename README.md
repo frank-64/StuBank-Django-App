@@ -36,7 +36,26 @@ For security purposes, the CVC number and card expiry date isn't displayed on th
 
 The accounts CVC number is: <b>434</b> and expiry date is: <b>19/01/2026</b>
 
-These will be of particular use when going through the process of adding a new payee.
+These will be of particular use going through the process of adding a new payee.
+
+## Example Helper Account
+We have also created a helper account as this must be done manually through the built in Django admin interface, this is
+how we intended to make the accounts as users should not be able to make themselves a helper.
+
+Helpers login in to the same place as customers and also use 2-Factor-Authentication.
+
+Navigate to the login page and enter the details below. Scan the QR code with the Google 
+Authenticator app to retrieve a six digit code for the Otp token section.
+
+Username: <b>Helper-Joel</b> 
+Password: <b>zzQu1d9!</b> 
+
+<p align="center">
+<img src="media/qr_codes/Helper-Joel.png" width="200" height="200">
+</p>
+
+Follow this link to retrieve the QR code if the above image isn't loading:
+https://imgur.com/a/JNVszye
 ## Testing
 We have created a series of unit tests which can be run to check the functionality of the different pages 
 of the web application. To run these, type into the command line:

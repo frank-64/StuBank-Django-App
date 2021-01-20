@@ -68,7 +68,7 @@ class UserDashboardView(LoginRequiredMixin, DetailView):
         if (self.request.user.is_customer):
             UserDashboardView.template_name = 'dashboard/customer/customer_dashboard.html'
         else:
-            UserDashboardView.template_name = 'dashboard/helper/helper_dashboard.html'
+            UserDashboardView.template_name = 'dashboard/helper/helper_chats.html'
 
     def get_context_data(self, **kwargs):
         """gets the transactions in and out of an account adds them to the context
@@ -77,10 +77,13 @@ class UserDashboardView(LoginRequiredMixin, DetailView):
         :return context: dictionary containing the transactions in an out of the account
         """
         context = super(UserDashboardView, self).get_context_data(**kwargs)
-        # get the customer's transactions which are ordered by most recent transaction first
-        context['customer_transactions'] = Transaction.objects.filter(Customer_id=self.request.user.pk).order_by(
-            '-TransactionTime')
-        context['card'] = Card.objects.filter(Customer_id=self.request.user.pk)
+        if(self.request.user.is_customer):
+            # get the customer's transactions which are ordered by most recent transaction first
+            context['customer_transactions'] = Transaction.objects.filter(Customer_id=self.request.user.pk).order_by(
+                '-TransactionTime')
+            context['card'] = Card.objects.filter(Customer_id=self.request.user.pk)
+        else:
+            context['livechats'] = LiveChat.objects.filter(helper_id=self.request.user.id)
         return context
 
 
@@ -584,7 +587,7 @@ def message(request, pk):
         m.save()
         result = {
             "message": m.message,
-            "sender": m.sender.username,
+            "sender": m.sender.first_name,
             "time": naturaltime(m.created_at),
             "sent": True
         }
@@ -595,7 +598,7 @@ def message(request, pk):
         for message in messages:
             result = {
                 "message": message.message,
-                "sender": message.sender.username,
+                "sender": message.sender.first_name,
                 "time": naturaltime(message.created_at),
                 "sent": False
             }
@@ -635,13 +638,6 @@ def get_helper(request):
         lc = LiveChat(customer_id=request.user.id, helper_id=random_helper.pk)
         lc.save()
         return HttpResponse(random_helper.pk)
-
-
-@login_required
-def get_livechats(request):
-    # TODO: Need to add a way to get user permission to freeze accounts/cards etc
-    livechats = LiveChat.objects.filter(helper_id=request.user.id)
-    return render(request, 'dashboard/helper/helper_chats.html', {"livechats": livechats})
 
 
 @login_required

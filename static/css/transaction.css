@@ -1,4 +1,4 @@
-.transfer-jumbo{
+.transaction-jumbo{
   background: #FFFFFF;
   box-shadow: 10px 10px 10px rgba(0,0,0, 0.5);
   min-width: 356px;
@@ -6,11 +6,12 @@
   border: 1px solid rgba(0,0,0,.125);
 }
 
-.form-group{
-  margin-top: 20px;
+.fa-arrow-down{
+  padding-left: 40px;
+  color: #228B22;
 }
 
-small{
-    font-size: 15px;
+.fa-arrow-up{
+  padding-left: 40px;
+  color: #8B0000;
 }
-
