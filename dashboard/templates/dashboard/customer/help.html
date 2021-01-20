@@ -28,10 +28,10 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-md-4 col-centered">
+    <div class="col-xs-12 col-sm-12 col-md-8 col-lg-6 col-xl-6 col-centered">
         <div class="card">
             <div class="card-header main-header">
-                <h4>FAQ</h4>
+                <h4>FAQs</h4>
             </div>
             <div class="card-body cards">
                 <div class="card faq-card">
@@ -66,40 +66,43 @@
                 </div>
                 <div class="card faq-card">
                     <div class="card-header">
-                        <span>Header</span>
+                        <span>How do I transfer money to someone?</span>
                         <span style="float:right;">
                             <a data-toggle="collapse" href="#card3" title="Read More" aria-controls="card3"><i class="fa extend" aria-hidden="true"></i></a>
                         </span>
                     </div>
                     <div class="collapse" id="card3">
                         <div class="card-body">
-                            BODY
+                            To transfer money to someone you must first add them as one of your payee's <a href="{% url 'addpayee' %}">here</a>. Once added, click the 'Make a Transfer' button on either the dashboard or your payee list and your payee will be visible in the dropdown of payees.
                         </div>
                     </div>
                 </div>
                 <div class="card faq-card">
                     <div class="card-header">
-                        <span>Header</span>
+                        <span>Where is my card information?</span>
                         <span style="float:right;">
                             <a data-toggle="collapse" href="#card4" title="Read More" aria-controls="card4"><i class="fa extend" aria-hidden="true"></i></a>
                         </span>
                     </div>
                     <div class="collapse" id="card4">
                         <div class="card-body">
-                            BODY
+                            For security reasons StuBank does not display any card details on this site.
+                            You should already have your physical card.
                         </div>
                     </div>
                 </div>
                 <div class="card faq-card">
                     <div class="card-header">
-                        <span>Header</span>
+                        <span>Is StuBank a secure website?</span>
                         <span style="float:right;">
                             <a data-toggle="collapse" href="#card5" title="Read More" aria-controls="card5"><i class="fa extend" aria-hidden="true"></i></a>
                         </span>
                     </div>
                     <div class="collapse" id="card5">
                         <div class="card-body">
-                            BODY
+                            At StuBank our security is our first priority, we achieve this through the use of
+                            2-Factor-Authentication during user login, encryption of passwords using a SHA256 hash and
+                            use of TLS to ensure the encryption of data transmitted between you and our servers.
                         </div>
                     </div>
                 </div>
@@ -107,17 +110,20 @@
         </div>
 
     </div>
-    <div class="col-md-4 col-centered">
+    <div class="col-xs-12 col-sm-12 col-md-8 col-lg-6 col-xl-6 col-centered">
         <div class="card livechat">
             <div class="card-header">
-                Live Chat
+                <h4>Live Chat</h4>
             </div>
             <div class="card-body">
                 Need more help? Connect to a helper to discuss account issues and freeze your account or card.<br>
+                <small style="font-style: italic">Once you click the 'Get Help' button a link to the live chat will appear below.</small>
+                <br>
+                <br>
                 <button class="btn" onclick="getHelp()">Get Help</button>
                 <br>
                 <div id="helper_status">
-                    <a id="livechat_link">Livechat</a>
+                    <a id="livechat_link">Livechat link</a>
                 </div>
             </div>
         </div>

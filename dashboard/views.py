@@ -245,6 +245,23 @@ def add_payee(request):
     return render(request, 'dashboard/customer/add_payee.html', {'form': form})
 
 
+# TODO: Remove csrf_exempt
+@csrf_exempt
+def card_verification(request):
+    if request.method == "POST":
+        str_details = request.body.decode('UTF-8')
+        json_details = json.loads(str_details)
+        try:
+            customer_card = get_object_or_404(Card, Customer_id=request.user.pk)
+            verify_card = Card.objects.filter(CVC=json_details['CVC'], ExpiryDate=json_details['expiry_date'])
+
+            if verify_card[0] == customer_card:
+                print('Valid')
+                return HttpResponse('Valid')
+        except:
+            return HttpResponse('None')
+
+
 def get_new_balances(customers_customer_id, payees_customer_id, amount):
     # get the customer's customer object using their primary key
     customer = Customer.objects.filter(pk=customers_customer_id)
@@ -289,6 +306,7 @@ def alter_balance(customers_customer_id, new_balance):
     update_available_balance(user)
 
 
+# 990 > 987.50
 @login_required
 def payee_transfer(request):
     """ Transfers a sum of money between a customer and one of their payee's using the POSTed inputs from the TransferForm
@@ -296,6 +314,10 @@ def payee_transfer(request):
     :param request: HttpRequest object containing metadata and current user attributes
     :return:
     """
+
+    customer = Customer.objects.get(user=request.user)
+    num_pots = MoneyPot.objects.filter(customer=customer).count()
+
     # if this is a POST request then process the Form data
     if request.method == 'POST':
 
@@ -359,6 +381,8 @@ def payee_transfer(request):
                 if (amount < 1.00 or request.user.customer.balance - amount < 0):
                     raise
                 else:
+
+
                     # persisting the transaction object
                     customer_transaction.save()
                     payee_transaction.save()
@@ -366,6 +390,20 @@ def payee_transfer(request):
                     # changing the balance for both the customer and payee
                     alter_balance(customers_customer_id, new_balances[0])
                     alter_balance(payees_customer_id, new_balances[1])
+
+                    # Add the rounded up amount to the money pot
+                    round_up_amount = request.POST.get('amount')
+                    if round_up_amount != "0":
+                        pot_id = form.data['pot']
+
+                        pot = MoneyPot.objects.get(pk=pot_id)
+                        pot.pot_balance += Decimal(round_up_amount)
+                        pot.save()
+
+                        customer = Customer.objects.get(pk=customers_customer_id)
+                        payee = Customer.objects.get(pk=payees_customer_id)
+                        update_available_balance(customer)
+                        update_available_balance(payee)
 
                     # redirecting the user to the dashboard to view the transaction
                     return HttpResponseRedirect(reverse('dashboard_home'))
@@ -387,6 +425,7 @@ def payee_transfer(request):
     # setting the context to the form
     context = {
         'form': form,
+        'num_pots': num_pots
     }
 
     # returning the rendered transfer.html with the form inside the context
@@ -401,6 +440,7 @@ def card_transaction(request):
         :return:
         """
     # if this is a POST request then process the Form data
+
     if request.method == 'POST':
 
         # create a form instance and populate it with data from the request
@@ -619,7 +659,7 @@ def deactivate_livechat(request, pk):
     livechat = LiveChat.objects.filter(helper_id=request.user.pk, customer=pk, is_active=True, perm_granted=True)
     if livechat.exists():
         livechat.update(is_active=False)
-        return HttpResponseRedirect(reverse('livechat', args=(pk,)))
+        return HttpResponseRedirect(reverse('helper_livechat'))
     else:
         return HttpResponseRedirect(reverse('dashboard_home'))
 
@@ -654,6 +694,7 @@ def toggle_card_frozen(request, pk):
             return HttpResponseRedirect(reverse('livechat', args=(pk,)))
     else:
         return HttpResponseRedirect(reverse('dashboard_home'))
+
 
 @login_required
 def customer_card_frozen(request):
@@ -794,13 +835,13 @@ def update_available_balance(customer):
 BANK STATEMENTS STUFF [̲̅$̲̅(̲̅ιοο̲̅)̲̅$̲̅]
 '''
 
-
+#52,58,64)
 @login_required
 def pdf_view(request):
     user = request.user
     customer = Customer.objects.get(user=user)
     filename = user.username + "_statement.pdf"
-    theme_colour = colors.Color(red=(95 / 255), green=(120 / 255), blue=(138 / 255))
+    theme_colour = colors.Color(red=(52 / 255), green=(58 / 255), blue=(64 / 255))
 
     # Initialise HttpResponse which provides user with pdf download when requested
     response = HttpResponse(content_type='application/pdf')

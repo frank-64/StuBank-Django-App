@@ -6,10 +6,6 @@
   border: 1px solid rgba(0,0,0,.125);
 }
 
-.payee-card-body{
-    padding: 20px;
-}
-
-.payee-card{
-    margin-bottom: 20px;
+.form-group{
+  margin-top: 20px;
 }

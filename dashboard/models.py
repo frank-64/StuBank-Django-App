@@ -56,7 +56,7 @@ class Transaction(models.Model):
     # this customer foreign key is used to relate a transaction to a customer
     Customer = models.ForeignKey(Customer, blank=True, null=True, on_delete=models.PROTECT)
     # direction of the transfer e.g. payment into account or transaction out of account
-    Amount = models.DecimalField(blank=False, decimal_places=2, max_digits=10, )
+    Amount = models.DecimalField(blank=False, decimal_places=2, max_digits=10)
     # transaction direction e.g. is money being removed from the account or added
     Direction = models.CharField(blank=False, choices=Direction.choices, default=Direction.OUT, max_length=10)
     # time the transaction took place
@@ -78,6 +78,10 @@ class Transaction(models.Model):
 
 
 class MoneyPot(models.Model):
+
+    def __str__(self):
+        return str(self.name) + " - (£" + str(self.pot_balance) + ")"
+
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     name = models.CharField(blank=False, default='My Money Pot', max_length=100)
     target_balance = models.DecimalField(blank=False, decimal_places=2, max_digits=10, validators=[MinValueValidator
