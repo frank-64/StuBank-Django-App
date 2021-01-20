@@ -32,6 +32,19 @@ Password: <b>xVy2Lbzj?</b>
 Follow this link to retrieve the QR code if the above image isn't loading:
 https://imgur.com/3Nea4CU
 
+For security purposes, the CVC number and card expiry date isn't displayed on the account. 
+
+The accounts CVC number is: <b>434</b> and expiry date is: <b>19/01/2026</b>
+
+These will be of particular use going through the process of adding a new payee.
+## Testing
+We have created a series of unit tests which can be run to check the functionality of the different pages 
+of the web application. To run these, type into the command line:
+
+```commandline
+py manage.py test
+```
+
 
 
  
