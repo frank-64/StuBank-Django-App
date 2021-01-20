@@ -19,6 +19,10 @@ We have created a pre-populated customer account specifically for marking purpos
 set of transactions, payees and money pots. This will allow you to view the full potential of
 the web application, without you needing to spend the time creating this data yourself.
 
+Navigate to the login page and enter the details below. Scan the QR code with the Google 
+Authenticator app to retrieve a six digit code for the Otp token section.
+
 Username: <b>bigstu22</b> 
 Password: <b>xVy2Lbzj?</b> 
+![qrcode](https://github.com/frank-64/Team20/blob/main/media/qr_codes/bigstu22.png "TOTP QR code")
  
