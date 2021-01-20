@@ -92,8 +92,3 @@ class TOTPCreateView(FormView):
             return redirect('dashboard_home')
         return redirect('totp_create')
 
-
-
-
-
-

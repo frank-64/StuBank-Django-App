@@ -138,7 +138,9 @@ LOGOUT_REDIRECT_URL = 'login'
 
 AUTH_USER_MODEL = 'accounts.User'
 
-EMAIL_BACKEND = 'django_ses.SESBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
+
+#EMAIL_BACKEND = 'django_ses.SESBackend'
 AWS_ACCESS_KEY_ID = 'AKIAQZ2PZHDHGYOWPWYO'
 AWS_SECRET_ACCESS_KEY = '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'
 AWS_SES_REGION_NAME = 'eu-west-2'
