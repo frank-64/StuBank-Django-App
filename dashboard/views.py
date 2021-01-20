@@ -734,7 +734,7 @@ MONEY POT STUFF ( ͡° ͜ʖ ͡°)
 class MoneyPotListView(LoginRequiredMixin, ListView):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To display all the customer's currently created money pots as a list
     """
 
     model = MoneyPot
@@ -751,7 +751,7 @@ class MoneyPotListView(LoginRequiredMixin, ListView):
 class MoneyPotCreateView(LoginRequiredMixin, CreateView):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To allow the customer to create a new money pot where they can specify its name and target balance
     """
 
     template_name = 'dashboard/customer/money_pots_add.html'
@@ -769,7 +769,8 @@ class MoneyPotCreateView(LoginRequiredMixin, CreateView):
 class MoneyPotDeleteView(LoginRequiredMixin, DeleteView):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To allow the customer to delete any previously created money pots, sending any money stored in it back
+                into their main account balance
     """
 
     template_name = 'dashboard/customer/money_pots_confirm_delete.html'
@@ -788,7 +789,7 @@ class MoneyPotDeleteView(LoginRequiredMixin, DeleteView):
 class MoneyPotUpdateView(LoginRequiredMixin, UpdateView):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To allow the user to update any of their money pots with a new name or target balance
     """
 
     template_name = 'dashboard/customer/money_pots_update.html'
@@ -801,7 +802,7 @@ class MoneyPotUpdateView(LoginRequiredMixin, UpdateView):
 class MoneyPotDepositView(LoginRequiredMixin, FormView):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To allow the user to deposit money into a previously created money pot from their available balance
     """
 
     template_name = 'dashboard/customer/money_pots_deposit.html'
@@ -843,7 +844,8 @@ class MoneyPotDepositView(LoginRequiredMixin, FormView):
 def update_available_balance(customer):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To update the customers available balance to not include any money stored in money pots.
+                available_balance = balance - (total $ stored in money pots)
     """
 
     money_pots_total = 0
@@ -868,7 +870,8 @@ BANK STATEMENTS STUFF [̲̅$̲̅(̲̅ιοο̲̅)̲̅$̲̅]
 def pdf_view(request):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To provide a downloadable pdf file displaying all the customers transactions in a neatly formatted
+                layout
     """
 
     user = request.user
@@ -922,7 +925,7 @@ def pdf_view(request):
     small_content = ParagraphStyle('small_print', alignment=0, fontSize=6, leading=8)
 
     '''
-    Add PDF content here
+    Add PDF content here ▼
     '''
 
     # Logo
@@ -977,7 +980,7 @@ def pdf_view(request):
     ]))
 
     '''
-    End PDF content here
+    End PDF content here ▲
     '''
 
     # Add the different elements of the PDF to elements list, and use it to build PDF
@@ -1004,7 +1007,7 @@ EXPENDITURE OVERVIEW STUFF ᶘᵒᴥᵒᶅ
 def expenditure_overview(request):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To display a series of bar charts outlining a customers transaction history and habits
     """
 
     transactions = Transaction.objects.filter(Customer_id=request.user.pk)
@@ -1023,6 +1026,7 @@ def expenditure_overview(request):
     out_in_labels = ['Outgoing', 'Income']
     out_in_data = [0, 0]
 
+    # Correctly formatting the transaction data for use in Chart.js
     for transaction in transactions:
         if transaction.Direction == 'Out':
             category_dict[transaction.Category] = category_dict.get(transaction.Category, 0) + float(transaction.Amount)
@@ -1039,6 +1043,7 @@ def expenditure_overview(request):
         termini_name.append(key)
         termini_amount.append(value)
 
+    # Return all correctly formatted data to be transformed into bar charts
     return render(request, 'dashboard/customer/expenditure_overview.html', {
         'category_labels': category_name,
         'category_data': category_amount,

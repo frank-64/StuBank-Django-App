@@ -10,7 +10,7 @@ class UserRegisterForm(UserCreationForm):
     """
         Written by: Ed
         Purpose: Template for form to allow user to register an account. User account_num and sort_code is set
-                upon saving of form.
+                upon saving of the form.
     """
 
     class Meta:

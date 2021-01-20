@@ -20,7 +20,7 @@ from dashboard import forms
 def setUpUser(username):
     """
         Written by: Ed
-        Purpose:
+        Purpose: Set up a default user for use during testing
     """
 
     user = User.objects.create(username=username, email='customer@test.com', first_name='Bobby',
@@ -32,8 +32,8 @@ def setUpUser(username):
 
 class CheckPayeeTestCase(TestCase):
     """
-        Written by: Ed
-        Purpose:
+        Written by: Frankie
+        Purpose: To test if the checking of payee functionality works as intended and a payee is successfully verified
     """
 
     # Create the customer and helper objects in the database for testing
@@ -73,38 +73,11 @@ class CheckPayeeTestCase(TestCase):
         self.assertEqual(True, payee_object[0].user == self.payee.user)
 
 
-class AddPayeeTestCase(TestCase):
-    """
-        Written by: Ed
-        Purpose:
-    """
-
-    def setUp(self):
-        self.request_factory = RequestFactory()
-        self.user = User.objects.create(username='test_customer', email='customer@test.com', first_name='Bobby',
-                                        last_name='Hummer', is_customer=1)
-        self.user.set_password('password')
-
-        self.user_payee = User.objects.create(username='test_payee', email='helper@test.com', first_name='Pegasus',
-                                              last_name='Smores', is_customer=0, is_helper=1)
-        self.user_payee.set_password('qwerty')
-
-        self.payee = Customer.objects.create(user=self.user_payee, account_num=2222222, sort_code='42-04-20',
-                                             balance=100.00, available_balance=100.00)
-
-        self.user.save()
-        self.payee.save()
-        self.client.login(username='test_customer', password='password')
-
-    def test_add_valid_payee(self):
-        request = self.request_factory.get(reverse('addpayee'))
-        request.user = self.user
-
-
 class MoneyPotCreateViewTestCase(TestCase):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To test if the MoneyPotCreateView successfully creates a new money pot in the database when valid
+                information is input.
     """
 
     # Set up user and customer objects and log in
@@ -139,7 +112,8 @@ class MoneyPotCreateViewTestCase(TestCase):
 class MoneyPotDepositViewTestCase(TestCase):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To test if the MoneyPotDepositView successfully deposits money into the correct money pot when valid
+                information is input.
     """
 
     # Set up and login customer, create a test money pot
@@ -178,7 +152,7 @@ class MoneyPotDepositViewTestCase(TestCase):
 class MoneyPotDeleteViewTestCase(TestCase):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To test if the MoneyPotDeleteView successfully deletes the correct money pot
     """
 
     # Set up and login customer, create a test money pot
@@ -208,7 +182,7 @@ class MoneyPotDeleteViewTestCase(TestCase):
 class MoneyPotUpdateViewTestCase(TestCase):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To test if the MoneyPotUpdateView successfully updates the correct money pot with a new target value
     """
 
     # Set up and login customer, create a test money pot
@@ -248,7 +222,7 @@ class MoneyPotUpdateViewTestCase(TestCase):
 class PDFDownloadTestCase(TestCase):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To test that the pdf_view function successfully generates a PDF file when requested
     """
 
     # Set up user and customer objects and log in
@@ -270,7 +244,7 @@ class PDFDownloadTestCase(TestCase):
 class PayeeTransferViewTestCase(TestCase):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To test that the PayeeTransferView successfully transfers money to the correct payee
     """
 
     def setUp(self):
@@ -303,7 +277,7 @@ class PayeeTransferViewTestCase(TestCase):
 class PayeeDetailViewTestCase(TestCase):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To test that a PayeeDetailView get request is successful
     """
 
     # Set up user and customer objects and log in
@@ -321,7 +295,7 @@ class PayeeDetailViewTestCase(TestCase):
 class AddPayeeViewTestCase(TestCase):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To test that a AddPayeeView get request is successful
     """
 
     # Set up user and customer objects and log in
@@ -345,7 +319,7 @@ class AddPayeeViewTestCase(TestCase):
 class ExpenditureOverviewViewTestCase(TestCase):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To test that a ExpenditureOverviewView get request is successful
     """
 
     # Set up user and customer objects and log in
@@ -363,7 +337,7 @@ class ExpenditureOverviewViewTestCase(TestCase):
 class HelpPageViewTestCase(TestCase):
     """
         Written by: Ed
-        Purpose:
+        Purpose: To test that a HelpPageView get request is successful
     """
 
     # Set up user and customer objects and log in
@@ -376,10 +350,6 @@ class HelpPageViewTestCase(TestCase):
     def test_get(self):
         response = self.client.get(reverse('help'))
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
-
-class LiveChatTestCase(TestCase):
-    pass
 
 
 '''class LiveChatTestCase(TestCase):

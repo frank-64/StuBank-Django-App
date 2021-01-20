@@ -5,7 +5,7 @@ from dashboard.models import *
 class PayeeDetailsForm(forms.Form):
     """
         Written by: Frankie
-        Purpose:
+        Purpose: Template to display a form allowing a customer to add a new payee
     """
 
     first_name = forms.CharField(required=True, max_length=20)
@@ -17,7 +17,8 @@ class PayeeDetailsForm(forms.Form):
 class TransferForm(forms.ModelForm):
     """
         Written by: Frankie and Ed
-        Purpose:
+        Purpose: Template to display a form allowing a customer to transfer money to a payee. Customer has option to
+                round up transaction to the nearest pound and can select which money pot to store this in.
     """
 
     pot = forms.ModelChoiceField(queryset=MoneyPot.objects.none())
@@ -40,7 +41,7 @@ class TransferForm(forms.ModelForm):
 class CardTransaction(forms.ModelForm):
     """
         Written by: Frankie
-        Purpose:
+        Purpose: Template to display a form allowing a customer to input details for a card transaction
     """
     def __init__(self, user, *args, **kwargs):
         super(CardTransaction, self).__init__(*args, **kwargs)
@@ -58,8 +59,8 @@ class CardTransaction(forms.ModelForm):
 
 class DepositForm(forms.Form):
     """
-        Written by: Frankie
-        Purpose:
+        Written by: Ed
+        Purpose: Template to display a form allowing the customer to deposit money into a money pot
     """
 
     amount = forms.DecimalField(required=True, decimal_places=2, max_digits=10)

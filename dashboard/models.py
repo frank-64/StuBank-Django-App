@@ -8,7 +8,7 @@ from accounts.models import *
 class Payee(models.Model):
     """
         Written by: Frankie
-        Purpose:
+        Purpose: Create a Payee table in the database containing all fields specific to a Payee
     """
 
     # customerID that added the payee
@@ -22,7 +22,8 @@ class Payee(models.Model):
 class Card(models.Model):
     """
         Written by: Frankie
-        Purpose:
+        Purpose: Create a Card table in the database containing all fields specific to a debit card. Each card is linked
+                to a customer using a foreign key.
     """
 
     Customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
@@ -39,7 +40,7 @@ class Card(models.Model):
 class Transaction(models.Model):
     """
         Written by: Frankie
-        Purpose:
+        Purpose: Create a Transaction table in the database containing all data involved during a transaction.
     """
 
     CATEGORY = (
@@ -95,7 +96,8 @@ class Transaction(models.Model):
 class MoneyPot(models.Model):
     """
         Written by: Ed
-        Purpose:
+        Purpose: Creates a MoneyPot table in the database to store all information related to money pots. Each money pot
+                is linked to a customer via a foreign key
     """
 
     def __str__(self):
@@ -111,7 +113,7 @@ class MoneyPot(models.Model):
 class Message(models.Model):
     """
         Written by: Frankie
-        Purpose:
+        Purpose: Creates a Message table in the database to store all messages sent during live chats.
     """
 
     sender = models.ForeignKey(User, related_name='sent', on_delete=models.CASCADE)
@@ -123,7 +125,8 @@ class Message(models.Model):
 class LiveChat(models.Model):
     """
         Written by: Frankie
-        Purpose:
+        Purpose: Creates a LiveChat table in the database to store information related to specific live chat sessions.
+                Each instance in the database shows which customer and helper the chat is between.
     """
 
     customer = models.ForeignKey(User, related_name='customer_livechat', on_delete=models.CASCADE)
