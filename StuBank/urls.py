@@ -1,6 +1,7 @@
 from django.urls import path
-from StuBank import views
+from StuBank.views import *
 
 urlpatterns = [
-    path('', views.Index.index_page, name="index")
+    path('', Index.as_view, name="index"),
+    path('password_reset', password_reset_request, name="password_reset")
 ]
