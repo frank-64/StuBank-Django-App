@@ -20,10 +20,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = '*kv2lii!m8k$-50rd)h0+&f^ln$)rsvxml!tgz0m%4#m#duze3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', cast=bool)
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'stubank.tk']
 
@@ -82,10 +82,10 @@ WSGI_APPLICATION = 'TeamProject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASS'),
-        'HOST': config('DB_HOST'),
+        'NAME': 'studatabase',
+        'USER': 'team20',
+        'PASSWORD': 'Monkey20?',
+        'HOST': 'canadamonkeys.cbrra2yz2pox.eu-west-2.rds.amazonaws.com',
         'PORT': '3306',
     }
 }
