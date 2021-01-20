@@ -9,14 +9,9 @@
 {% endblock javascript %}
 
 {% block header %}
-    <div class="row">
-        <div class="col-lg-6 col-md-6 col-xs-12">
-            <h4>Welcome back {{ user.first_name }}!</h4>
-            <h6>Last login: {{ user.last_login|date:"l dS F, h:m A" }}</h6>
-        </div>
-        <div class="col-lg-6 col-md-6 col-xs-12">
-
-        </div>
+    <div class="alert alert-dark" role="alert">
+        <h4>Welcome back {{ user.first_name }}!</h4>
+        <h6>Last login: {{ user.last_login|date:"l dS F, h:m A" }}</h6>
     </div>
 {% endblock %}
 
