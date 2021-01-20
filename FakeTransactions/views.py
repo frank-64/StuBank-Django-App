@@ -19,18 +19,7 @@ def AddNewTransaction(request):
         transaction_variables = request.body.decode('UTF-8')
 
         json_details = json.loads(transaction_variables)
-        "apply the variables like this"
 
-        """         try:
-            payee_customer = Customer.objects.filter(sort_code=json_details['sort_code'],
-                                                     account_num=json_details['account_num'],
-                                                     user__first_name=json_details['firstname'],
-                                                     user__last_name=json_details['lastname'])
-
-            if payee_customer[0] == request.user.customer:
-                return HttpResponse('Same')
-            if payee_customer.exists():
-                return HttpResponse('Exists') """
         customer_id = request.user.pk
 
         card = get_object_or_404(Card, Customer_id=request.user.pk)
@@ -40,7 +29,7 @@ def AddNewTransaction(request):
         comment = json_details['comment']  ##get from json
 
         amount = Decimal(json_details['amount'])  ##get from json
-
+        print(amount)
         termini = json_details['termini']  ##get from json
 
         category = 'Dining Out'  ##get from json

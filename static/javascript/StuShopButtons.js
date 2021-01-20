@@ -60,13 +60,17 @@ function addToCart(StuStuff){
         </div>`
     StuTable.append(row)
     row.getElementsByClassName('StuDelete')[0].addEventListener('click', remove)
-    row.getElementsByClassName('StuQuantity')[0].addEventListener('change', inputChange )
+    row.getElementsByClassName('StuQuantity')[0].addEventListener('change', inputChange)
 
 }
 
+
+
+
 function totalFunction() {
-  var stuCartTable =  document.getElementsByClassName('StuCart')[0]
-    var stuRows = stuCartTable.getElementsByClassName('StuTable')
+
+  var stuCartTable =  document.getElementsByClassName('StuTable')[0]
+    var stuRows = stuCartTable.getElementsByClassName('StuCartItems')
     var total = 0
     for (var i = 0; i < stuRows.length; i++){
         var stuRow = stuRows[i]
@@ -77,7 +81,15 @@ function totalFunction() {
         total = total + (price * quantity)
     }
      total = Math.round(total * 100) / 100
-    document.getElementsByClassName('StuFinalPrice')[0].innerText = '£' + total
+    document.getElementsByClassName('StuFinalPrice')[0].innerText = total
+    var balance = document.getElementById('new_balance')
+    var finalBalance = balance - total
+    alert(balance)
+    balance.innerText = finalBalance
+
+
+
+
 }
 
 function remove(press){
@@ -85,8 +97,10 @@ function remove(press){
     pressed.parentElement.parentElement.remove()
     totalFunction()
 }
+
 function buy(){
     var stuTable = document.getElementsByClassName('StuTable')[0]
+    spoofTransaction()
     while(stuTable.hasChildNodes()){
         stuTable.removeChild(stuTable.firstChild)
     }
@@ -94,9 +108,9 @@ function buy(){
 }
 
 function spoofTransaction(){
-        var transactionTotal = 5;
+        var transactionTotal = document.getElementsByClassName('StuFinalPrice')[0].innerText.replace('£','');
         //var category =
-        var comment = "Groceries"; //figure that out
+        var comment='test'
         var termini = "StuShop"; //should be stushop
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
@@ -121,7 +135,34 @@ function spoofTransaction(){
         xhttp.send(JSON.stringify(json_transaction));
     }
 
-
+$(document).ready(function(){
+          $("StuTotal").change(function(){
+              let amount = this.value;
+              let sum = available_balance-amount;
+              if (sum<0){
+                  alert("You do not have £"+amount+" in your bank account.")
+                  document.getElementById('submit').disabled = true;
+                  document.getElementById("new_balance").innerText = "£"+(sum);
+                  document.getElementById("new_balance").style.color='red';
+                  valid = false;
+              }else if (amount<0){
+                  alert("You cannot transfer a negative amount!")
+                  document.getElementById('submit').disabled = true;
+                  document.getElementById("new_balance").innerText = "£"+available_balance+".00";
+                  valid = false;
+              }else if (amount<1.00){
+                  alert("You must transfer an amount more than or equal to £1.00.")
+                  document.getElementById('submit').disabled = true;
+                  document.getElementById("new_balance").innerText = "£"+available_balance+".00";
+                  valid = false;
+              } else {
+                  document.getElementById('submit').disabled = false;
+                  document.getElementById("new_balance").style.color='black';
+                  document.getElementById("new_balance").innerText = "£"+(sum);
+                  valid = true;
+              }
+          });
+        });
 
 
 
