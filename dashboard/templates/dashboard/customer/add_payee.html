@@ -27,11 +27,13 @@
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-                if(xhttp.response === 'Exists'){
+                if(xhttp.response === 'Valid'){
                     document.getElementById("payee_check").hidden = false;
                     document.getElementById("payee_check").innerHTML = "Payee Exists!"
                     document.getElementById("submit").hidden = false;
                     document.getElementById("payee_btn").hidden = true;
+                }else if (xhttp.response === 'Exists') {
+                    alert("You have already added this payee.")
                 }else if (xhttp.response === 'Same') {
                     alert("You cannot add yourself as a payee!")
                 }else if (xhttp.response === 'None') {

@@ -183,28 +183,49 @@ def delete_payee(request, pk):
 @csrf_exempt
 def check_payee(request):
     if request.method == "POST":
+        # Decode the request body into a string
         str_details = request.body.decode('UTF-8')
+
+        # Convert the string to a JSON object
         json_details = json.loads(str_details)
         try:
+            # Get the customer with matching details from the JSON
             payee_customer = Customer.objects.filter(sort_code=json_details['sort_code'],
                                                      account_num=json_details['account_num'],
                                                      user__first_name=json_details['firstname'],
                                                      user__last_name=json_details['lastname'])
 
-            if payee_customer[0] == request.user.customer:
+            # Getting the customer object from the filtered customer objects
+            customer_object = payee_customer[0]
+
+            # Getting the payee object of the current user and the user they're attempting to add to see if there is a
+            # duplicate
+            existing_payee_list = Payee.objects.filter(User_id=request.user.pk, PayeeID_id=customer_object)
+
+            # If the customer attempts to add themselves as a payee return 'Same'
+            if customer_object == request.user.customer:
+                print("Same")
                 return HttpResponse('Same')
-            if payee_customer.exists():
+            # If the payee has already been added return 'Exists'
+            elif payee_customer.exists() and len(existing_payee_list) > 0:
                 return HttpResponse('Exists')
+
+            # If the payee exists and is not already a current payee
+            elif payee_customer.exists():
+                return HttpResponse('Valid')
         except:
+            print("Error")
             return HttpResponse('None')
 
 
 @login_required
 def add_payee(request):
-    """ Adds a payee using the POSTed inputs from the PayeeDetailsForm
+    """
+        Written by: Frankie
+        Adds a payee using the POSTed inputs from the PayeeDetailsForm
 
-    :param request: HttpRequest object containing metadata and current user attributes
-    :return response: render HttpResponse object which takes request, template name and a dictionary as parameters
+        :param request: HttpRequest object containing metadata and current user attributes
+        :return response: render HttpResponse object which takes request, template name and a dictionary as parameters
     """
     # if this is a POST request and valid then process the form data
     form = PayeeDetailsForm(request.POST or None)
@@ -251,6 +272,14 @@ def add_payee(request):
 # TODO: Remove csrf_exempt
 @csrf_exempt
 def card_verification(request):
+    """
+        Written by: Frankie
+        This function verifies the current user know their card details and returns valid if the details they entered
+        matches their current card.
+
+        :param request:
+        :return:
+    """
 
     if request.method == "POST":
         # Decode the request body into a string
