@@ -155,3 +155,13 @@ MEDIA_URL = '/media/'
 SESSION_COOKIE_AGE = 600
 SESSION_SAVE_EVERY_REQUEST = True
 '''
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'ehartley38@gmail.com'
+EMAIL_HOST_PASSWORD = 'FILL IN FOR DEMONSTRATION'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'StuBank Team <noreply@stubank.com>'
+
+
