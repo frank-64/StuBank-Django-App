@@ -1,6 +1,13 @@
 {% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static '/css/stushop.css' %}">
+{% endblock css %}
+
+
 {% block javascript %}
-    <script>
+<script>
 const available_balance = {{ user.customer.available_balance }}
 
 if (document.readyState === 'loading') {
@@ -144,10 +151,79 @@ function spoofTransaction(){
         xhttp.send(JSON.stringify(json_transaction));
     }
 
+function modal_start(){
+        $("#cardDetails").modal()
+    }
 
+function verify_card_details(){
+    var expiry_date = document.getElementById('expDate').value;
+    var CVC = document.getElementById('CVC').value;
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            if(xhttp.response === 'Valid'){
+                buy()
+            }else if(xhttp.response === 'Invalid'){
+                var status = document.getElementById("verification-status");
+                status.hidden = false;
+                status.innerText = "Your card details were incorrect please try again.";
+            }else {
+                alert("Your card details are incorrect.")
+            }
+        }
+    };
+    var json_card_details = {
+        'expiry_date':expiry_date,
+        'CVC':CVC,
+    }
+    xhttp.open("POST", '/dashboard/verify-card/');
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.send(JSON.stringify(json_card_details));
+}
 
+{#Ed's stuff#}
+{#function checkCheckBox(checkbox) {#}
+{#        var pot_div = document.getElementById("pot-form");#}
+{#        if (checkbox.checked) {#}
+{#            pot_div.style.display = "block";#}
+{#            document.getElementById('amount').value = round;#}
+{#        } else {#}
+{#            pot_div.style.display = "none";#}
+{#            document.getElementById('amount').value = 0;#}
+{#        }#}
+{#    }#}
+{##}
+{#function displayRoundUp(amount) {#}
+{#    var checkbox_div = document.getElementById("check-box");#}
+{#    rounded_amount = Math.ceil(amount);#}
+{#    round = (Math.round((rounded_amount - amount) * 100) / 100).toFixed(2);#}
+{#    check_box = document.getElementById('pot_check_box');#}
+{#    document.getElementById('amount').value = 0;#}
+{##}
+{#    if ((round > 0) && ({{num_pots}} > 0)) {#}
+{#        checkbox_div.style.display = "block";#}
+{#    } else {#}
+{#        checkbox_div.style.display = "none";#}
+{#    }#}
+{#    document.getElementById('round-up-text').innerText = "Round up transaction by £" + round + "?";#}
+{#}#}
+{##}
+{#function toggleCheckBox() {#}
+{#    var checkbox_div = document.getElementById("check-box");#}
+{#}#}
+{##}
+{#window.onload = function() {#}
+{#    var pot_div = document.getElementById("pot-form");#}
+{#    var checkbox_div = document.getElementById("check-box");#}
+{##}
+{#    pot_div.style.display = "none";#}
+{#    checkbox_div.style.display = "none";#}
+{##}
+{#    document.getElementById("transfer-form").reset();#}
+{#}#}
 </script>
 {% endblock javascript %}
+
 {% block content %}
 
 
@@ -157,75 +233,124 @@ function spoofTransaction(){
 
 
 <strong style="font-style: italic;">Available Balance</strong ><h3 id="new_balance">£{{ user.customer.available_balance }}</h3>
-
-    <section class="container content-section">
-        <span class = StuCategory><h3>StuFood</h3></span>
-            <div class="StuItems">
-                <div class="StuItem">
-                    <span class="StuTitle">Groceries</span>
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="jumbotron stushop-jumbo">
+            <section class="container content-section">
+                <span class = StuCategory><h3>StuFood</h3></span>
+                    <div class="StuItems">
+                        <div class="StuItem">
+                        <span class="StuTitle">Groceries</span>
                         <span class="StuPrice">£20.16</span>
-                        <button class="StuAdd" type="button">Add</button>
+                        <button class="StuAdd btn" type="button">Add</button>
 
-                </div>
-                <div class="StuItems">
-                <div class="StuItem">
-                    <span class="StuTitle">FastFood</span>
+                        </div>
+                        <div class="StuItems">
+                        <div class="StuItem">
+                            <span class="StuTitle">FastFood</span>
 
-                        <span class="StuPrice">£10.72</span>
-                        <button class="StuAdd" type="button">Add</button>
+                                <span class="StuPrice">£10.72</span>
+                                <button class="StuAdd btn" type="button">Add</button>
+                            </div>
+                        </div>
+                        <div class="StuItems">
+                        <div class="StuItem">
+                            <span class="StuTitle">Snack</span>
+
+                                <span class="StuPrice">£5.31</span>
+                                <button class="StuAdd btn" type="button">Add</button>
+                            </div>
+                        </div>
                     </div>
-                </div>
+            </section>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="jumbotron stushop-jumbo">
+            <section class="container content-section">
+                <span class = StuCategory><h3>StuClothes</h3></span>
                 <div class="StuItems">
-                <div class="StuItem">
-                    <span class="StuTitle">Snack</span>
-
-                        <span class="StuPrice">£5.31</span>
-                        <button class="StuAdd" type="button">Add</button>
+                    <div class="StuItem">
+                        <span class="StuTitle">Jeans</span>
+                            <span class="StuPrice">£13.54</span>
+                            <button class="StuAdd btn" type="button">Add</button>
+                        </div>
                     </div>
-                </div>
-            </div>
+                    <div class="StuItems">
+                    <div class="StuItem">
+                        <span class="StuTitle">Shorts</span>
+                            <span class="StuPrice">£12.06</span>
+                            <button class="StuAdd btn" type="button">Add</button>
+                        </div>
+                    </div>
+                    <div class="StuItems">
+                    <div class="StuItem">
+                        <span class="StuTitle">Shirts</span>
+                            <span class="StuPrice">£10.01</span>
+                            <button class="StuAdd btn" type="button">Add</button>
+                        </div>
+                    </div>
 
-    </section>
+            </section>
+        </div>
+    </div>
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="jumbotron stushop-jumbo">
         <section class="container content-section">
-            <span class = StuCategory><h3>StuClothes</h3></span>
-            <div class="StuItems">
-                <div class="StuItem">
-                    <span class="StuTitle">Jeans</span>
-                        <span class="StuPrice">£13.54</span>
-                        <button class="StuAdd" type="button">Add</button>
+                <h2>StuCart</h2>
+            <span class="CartItem"><h5>Item/s</h5></span>
+                <div class="StuCart">
+
+                <div class="StuTable">
                     </div>
+                <div class="StuTotal">
+                    <strong class="StuFinalTotal">Total</strong>
+                    <p>£<span class="StuFinalPrice" id="StuTotal">0</span></p>
                 </div>
-                <div class="StuItems">
-                <div class="StuItem">
-                    <span class="StuTitle">Shorts</span>
-                        <span class="StuPrice">£12.06</span>
-                        <button class="StuAdd" type="button">Add</button>
-                    </div>
-                </div>
-                <div class="StuItems">
-                <div class="StuItem">
-                    <span class="StuTitle">Shirts</span>
-                        <span class="StuPrice">£10.01</span>
-                        <button class="StuAdd" type="button">Add</button>
-                    </div>
                 </div>
 
-    </section>
-    <section class="container content-section">
-            <h2>StuCart</h2>
-        <span class="CartItem"><h5>Item/s</h5></span>
-            <div class="StuCart">
 
-            <div class="StuTable">
+    {#            Ed's Stuff#}
+                <div id="check-box">
+                    <input type="checkbox" id="pot_check_box" name="pot_check_box" onclick="checkCheckBox(this)">
+                    <label for="pot_check_box" id="round-up-text"></label>
                 </div>
-            <div class="StuTotal">
-                <strong class="StuFinalTotal">Total</strong>
-                <p>£<span class="StuFinalPrice" id="StuTotal">0</span></p>
-            </div>
+                <div id="pot-form">
+                    <h3>Select Money Pot</h3>
+                    {{ form.pot }}
+                    <input type="hidden" id="amount" name="amount" value="">
                 </div>
-            <button class="StuBuy" type="button">Purchase</button>
-    </section>
+                <button class="btn btn-primary" type="button" onclick="modal_start()">Purchase</button>
+            </section>
+        </div>
+    </div>
+</div>
 
+<!-- Modal -->
+<div class="modal fade" id="cardDetails" tabindex="-1" role="dialog" aria-labelledby="cardDetailsModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cardDetailsLabel">Verify Your Card Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label for="CVC">CVC</label><br>
+        <input type="text" id="CVC"><br>
 
+        <label for="expDate">Expiry Date</label><br>
+        <input type="date" id="expDate"><br>
+
+          <p id="verification-status" hidden></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="verify_card_details()">Verify</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock content %}
