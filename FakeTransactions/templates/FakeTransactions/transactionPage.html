@@ -22,7 +22,6 @@ function ready() {
         button.addEventListener("click", remove) //function of the button
     }
     document.getElementsByClassName('StuBuy')[0].addEventListener('click',buy)
-
 }
 
 function addButton(press){
@@ -34,7 +33,6 @@ function addButton(press){
     addToCart(StuStuff)
     totalFunction()
 }
-
 function inputChange(changes){
     let changed = changes.target;
     if (changed.value <= 0){
@@ -106,6 +104,9 @@ function buy(){
     if(amounts[1] < 0) {
         alert("You dont have £" + amounts[0] + " in your account")
     }
+    else if(amounts[0] == 0) {
+        alert("Add something to cart")
+    }
     else{
         spoofTransaction()
     }
@@ -125,7 +126,7 @@ function spoofTransaction(){
             if (this.readyState == 4 && this.status == 200) {
                 if(xhttp.response === 'Complete'){
                     //what to do if successful
-                     document.getElementById('new_balance').innerText = '£' + {{ user.customer.available_balance }}
+                    document.getElementById('new_balance').innerText = '£' + {{ user.customer.available_balance }}
                     location.reload()
                 }else{
                     alert("Unsuccessful")
@@ -209,7 +210,6 @@ function spoofTransaction(){
                         <button class="StuAdd" type="button">Add</button>
                     </div>
                 </div>
-
     </section>
     <section class="container content-section">
             <h2>StuCart</h2>

@@ -29,7 +29,7 @@ def AddNewTransaction(request):
         comment = json_details['comment']  ##get from json
 
         amount = Decimal(json_details['amount'])  ##get from json
-        print(amount)
+
         termini = json_details['termini']  ##get from json
 
         category = 'Dining Out'  ##get from json
@@ -37,8 +37,6 @@ def AddNewTransaction(request):
         new_balance = get_new_balances(customer_id, -1, amount)
 
         method = 'Card Transaction'
-
-        print(comment, amount, termini)
 
         card_transaction_object = Transaction(Card_id=card.pk, Customer_id=customer_id,
                                               Amount=amount,
