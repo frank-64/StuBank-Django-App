@@ -1,11 +1,6 @@
-{% extends "FakeTransactions/base.html" %}
-{% block content %}
-<!-- <script src="../../../static/javascript/StuShopButtons.js" async></script> -->
-
-<body>
-
-{% if user.is_authenticated and user.is_customer%}
-<script>
+{% extends "dashboard/customer/customer_dashboard_base.html" %}
+{% block javascript %}
+    <script>
 const available_balance = {{ user.customer.available_balance }}
 
 if (document.readyState === 'loading') {
@@ -152,6 +147,12 @@ function spoofTransaction(){
 
 
 </script>
+{% endblock javascript %}
+{% block content %}
+
+
+<body>
+
 <title>StuShop</title><br>
 
 
@@ -226,7 +227,5 @@ function spoofTransaction(){
     </section>
 
 
-{% else %}
-    <h3>Not authenticated</h3>
-{% endif %}
+
 {% endblock content %}
