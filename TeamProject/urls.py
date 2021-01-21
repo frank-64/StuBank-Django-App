@@ -24,4 +24,5 @@ urlpatterns = [
     path('', include('StuBank.urls'), name='StuBank'),
     path('', include('accounts.urls'), name='accounts'),
     path('dashboard/', include('dashboard.urls'), name="dashboard"),
+    path('StuShop/', include('FakeTransactions.urls')),
 ]
