@@ -35,7 +35,7 @@ The website is hosted using Amazon Web Service with all of the service available
     to Gunicorn to for it to handle. Nginx also serves any static files too such as CSS, images and files.
 ### Database
 * We use Amazon's Relational Database Service (RDS) to contain our database.
-* Our Django application is connected to this database and perform CRUD operations on either localhost or the hosted
+* Our Django application is connected to this database and performs CRUD operations on either localhost or the hosted
 website.
 
 ## Example Customer Account

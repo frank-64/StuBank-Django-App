@@ -79,7 +79,7 @@ var categories_config = {
   type: 'bar',
   data: {
     datasets: [{
-      data: {{ category_data|safe }},
+      data: {{ category_data|safe }}.map(function(e){return (Math.round(e*100)/100)}),
       backgroundColor: purple_fade,
       borderColor: purple,
       borderWidth: 1,
@@ -107,7 +107,7 @@ var termini_config = {
   type: 'bar',
   data: {
     datasets: [{
-      data: {{ termini_data|safe }},
+      data: {{ termini_data|safe }}.map(function(e){return (Math.round(e*100)/100)}),
       backgroundColor: orange_fade,
       borderColor: orange,
       borderWidth: 1,
@@ -136,7 +136,7 @@ var spending_config = {
   type: 'horizontalBar',
   data: {
     datasets: [{
-      data: {{ out_in_data|safe }},
+      data: {{ out_in_data|safe }}.map(function(e){return (Math.round(e*100)/100)}),
       backgroundColor: [red_fade, green_fade],
       borderColor: [red, green],
       borderWidth: 1,
