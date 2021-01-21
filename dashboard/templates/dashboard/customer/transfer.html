@@ -25,12 +25,12 @@
               }else if (amount<0){
                   alert("You cannot transfer a negative amount!")
                   document.getElementById('submit').disabled = true;
-                  document.getElementById("new_balance").innerText = "£"+available_balance+".00";
+                  document.getElementById("new_balance").innerText = "£"+available_balance;
                   valid = false;
               }else if (amount<1.00){
                   alert("You must transfer an amount more than or equal to £1.00.")
                   document.getElementById('submit').disabled = true;
-                  document.getElementById("new_balance").innerText = "£"+available_balance+".00";
+                  document.getElementById("new_balance").innerText = "£"+available_balance;
                   valid = false;
               } else {
                   document.getElementById('submit').disabled = false;
@@ -65,10 +65,12 @@
                 if(xhttp.response === 'Valid'){
                     $("#cardDetails").modal('hide');
                     document.getElementById("transfer-form").submit();
-                }else {
+                }else if(xhttp.response === 'Invalid'){
                     var status = document.getElementById("verification-status");
                     status.hidden = false;
                     status.innerText = "Your card details were incorrect please try again.";
+                }else {
+                    alert("An error occurred.")
                 }
             }
         };

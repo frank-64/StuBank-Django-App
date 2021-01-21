@@ -64,10 +64,12 @@
                 if(xhttp.response === 'Valid'){
                     $("#cardDetails").modal('hide');
                     document.getElementById("payee-form").submit();
-                }else {
+                }else if(xhttp.response === 'Invalid'){
                     var status = document.getElementById("verification-status");
                     status.hidden = false;
                     status.innerText = "Your card details were incorrect please try again.";
+                }else {
+                    alert("Your card details are incorrect.")
                 }
             }
         };
