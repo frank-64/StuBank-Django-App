@@ -13,15 +13,14 @@
     border: none;
 }
 </style>
-    <div class="col">
-        <img src={% static "images/monkey.png" %} alt="Monkey">
-        <h1>Welcome to Stubank</h1>
-    </div>
-    <div class="backgroundStyle col-sm-12" >
-        <p>StuBank is a secure and easy way to store you money, and start saving today!</p>
-        <form action="register">
-            <input type="submit" value="Get a Stubank account">
-        </form>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8 col-xl-8">
+            <div class="jumbotron title-jumbo">
+                <h1>Welcome to StuBank!</h1>
+                <p>StuBank is a secure and easy way to store you money, and start saving today!</p>
+                <a class="btn btn-primary" href="{% url 'register' %}">Get A StuBank Account</a>
+            </div>
+        </div>
     </div>
     <div class="row">
             <div style="background-color: #fff;" onmouseover="this.style.background='#eee'"  onmouseout="this.style.background='#fff';" class="jumbotron col-sm m-2">
