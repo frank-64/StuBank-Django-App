@@ -113,6 +113,9 @@ function buy(){
     if(amounts[1] < 0) {
         alert("You dont have £" + amounts[0] + " in your account")
     }
+    else if(amounts[0] == 0) {
+        alert("Add something to cart")
+    }
     else{
         spoofTransaction()
     }
@@ -132,7 +135,7 @@ function spoofTransaction(){
             if (this.readyState == 4 && this.status == 200) {
                 if(xhttp.response === 'Complete'){
                     //what to do if successful
-                     document.getElementById('new_balance').innerText = '£' + {{ user.customer.available_balance }}
+                    document.getElementById('new_balance').innerText = '£' + {{ user.customer.available_balance }}
                     location.reload()
                 }else{
                     alert("Unsuccessful")
