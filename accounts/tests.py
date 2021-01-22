@@ -1,7 +1,4 @@
-from django.contrib.auth import authenticate, login
 from django.test import TestCase
-from django.urls import reverse
-
 from .models import *
 from .views import *
 

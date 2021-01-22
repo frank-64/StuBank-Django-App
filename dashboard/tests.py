@@ -1,20 +1,6 @@
-import json
 from http import HTTPStatus
-
-from django.contrib.auth import authenticate
-from django.contrib.messages import get_messages
-from django.test import TestCase
-from django.urls import reverse
-
-from .models import *
-
-from urllib.parse import urlencode
-
-from django.http import request
 from django.test import TestCase, RequestFactory
-from .models import *
 from .views import *
-from dashboard import forms
 
 
 def setUpUser(username):

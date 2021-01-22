@@ -1,6 +1,6 @@
-from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db.models import Q
@@ -8,18 +8,17 @@ from django.http import BadHeaderError, HttpResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.views.generic.edit import CreateView, FormView
 from django_otp import devices_for_user
-from django.contrib.auth import views as auth_views, authenticate, login, logout
-from django_otp.decorators import otp_required
+from django.contrib.auth import views as auth_views, authenticate, login
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from .forms import UserRegisterForm, UserInputQrCodeForm, CustomAuthenticationForm
-from django_otp.forms import OTPAuthenticationForm
 from .models import User, Customer
 import qrcode
-from django.core.files.base import ContentFile, File
+from django.core.files.base import ContentFile
 
 
 def get_user_totp_device(self, user, confirmed=None):
@@ -55,9 +54,9 @@ class CustomTOTPLoginView(auth_views.LoginView):
     template_name = 'accounts/login.html'
     form_class = CustomAuthenticationForm
 
-class infoView(auth_views.LoginView):
+
+class InfoView(auth_views.LoginView):
     template_name = 'accounts/info.html'
-    #form_class = CustomAuthenticationForm
 
 
 class RegisterView(CreateView):
@@ -83,6 +82,7 @@ class RegisterView(CreateView):
 
 
 # Create TOTP QR code and ask for user code input
+@method_decorator(login_required, name='dispatch')
 class TOTPCreateView(FormView):
     """
         Written by: Ed
@@ -131,6 +131,7 @@ class TOTPCreateView(FormView):
                 device.save()
             return redirect('dashboard_home')
         return redirect('totp_create')
+
 
 def password_reset_request(request):
     if request.method == "POST":

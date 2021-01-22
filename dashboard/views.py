@@ -1,39 +1,29 @@
 import datetime
 import io
 import random
-from collections import Counter
-from decimal import Decimal
-from functools import partial
 
-from django.contrib.auth.decorators import login_required, user_passes_test
-from dashboard import decorators
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.humanize.templatetags.humanize import naturaltime
-from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, ListView, CreateView, DeleteView, UpdateView, FormView
-from reportlab.lib import colors, utils
+from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
-
 from .decorators import valid_helper
 from .forms import *
 from dashboard.models import *
-from django_otp.decorators import otp_required
 from dashboard.card_gen import credit_card_number
-from django.http.response import JsonResponse, FileResponse
+from django.http.response import JsonResponse
 from django.db.models import Q
 import json
-
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Frame, PageTemplate, FrameBreak, \
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Frame, PageTemplate, FrameBreak, \
     Image
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch, cm
 
 """
 Request is not a visible parameter with Class-based views because as_view() on the .urls file makes the view callable
@@ -77,7 +67,7 @@ class UserDashboardView(LoginRequiredMixin, DetailView):
         :return context: dictionary containing the transactions in an out of the account
         """
         context = super(UserDashboardView, self).get_context_data(**kwargs)
-        if(self.request.user.is_customer):
+        if (self.request.user.is_customer):
             # get the customer's transactions which are ordered by most recent transaction first
             context['customer_transactions'] = Transaction.objects.filter(Customer_id=self.request.user.pk).order_by(
                 '-TransactionTime')
@@ -361,7 +351,6 @@ def alter_balance(customers_customer_id, new_balance):
     update_available_balance(user)
 
 
-
 @login_required
 def payee_transfer(request):
     """
@@ -438,7 +427,6 @@ def payee_transfer(request):
                 if (amount < 1.00 or request.user.customer.balance - amount < 0):
                     raise
                 else:
-
 
                     # persisting the transaction object
                     customer_transaction.save()
@@ -535,7 +523,7 @@ def card_transaction(request):
                                                   NewBalance=new_balance[0], Termini=termini, Category=category,
                                                   Method=method)
             try:
-                if (amount < 1.00):
+                if amount < 1.00:
                     raise
                 else:
                     # persisting the transaction object
@@ -552,7 +540,8 @@ def card_transaction(request):
                 error_title = 'Could not complete transaction!'
                 resolution = 'Is your balance correct? Is the amount equal to or above £1.00?'
 
-                # a rendered response is returned as a error.html page with accompanying dictionary containing details about the error
+                # a rendered response is returned as a error.html page with accompanying dictionary containing
+                # details about the error
                 return render(request, 'dashboard/customer/error.html',
                               {'error_title': error_title, 'resolution': resolution})
 
@@ -573,9 +562,8 @@ def card_transaction(request):
 @login_required
 def livechat(request, pk):
     """
-        Written by: Frankie
-        This method returns all the message objects between two users and renders them on customer_livechat.html with the
-        relevant context
+    Written by: Frankie This method returns all the message objects between two users and renders them on
+    customer_livechat.html with the relevant context
 
         :param request: HttpRequest object containing metadata and current user attributes
         :param pk: the primary key of the other user in the livechat
@@ -991,7 +979,7 @@ def update_available_balance(customer):
 BANK STATEMENTS STUFF [̲̅$̲̅(̲̅ιοο̲̅)̲̅$̲̅]
 '''
 
-#52,58,64)
+
 @login_required
 def pdf_view(request):
     """
@@ -1130,6 +1118,7 @@ EXPENDITURE OVERVIEW STUFF ᶘᵒᴥᵒᶅ
 '''
 
 
+@login_required
 def expenditure_overview(request):
     """
         Written by: Ed
