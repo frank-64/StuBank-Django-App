@@ -33,13 +33,12 @@
 <body class="d-flex flex-column h-100" style="background-image: url({% static '/images/blur_background.jpg'%});
 background-repeat: no-repeat;
 background-attachment: fixed;
-background-size: cover;
-padding-top: 90px;">
+background-size: cover;">
     
 <header>
   <!-- Fixed navbar -->
   <nav class="navbar navbar-expand-lg navbar-custom fixed-top navbar-dark bg-dark">
-      <a href="{% url 'index' %}" class="navbar-left"><img src="{% static '/images/monkey.png' %}"></a>
+      <a href="{% url 'index' %}" class="navbar-left"><img src="{% static '/images/monkey.png' %}" style="max-width: 90px"></a>
     <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'index' %}">StuBank</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -83,7 +82,7 @@ padding-top: 90px;">
     </div>
 </main>
 
-<footer class="footer mt-auto py-3 bg-light">
+<footer class="footer mt-auto py-3 bg-light page-footer">
   <div class="container">
     <span class="text-muted">Copyright © StuBank plc 2021</span>
   </div>
