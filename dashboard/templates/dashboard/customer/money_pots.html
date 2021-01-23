@@ -16,13 +16,19 @@
 </a>
 <br>
 <br>
+<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
 
 <div class="row">
 
 
     <div class="col-md-12">
-        {%  for pot in money_pots %}
-            <div id="card" class="card" style="background-color: #ff7f00;">
+        {% for pot in money_pots %}
+            <div id="card" class="card" style="background-color: #a1a4a4;">
                 {% if pot.pot_balance >= pot.target_balance %}
                 <script>document.getElementById("card").style.backgroundColor="green";</script>
                 {% endif %}
@@ -30,6 +36,14 @@
                 <div class="card-body">
                     <p class="card-text">Pot Balance: <b>£{{ pot.pot_balance }}</b></p>
                     <p class="card-text">Target Balance: <b>£{{ pot.target_balance }}</b></p>
+                    <div class="container">
+                        <h3>Money Pot Progress</h3>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" id ="progress" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:80%">
+                                    <span class="sr-only">90% Complete</span>
+                                </div>
+                            </div>
+                    </div>
                     <a href="{% url 'deposit_money_pot' pot.id %}" class="btn btn-primary" role="button">Deposit</a>
                     <a href="{% url 'update_money_pot' pot.id %}" class="btn btn-primary" role="button">Update</a>
                     <a href="{% url 'delete_money_pot' pot.id %}" class="btn btn-danger" role="button"
@@ -41,5 +55,15 @@
     </div>
 
 </div>
+<script>
+const potBalance =  {{pot.pot_balance}}
+const potTarget =  {{pot.target_balance}}
+      window.onload=function(){
+        var progress = document.getElementById('progress');
+        var percentage = (potBalance / potTarget)* 100
+        console.log(percentage)
+        progress.style.width = percentage + "%";
+  }
+  </script>
 
 {% endblock content %}

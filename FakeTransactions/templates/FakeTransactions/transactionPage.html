@@ -14,6 +14,7 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', ready)
 } else {
     ready()
+
 }
 function ready() {
     //Put all buttons here to ensure they are loaded and work
@@ -40,6 +41,10 @@ function addButton(press){
     var StuStuff = {price:StuPriceAdd, title:StuTitleAdd}
     addToCart(StuStuff)
     totalFunction()
+
+
+function categories(){
+
 }
 
 function inputChange(changes){
@@ -73,6 +78,20 @@ function addToCart(StuStuff){
     StuTable.append(row)
     row.getElementsByClassName('StuDelete')[0].addEventListener('click', remove)
     row.getElementsByClassName('StuQuantity')[0].addEventListener('change', inputChange)
+    var category = []
+    if (stuff.title === 'Groceries' || stuff.title === 'FastFood' || stuff.title === 'Snack'){
+       // if(category.includes('Food Shopping')){
+       // }
+        //else{
+        category.push('Food Shopping')
+      //  }
+
+    }
+    else if (stuff.title === 'Jeans' || stuff.title === 'Shorts' || stuff.title === 'Shirts'){
+        category.push('Clothing')
+    }
+    console.log(category)
+}
 
 }
 
@@ -240,30 +259,27 @@ function verify_card_details(){
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
         <div class="jumbotron stushop-jumbo">
             <section class="container content-section">
-                <span class = StuCategory><h3>StuFood</h3></span>
+                <h3><span class ="StuFood">StuFood</span></h3>
                     <div class="StuItems">
                         <div class="StuItem">
-                        <span class="StuTitle">Groceries</span>
-                        <span class="StuPrice">£20.16</span>
-                        <button class="StuAdd btn" type="button">Add</button>
-
-                        </div>
-                        <div class="StuItems">
-                        <div class="StuItem">
-                            <span class="StuTitle">FastFood</span>
-
-                                <span class="StuPrice">£10.72</span>
+                            <b><span class="StuTitle">Groceries</span></b>
+                            <span class="StuPrice">£20.16</span>
                                 <button class="StuAdd btn" type="button">Add</button>
-                            </div>
                         </div>
-                        <div class="StuItems">
+                    <div class="StuItems">
                         <div class="StuItem">
-                            <span class="StuTitle">Snack</span>
-
-                                <span class="StuPrice">£5.31</span>
+                            <b><span class="StuTitle">FastFood</span></b>
+                            <span class="StuPrice">£10.72</span>
                                 <button class="StuAdd btn" type="button">Add</button>
-                            </div>
                         </div>
+                    </div>
+                    <div class="StuItems">
+                        <div class="StuItem">
+                            <b><span class="StuTitle">Snack</span></b>
+                            <span class="StuPrice">£5.31</span>
+                                <button class="StuAdd btn" type="button">Add</button>
+                        </div>
+                    </div>
                     </div>
             </section>
         </div>
@@ -271,29 +287,114 @@ function verify_card_details(){
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
         <div class="jumbotron stushop-jumbo">
             <section class="container content-section">
-                <span class = StuCategory><h3>StuClothes</h3></span>
+                <h3><span class="StuClothes">StuClothes</span></h3>
                 <div class="StuItems">
                     <div class="StuItem">
-                        <span class="StuTitle">Jeans</span>
+                        <b><span class="StuTitle">Jeans</span></b>
                             <span class="StuPrice">£13.54</span>
                             <button class="StuAdd btn" type="button">Add</button>
                         </div>
                     </div>
                     <div class="StuItems">
                     <div class="StuItem">
-                        <span class="StuTitle">Shorts</span>
+                        <b><span class="StuTitle">Shorts</span></b>
                             <span class="StuPrice">£12.06</span>
                             <button class="StuAdd btn" type="button">Add</button>
                         </div>
                     </div>
                     <div class="StuItems">
                     <div class="StuItem">
-                        <span class="StuTitle">Shirts</span>
+                        <b><span class="StuTitle">Shirts</span></b>
                             <span class="StuPrice">£10.01</span>
                             <button class="StuAdd btn" type="button">Add</button>
                         </div>
                     </div>
 
+            </section>
+        </div>
+    </div>
+     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="jumbotron stushop-jumbo">
+            <section class="container content-section">
+                <h3><span class="StuClothes">StuCare</span></h3>
+                <div class="StuItems">
+                    <div class="StuItem">
+                        <b><span class="StuTitle">Paracetamol</span></b>
+                            <span class="StuPrice">£1.03</span>
+                            <button class="StuAdd btn" type="button">Add</button>
+                        </div>
+                    </div>
+                    <div class="StuItems">
+                    <div class="StuItem">
+                        <b><span class="StuTitle">Bandages</span></b>
+                            <span class="StuPrice">£3.26</span>
+                            <button class="StuAdd btn" type="button">Add</button>
+                        </div>
+                    </div>
+                    <div class="StuItems">
+                    <div class="StuItem">
+                        <b><span class="StuTitle">Lemsip (Cold and Flu relief)</span></b>
+                            <span class="StuPrice">£4.75</span>
+                            <button class="StuAdd btn" type="button">Add</button>
+                        </div>
+                    </div>
+
+            </section>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="jumbotron stushop-jumbo">
+            <section class="container content-section">
+                <h3><span class ="StuTech">StuTech</span></h3>
+                    <div class="StuItems">
+                        <div class="StuItem">
+                            <b><span class="StuTitle">Ram 8GB</span></b>
+                            <span class="StuPrice">£36.64</span>
+                                <button class="StuAdd btn" type="button">Add</button>
+                        </div>
+                    <div class="StuItems">
+                        <div class="StuItem">
+                            <b><span class="StuTitle">StuPhone</span></b>
+                            <span class="StuPrice">£342.69</span>
+                                <button class="StuAdd btn" type="button">Add</button>
+                        </div>
+                    </div>
+                    <div class="StuItems">
+                        <div class="StuItem">
+                            <b><span class="StuTitle">StuPhone Charger</span></b>
+                            <span class="StuPrice">£7.31</span>
+                                <button class="StuAdd btn" type="button">Add</button>
+                        </div>
+                    </div>
+                    </div>
+            </section>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="jumbotron stushop-jumbo">
+            <section class="container content-section">
+                <h3><span class = "StuCategory">StuEntertainment</span></h3>
+                    <div class="StuItems">
+                        <div class="StuItem">
+                            <b><span class="StuTitle">Netflix</span></b>
+                            <span class="StuPrice">£9.99</span>
+                                <button class="StuAdd btn" type="button">Add</button>
+                        </div>
+                    <div class="StuItems">
+                        <div class="StuItem">
+                            <b><span class="StuTitle">Disney+</span></b>
+                            <span class="StuPrice">£5.99</span>
+                                <button class="StuAdd btn" type="button">Add</button>
+                        </div>
+                    </div>
+                    <div class="StuItems">
+                        <div class="StuItem">
+                            <b><span class="StuTitle">StuVideo</span></b>
+                            <span class="StuPrice">£4.99</span>
+                                <button class="StuAdd btn" type="button">Add</button>
+                        </div>
+                    </div>
+                    </div>
             </section>
         </div>
     </div>
@@ -304,7 +405,6 @@ function verify_card_details(){
                 <h2>StuCart</h2>
             <span class="CartItem"><h5>Item/s</h5></span>
                 <div class="StuCart">
-
                 <div class="StuTable">
                     </div>
                 <div class="StuTotal">
