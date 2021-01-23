@@ -1,9 +1,8 @@
 from decimal import Decimal
 
 from django.core.validators import MinValueValidator
-from django.utils import timezone
-
 from accounts.models import *
+
 
 class Payee(models.Model):
     """
@@ -65,6 +64,7 @@ class Transaction(models.Model):
     class Direction(models.TextChoices):
         IN = 'In'
         OUT = 'Out'
+
     # optional foreign key used to link the card used with the customer who made the transaction
     Card = models.ForeignKey(Card, blank=True, null=True, on_delete=models.PROTECT)
     # optional foreign key used to link payees to a transaction if transferring or receiving money from a payee
@@ -121,6 +121,7 @@ class Message(models.Model):
     seen = models.BooleanField(default=False)
     message = models.TextField()
     created_at = models.DateTimeField()
+
 
 class LiveChat(models.Model):
     """

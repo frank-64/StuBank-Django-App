@@ -14,6 +14,7 @@ pip install -r requirements.txt
 
 ## Local execution
 <strong>We recommend using the website rather than installing the project</strong>
+## Usage
 To run the web application locally, navigate to the project directory within the pycharm terminal and type:
 ```commandline
 py manage.py runserver

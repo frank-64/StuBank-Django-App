@@ -12,9 +12,7 @@ by ..:: crazyjunkie ::.. 2014
 
 from random import Random
 import copy
-import datetime
 
-from django.utils import timezone
 
 StuBankPrefix = [['2', '0', '0', '2']]
 

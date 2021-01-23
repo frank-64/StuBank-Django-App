@@ -28,14 +28,18 @@ submitButton:hover {
 
 body {
   color: #333333;
-  margin-top: 60px;
   margin-bottom: 60px;
-  padding-top: 40px;
 }
 
-@media screen and (max-width: 768px) {
-    body { padding-top: 0px; }
+body {
+  padding-top: 60px;
 }
+@media (max-width: 979px) {
+  body {
+    padding-top: 125px;
+  }
+}
+
 
 .footer {
   position: absolute;
@@ -52,7 +56,8 @@ html {
 }
 
 main > .container {
-  padding: 70px 15px 0;
+  padding: 35px 15px 0;
+
 }
 
 .navbar-custom{
@@ -66,6 +71,19 @@ main > .container {
 .navbar img {
     width: 80px;
     height: auto;
+}
+
+.title-jumbo{
+    border: 1px solid rgba(0,0,0,.125);
+    background: #FFFFFF;
+    box-shadow: 10px 10px 10px rgba(0,0,0, 0.5);
+    min-width: 356px;
+    text-align: center;
+    padding-top: 15px;
+}
+
+.page-footer{
+  margin-top: 20px;
 }
 
 

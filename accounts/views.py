@@ -1,16 +1,24 @@
-from django.conf import settings
-from django.contrib.auth.forms import AuthenticationForm
-from django.shortcuts import redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.db.models import Q
+from django.http import BadHeaderError, HttpResponse
+from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
+from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from django.views.generic.edit import CreateView, FormView
 from django_otp import devices_for_user
-from django.contrib.auth import views as auth_views, authenticate, login, logout
-from django_otp.decorators import otp_required
+from django.contrib.auth import views as auth_views, authenticate, login
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from .forms import UserRegisterForm, UserInputQrCodeForm, CustomAuthenticationForm
-from django_otp.forms import OTPAuthenticationForm
 from .models import User, Customer
 import qrcode
-from django.core.files.base import ContentFile, File
+from django.core.files.base import ContentFile
 
 
 def get_user_totp_device(self, user, confirmed=None):
@@ -46,9 +54,9 @@ class CustomTOTPLoginView(auth_views.LoginView):
     template_name = 'accounts/login.html'
     form_class = CustomAuthenticationForm
 
-class infoView(auth_views.LoginView):
+
+class InfoView(auth_views.LoginView):
     template_name = 'accounts/info.html'
-    #form_class = CustomAuthenticationForm
 
 
 class RegisterView(CreateView):
@@ -74,6 +82,7 @@ class RegisterView(CreateView):
 
 
 # Create TOTP QR code and ask for user code input
+@method_decorator(login_required, name='dispatch')
 class TOTPCreateView(FormView):
     """
         Written by: Ed
@@ -123,3 +132,35 @@ class TOTPCreateView(FormView):
             return redirect('dashboard_home')
         return redirect('totp_create')
 
+
+def password_reset_request(request):
+    if request.method == "POST":
+        password_reset_form = PasswordResetForm(request.POST)
+        if password_reset_form.is_valid():
+            data = password_reset_form.cleaned_data['email']
+            associated_users = User.objects.filter(Q(email=data))
+            if associated_users.exists():
+                for user in associated_users:
+                    subject = "StuBank Password Reset Requested"
+                    email_template_name = "registration/password_reset_email.html"
+                    c = {
+                        "email": user.email,
+                        'domain': 'stubank.tk',
+                        'site_name': 'StuBank',
+                        "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                        'token': default_token_generator.make_token(user),
+                        'protocol': 'https',
+                    }
+                    email = render_to_string(email_template_name, c)
+                    try:
+                        send_mail(subject, email, 'AWS_verified_email_address', [user.email], fail_silently=False)
+                    except BadHeaderError:
+
+                        return HttpResponse('Invalid header found.')
+
+                    messages.success(request, 'A message with reset password instructions has been sent to your inbox.')
+                    return redirect(reverse('password_reset_done'))
+            messages.error(request, 'An invalid email has been entered.')
+    password_reset_form = PasswordResetForm()
+    return render(request=request, template_name="registration/password_reset_form.html",
+                  context={"password_reset_form": password_reset_form})

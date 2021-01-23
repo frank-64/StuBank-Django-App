@@ -139,9 +139,9 @@ LOGOUT_REDIRECT_URL = 'login'
 
 AUTH_USER_MODEL = 'accounts.User'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
 
-#EMAIL_BACKEND = 'django_ses.SESBackend'
+EMAIL_BACKEND = 'django_ses.SESBackend'
 AWS_ACCESS_KEY_ID = 'AKIAQZ2PZHDHGYOWPWYO'
 AWS_SECRET_ACCESS_KEY = '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'
 AWS_SES_REGION_NAME = 'eu-west-2'
@@ -156,3 +156,13 @@ MEDIA_URL = '/media/'
 SESSION_COOKIE_AGE = 600
 SESSION_SAVE_EVERY_REQUEST = True
 '''
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'ehartley38@gmail.com'
+EMAIL_HOST_PASSWORD = 'FILL IN FOR DEMONSTRATION'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'StuBank Team <noreply@stubank.com>'
+
+

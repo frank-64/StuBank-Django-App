@@ -7,7 +7,7 @@
      $(document).ready(function(){
           $("input[name='amount']").keyup(function(){
               let amount = this.value;
-              let sum = available_balance-amount;
+              let sum = (Math.round((available_balance-amount)*100) / 100).toFixed(2);
               if (sum<0){
                   alert("You do not have £"+amount+" in your bank account.")
                   document.getElementById('submit').disabled = true;
@@ -20,17 +20,20 @@
               }
           });
         });
+
+        window.onload = function() {
+        document.getElementById("amount-form").reset();
+    }
     </script>
 
     <h3>Available balance: <p id="new_balance">{{ user.customer.available_balance }}</p></h3>
-    <form method="POST">
-        {% csrf_token %}
-        <h1>Deposit money to pot: {{ pot.name }}</h1>
-        <h3>Current amount in pot: {{ pot.pot_balance }}</h3>
-        <h3>Target: {{ pot.target_balance }}</h3>
-            {{ form|crispy }}
-        <br>
-        <button type="submit" id="submit" class="btn btn-primary">Deposit</button>
-    </form>
-
+        <form method="POST" id="amount-form">
+            {% csrf_token %}
+            <h1>Deposit money to pot: {{ pot.name }}</h1>
+            <h3>Current amount in pot: {{ pot.pot_balance }}</h3>
+            <h3>Target: {{ pot.target_balance }}</h3>
+                {{ form|crispy }}
+            <br>
+            <button type="submit" id="submit" class="btn btn-primary">Deposit</button>
+        </form>
 {% endblock content %}
