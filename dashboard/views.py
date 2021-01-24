@@ -33,27 +33,33 @@ meaning it takes a request and returns a response
 
 @method_decorator(login_required, name='dispatch')
 class UserDashboardView(LoginRequiredMixin, DetailView):
-    """ Redirects the user to dashboard_home if authenticated or the login page otherwise
-    Inherits:
-        DetailView: inherited class to override the get_object(), get_queryset() and set the Model/template
-        LoginRequiredMixin: inherited class used to redirect if not authenticated
-    Attributes:
-        model = model used with this view
-        queryset: queryset which will be returned to the URL that called this view
-        template_name: html file to be sent with the response
-        context_object_name: variable used on the template to access the context sent with the response
+    """
+        Written by: Frankie
+        Redirects the user to dashboard_home if authenticated or the login page otherwise
+        Inherits:
+            DetailView: inherited class to override the get_object(), get_queryset() and set the Model/template
+            LoginRequiredMixin: inherited class used to redirect if not authenticated
+        Attributes:
+            model = model used with this view
+            queryset: queryset which will be returned to the URL that called this view
+            template_name: html file to be sent with the response
+            context_object_name: variable used on the template to access the context sent with the response
     """
     model = Transaction
 
     def get_queryset(self):
-        """ Gets all the transactions as we set the view 'model = Transaction'
-        :return: all transactions
+        """
+            Written by: Frankie
+            Gets all the transactions as we set the view 'model = Transaction'
+            :return: all transactions
         """
         return super(UserDashboardView, self).get_queryset()
 
     def get_object(self, queryset=None):
-        """ Checks if the current user is a helper or customer and sets the template_name accordingly
-        :param request: HttpRequest object containing metadata and current user attributes
+        """
+            Written by: Frankie
+            Checks if the current user is a helper or customer and sets the template_name accordingly
+            :param request: HttpRequest object containing metadata and current user attributes
         """
         if (self.request.user.is_customer):
             UserDashboardView.template_name = 'dashboard/customer/customer_dashboard.html'
@@ -61,10 +67,12 @@ class UserDashboardView(LoginRequiredMixin, DetailView):
             UserDashboardView.template_name = 'dashboard/helper/helper_chats.html'
 
     def get_context_data(self, **kwargs):
-        """gets the transactions in and out of an account adds them to the context
+        """
+            Written by: Frankie
+            gets the transactions in and out of an account adds them to the context
 
-        :param kwargs: used to obtain the queryset
-        :return context: dictionary containing the transactions in an out of the account
+            :param kwargs: used to obtain the queryset
+            :return context: dictionary containing the transactions in an out of the account
         """
         context = super(UserDashboardView, self).get_context_data(**kwargs)
         if (self.request.user.is_customer):
@@ -78,18 +86,22 @@ class UserDashboardView(LoginRequiredMixin, DetailView):
 
 
 def get_expiry_date():
-    """ Gets the date in 5 years time
+    """
+        Written by: Frankie
+        Gets the date in 5 years time
 
-    :return datetime of the date now + 5 years:
+        :return datetime of the date now + 5 years:
     """
     now = timezone.now().date()
     return now + datetime.timedelta(days=1825)
 
 
 def get_CVC():
-    """ Randomises 3 digits to generate a CVC
+    """
+        Written by: Frankie
+        Randomises 3 digits to generate a CVC
 
-    :return string array CVC:
+        :return string array CVC:
     """
     generator = random.Random()
     generator.seed()
@@ -102,10 +114,12 @@ def get_CVC():
 
 
 def get_card(request):
-    """ Creates a card object for the user that called this method on their dashboard
+    """
+        Written by: Frankie
+        Creates a card object for the user that called this method on their dashboard
 
-    :param request: HttpRequest object containing metadata and current user attributes
-    :return HttpResponseRedirect: redirects user to the dashboard
+        :param request: HttpRequest object containing metadata and current user attributes
+        :return HttpResponseRedirect: redirects user to the dashboard
     """
     generator = random.Random()
     generator.seed()
@@ -126,16 +140,18 @@ def get_card(request):
 
 
 class PayeeDetailView(LoginRequiredMixin, DetailView):
-    """ Displays all payees related to the current customer's pk
+    """
+        Written by: Frankie
+        Displays all payees related to the current customer's pk
 
-    Inherits:
-        DetailView: inherited class to override the get_object(), get_queryset() and set the Model/template
+        Inherits:
+            DetailView: inherited class to override the get_object(), get_queryset() and set the Model/template
 
-    Attributes:
-        model = model used with this view
-        queryset: queryset which will be returned to the URL that called this view
-        template_name: html file to be sent with the response
-        context_object_name: variable used on the template to access the context sent with the response
+        Attributes:
+            model = model used with this view
+            queryset: queryset which will be returned to the URL that called this view
+            template_name: html file to be sent with the response
+            context_object_name: variable used on the template to access the context sent with the response
     """
     model = Payee
     context_object_name = 'payee_list'
@@ -158,11 +174,13 @@ class PayeeDetailView(LoginRequiredMixin, DetailView):
 
 @login_required
 def delete_payee(request, pk):
-    """ Deletes a payee
+    """
+        Written by: Frankie
+        Deletes a payee
 
-    :param request: HttpRequest object containing metadata and current user attributes
-    :param pk: primary key in the payee table used to identify a specific row
-    :return response: HttpResponse object which redirects to new url path
+        :param request: HttpRequest object containing metadata and current user attributes
+        :param pk: primary key in the payee table used to identify a specific row
+        :return response: HttpResponse object which redirects to new url path
     """
     Payee.objects.filter(pk=pk).delete()
     response = redirect(reverse('viewpayee'))
@@ -172,6 +190,15 @@ def delete_payee(request, pk):
 # TODO: Remove csrf_exempt
 @csrf_exempt
 def check_payee(request):
+    """
+        Written by: Frankie
+        Checks the details POSTed through the request.body and parses it to a JSON object which can be checked to see
+        if the payee exists
+
+        :param request: HttpRequest object containing metadata and current user attributes
+        :return: 'Same' if the user attempts to add themselves, 'Exists' if the user has already added this payee or
+                 'Valid' if the payee is valid.
+    """
     if request.method == "POST":
         # Decode the request body into a string
         str_details = request.body.decode('UTF-8')
@@ -194,7 +221,6 @@ def check_payee(request):
 
             # If the customer attempts to add themselves as a payee return 'Same'
             if customer_object == request.user.customer:
-                print("Same")
                 return HttpResponse('Same')
             # If the payee has already been added return 'Exists'
             elif payee_customer.exists() and len(existing_payee_list) > 0:
