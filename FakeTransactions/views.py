@@ -53,7 +53,7 @@ def AddNewTransaction(request):
 
 
 def StuShopRender(request):
-    return render(request,'FakeTransactions/transactionPage.html')
+    return render(request, 'FakeTransactions/transactionPage.html')
 
 
 
