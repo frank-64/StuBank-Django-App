@@ -53,12 +53,12 @@
 
 </div>
 <script>
-const potBalance =  {{pot.pot_balance}}
-const potTarget =  {{pot.target_balance}}
+const potBalance =  parseFloat({{'pot.pot_balance'}})
+const potTarget =  parseFloat({{'pot.target_balance'}})
       window.onload=function(){
         var progress = document.getElementById('progress');
         var percentage = (potBalance / potTarget)* 100
-        console.log(percentage)
+        console.log(potBalance)
         progress.style.width = percentage + "%";
   }
   </script>

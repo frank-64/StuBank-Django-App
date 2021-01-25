@@ -32,7 +32,7 @@ def AddNewTransaction(request):
 
         termini = json_details['termini']  ##get from json
 
-        category = 'Dining Out'  ##get from json
+        category = json_details['category']  ##get from json
 
         new_balance = get_new_balances(customer_id, -1, amount)
 
