@@ -29,7 +29,6 @@ function ready() {
         let button = stuRemove[i];
         button.addEventListener("click", remove) //function of the button
     }
-    document.getElementsByClassName('StuBuy')[0].addEventListener('click',buy)
 
 }
 
@@ -43,9 +42,7 @@ function addButton(press){
     totalFunction()
 
 
-function categories(){
 
-}
 
 function inputChange(changes){
     let changed = changes.target;
@@ -78,19 +75,7 @@ function addToCart(StuStuff){
     StuTable.append(row)
     row.getElementsByClassName('StuDelete')[0].addEventListener('click', remove)
     row.getElementsByClassName('StuQuantity')[0].addEventListener('change', inputChange)
-    var category = []
-    if (stuff.title === 'Groceries' || stuff.title === 'FastFood' || stuff.title === 'Snack'){
-       // if(category.includes('Food Shopping')){
-       // }
-        //else{
-        category.push('Food Shopping')
-      //  }
 
-    }
-    else if (stuff.title === 'Jeans' || stuff.title === 'Shorts' || stuff.title === 'Shirts'){
-        category.push('Clothing')
-    }
-    console.log(category)
 }
 
 }
@@ -124,10 +109,41 @@ function remove(press){
     totalFunction()
 }
 
+function categories() {
+    var stuCartTable = document.getElementsByClassName('StuTable')[0]
+    var stuRows = stuCartTable.getElementsByClassName('StuCartItems')
+    var cartCategories = []
+    for (var i = 0; i < stuRows.length; i++) {
+        var stuRow = stuRows[i]
+        var cartProducts = stuRow.getElementsByClassName('StuCartTitle')[0].innerHTML
+        if (cartProducts === 'Groceries' || cartProducts === 'FastFood' || cartProducts === 'Snack') {
+            cartCategories.push('Food Shopping')
+        }
+        if (cartProducts === 'Jeans' || cartProducts === 'Shorts' || cartProducts === 'Shirts') {
+            cartCategories.push('Clothing')
+        }
+        if (cartProducts === 'Paracetamol' || cartProducts === 'Bandages' || cartProducts === 'Lemsip (Cold and Flu relief)') {
+            cartCategories.push('Healthcare')
+        }
+        if (cartProducts === 'Ram 8GB' || cartProducts === 'StuPhone' || cartProducts === 'StuPhone Charger') {
+            cartCategories.push('Technology')
+        }
+        if (cartProducts === 'Netflix' || cartProducts === 'Disney+' || cartProducts === 'StuVideo') {
+            cartCategories.push('Entertainment')
+        }
+    }
+    var sortedCategories = []
+    $.each(cartCategories, function(i, categories){
+    if($.inArray(categories, sortedCategories) === -1) sortedCategories.push(categories);
+    })
 
+    return sortedCategories
+    //console.log(sortedCategories)
+
+}
 function buy(){
     var stuTable = document.getElementsByClassName('StuTable')[0]
-
+    categories()
     var amounts = totalFunction()
     if(amounts[1] < 0) {
         alert("You dont have £" + amounts[0] + " in your account")
@@ -146,7 +162,7 @@ while(stuTable.hasChildNodes()){
 
 function spoofTransaction(){
         var transactionTotal = document.getElementsByClassName('StuFinalPrice')[0].innerText.replace('£','');
-        //var category =
+        var category = categories()
         var comment='test'
         var termini = "StuShop"; //should be stushop
         var xhttp = new XMLHttpRequest();
@@ -155,7 +171,7 @@ function spoofTransaction(){
                 if(xhttp.response === 'Complete'){
                     //what to do if successful
                     document.getElementById('new_balance').innerText = '£' + {{ user.customer.available_balance }}
-                    location.reload()
+                    //location.reload()
                 }else{
                     alert("Unsuccessful")
                     //what to when when unsuccessful
@@ -164,7 +180,7 @@ function spoofTransaction(){
         };
         var json_transaction = {
             'amount':transactionTotal,
-            //'category':category,
+            'category':category,
             'comment':comment,
             'termini':termini
         }
@@ -203,46 +219,7 @@ function verify_card_details(){
     xhttp.send(JSON.stringify(json_card_details));
 }
 
-{#Ed's stuff#}
-{#function checkCheckBox(checkbox) {#}
-{#        var pot_div = document.getElementById("pot-form");#}
-{#        if (checkbox.checked) {#}
-{#            pot_div.style.display = "block";#}
-{#            document.getElementById('amount').value = round;#}
-{#        } else {#}
-{#            pot_div.style.display = "none";#}
-{#            document.getElementById('amount').value = 0;#}
-{#        }#}
-{#    }#}
-{##}
-{#function displayRoundUp(amount) {#}
-{#    var checkbox_div = document.getElementById("check-box");#}
-{#    rounded_amount = Math.ceil(amount);#}
-{#    round = (Math.round((rounded_amount - amount) * 100) / 100).toFixed(2);#}
-{#    check_box = document.getElementById('pot_check_box');#}
-{#    document.getElementById('amount').value = 0;#}
-{##}
-{#    if ((round > 0) && ({{num_pots}} > 0)) {#}
-{#        checkbox_div.style.display = "block";#}
-{#    } else {#}
-{#        checkbox_div.style.display = "none";#}
-{#    }#}
-{#    document.getElementById('round-up-text').innerText = "Round up transaction by £" + round + "?";#}
-{#}#}
-{##}
-{#function toggleCheckBox() {#}
-{#    var checkbox_div = document.getElementById("check-box");#}
-{#}#}
-{##}
-{#window.onload = function() {#}
-{#    var pot_div = document.getElementById("pot-form");#}
-{#    var checkbox_div = document.getElementById("check-box");#}
-{##}
-{#    pot_div.style.display = "none";#}
-{#    checkbox_div.style.display = "none";#}
-{##}
-{#    document.getElementById("transfer-form").reset();#}
-{#}#}
+
 </script>
 {% endblock javascript %}
 
@@ -411,18 +388,6 @@ function verify_card_details(){
                     <strong class="StuFinalTotal">Total</strong>
                     <p>£<span class="StuFinalPrice" id="StuTotal">0</span></p>
                 </div>
-                </div>
-
-
-    {#            Ed's Stuff#}
-                <div id="check-box">
-                    <input type="checkbox" id="pot_check_box" name="pot_check_box" onclick="checkCheckBox(this)">
-                    <label for="pot_check_box" id="round-up-text"></label>
-                </div>
-                <div id="pot-form">
-                    <h3>Select Money Pot</h3>
-                    {{ form.pot }}
-                    <input type="hidden" id="amount" name="amount" value="">
                 </div>
                 <button class="btn btn-primary" type="button" onclick="modal_start()">Purchase</button>
             </section>
