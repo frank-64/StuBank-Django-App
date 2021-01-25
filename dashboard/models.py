@@ -86,7 +86,7 @@ class Transaction(models.Model):
     # If the transfer was OUT then the termini would be the name of the payee
     Termini = models.CharField(blank=False, max_length=50)
     # this attribute will be used the machine learning to determine probability of certain categories
-    Category = models.CharField(blank=False, choices=CATEGORY, max_length=20)
+    Category = models.CharField(blank=False, choices=CATEGORY, max_length=70)
     Method = models.CharField(blank=False, choices=Method.choices, max_length=20, default=Method.Bank_Transfer)
 
     def __str__(self):
