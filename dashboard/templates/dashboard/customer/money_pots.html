@@ -10,15 +10,17 @@
 
       window.onload=function()
       {
-        const potBalance = document.getElementById('balance').innerText.replace('£','');
-        const potTarget = document.getElementById('target').innerText.replace('£','');
-        console.log(potTarget)
-        console.log(potBalance)
-        var progress = document.getElementById('progress');
-        var percentage = (potBalance / potTarget)*100
-
-        progress.style.width = percentage + '%';
-
+    var moneyPotCards = document.getElementsByClassName('moneypot-card')[0]
+    var moneyCards = moneyPotCards.getElementsByClassName('card')
+    percentage = 0
+           for (var i = 0; i < moneyCards.length; i++) {
+               var moneyCard = moneyCards[i]
+               const potBalance = moneyCard.getElementsByClassName('balance')[0].innerText.replace('£', '');
+               const potTarget = moneyCard.getElementsByClassName('target')[0].innerText.replace('£', '');
+               var progress = moneyCard.getElementsByClassName('progress-bar')[0];
+               var percentage = (potBalance / potTarget) * 100
+               progress.style.width = percentage + '%';
+           }
   }
   </script>
 {% endblock javascript %}
@@ -40,16 +42,17 @@
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
         <div class="jumbotron moneypot-jumbo">
-        {%  for pot in money_pots %}
+        <div class="moneypot-card">
+        {% for pot in money_pots %}
             <div id="card" class="card">
                 <h5 class="card-header">{{ pot.name }}</h5>
                 <div class="card-body">
-                    <p class="card-text">Pot Balance: <b id="balance">£{{ pot.pot_balance }}</b></p>
-                    <p class="card-text">Target Balance: <b id="target">£{{ pot.target_balance }}</b></p>
+                    <p class="card-text">Pot Balance: <b class="balance">£{{ pot.pot_balance }}</b></p>
+                    <p class="card-text">Target Balance: <b class="target">£{{ pot.target_balance }}</b></p>
                     <div class="container">
                         <p>Money Pot Progress</p>
                             <div class="progress">
-                                <div class="progress-bar" role="progressbar" id ="progress" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" style="width:30%" onload="">
+                                <div class="progress-bar" role="progressbar" id ="progress" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" style="width:0%">
                                 </div>
                             </div>
                     </div>
@@ -62,6 +65,7 @@
             </div>
             <br>
         {% endfor %}
+    </div>
     </div>
     </div>
 </div>
