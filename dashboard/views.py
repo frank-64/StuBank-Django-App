@@ -311,8 +311,10 @@ def card_verification(request):
             verify_card = Card.objects.filter(CVC=json_details['CVC'], ExpiryDate=json_details['expiry_date'])
 
             # Verify the two cards match and return valid
-            if verify_card[0] == customer_card:
+            if (verify_card[0] == customer_card) and (not customer_card.CardFrozen):
                 return HttpResponse('Valid')
+            elif (customer_card.CardFrozen):
+                return HttpResponse('Frozen')
             else:
                 return HttpResponse('Invalid')
         except:

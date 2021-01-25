@@ -199,8 +199,12 @@ function verify_card_details(){
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            if(xhttp.response === 'Valid'){
+            if(xhttp.response === 'Valid') {
                 buy()
+            }else if(xhttp.response === 'Frozen'){
+                var temp = document.getElementById("verification-status");
+                temp.hidden = false;
+                temp.innerText = "Your card is frozen.";
             }else if(xhttp.response === 'Invalid'){
                 var status = document.getElementById("verification-status");
                 status.hidden = false;
