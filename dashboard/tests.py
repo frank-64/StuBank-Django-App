@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from django.test import TestCase, RequestFactory
+from django.test import TestCase, RequestFactory, Client
 from .views import *
 
 
@@ -30,7 +30,7 @@ class CheckPayeeTestCase(TestCase):
         self.user.set_password('password')
 
         self.user_payee = User.objects.create(username='test_payee', email='helper@test.com', first_name='Pegasus',
-                                              last_name='Smores', is_customer=0, is_helper=1)
+                                              last_name='Smores', is_customer=1)
         self.user_payee.set_password('qwerty')
 
         self.payee = Customer.objects.create(user=self.user_payee, account_num=2222222, sort_code='42-04-20',
@@ -339,15 +339,36 @@ class HelpPageViewTestCase(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
-'''class LiveChatTestCase(TestCase):
+class LiveChatTestCase(TestCase):
 
     # Set up user and customer objects and log in
     def setUp(self):
-        self.user = setUpUser()
+        self.user = setUpUser('BobbyBoy')
         self.customer = Customer.objects.create(user=self.user)
-        self.client.login(username='test_customer', password='password')
+        self.client.login(username='BobbyBoy', password='password')
+
+
+        self.helper = User.objects.create(username='Helper-Jacob', email='helper-jacob@test.com', first_name='Jacob',
+                                              last_name='Steed', is_helper=1)
+        self.helper.set_password('password')
+        self.helper = Helper.objects.create(user=self.helper)
 
     # Test get request for live chat page
     def test_get(self):
         response = self.client.get(reverse('help'))
-        self.assertEqual(response.status_code, HTTPStatus.OK)'''
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    # Checking that customer and helper are correct role
+    def test_role(self):
+        self.assertEqual(self.customer.user.is_customer, True)
+        self.assertEqual(self.helper.user.is_helper, True)
+
+    def test_livechat_get(self):
+        response = self.client.get(reverse('help'))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_freeze_account_before_perms(self):
+        self.client.login(username='Helper-Jacob', password='password')
+        response = self.client.get(reverse('freeze_card', kwargs={'pk': self.user.pk}))
+        print(response)
+        self.assertEqual(self.user.is_active, False)
