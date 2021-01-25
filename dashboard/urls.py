@@ -22,6 +22,7 @@ urlpatterns = [
     path('statement/', pdf_view, name='statement'),
     path('overview/', expenditure_overview, name='overview'),
     path('livechat/<int:pk>/', livechat, name='livechat'),
+    path('message/<int:pk>/', message, name='message'),
     path('livechat/helper-perms/<int:pk>/', grant_permission, name='helper_perms'),
     path('livechat/deactivate/<int:pk>/', deactivate_livechat, name='deactivate_livechat'),
     path('livechat/freeze-account/<int:pk>/', toggle_account_frozen, name='toggle_account'),
