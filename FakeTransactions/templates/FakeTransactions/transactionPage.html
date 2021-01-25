@@ -136,8 +136,11 @@ function categories() {
     $.each(cartCategories, function(i, categories){
     if($.inArray(categories, sortedCategories) === -1) sortedCategories.push(categories);
     })
+    var finalCategories = sortedCategories.join()
+    console.log(finalCategories)
+    return finalCategories
 
-    return sortedCategories
+
     //console.log(sortedCategories)
 
 }
@@ -171,7 +174,7 @@ function spoofTransaction(){
                 if(xhttp.response === 'Complete'){
                     //what to do if successful
                     document.getElementById('new_balance').innerText = '£' + {{ user.customer.available_balance }}
-                    //location.reload()
+                    location.reload()
                 }else{
                     alert("Unsuccessful")
                     //what to when when unsuccessful
@@ -379,6 +382,7 @@ function verify_card_details(){
             </section>
         </div>
     </div>
+</div>
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
         <div class="jumbotron stushop-jumbo">
