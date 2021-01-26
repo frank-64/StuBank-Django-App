@@ -2,19 +2,6 @@ from django import forms
 
 from dashboard.models import Transaction, Card
 
-TRANSACTION_CHOICES = (
-    ('Food', (
-        ("1", "Groceries"),
-        ("2", "Fast Food"),
-        ("3", "Snack"),
-    )),
-    ('Clothes', (
-        ("1", "Jeans"),
-        ("2", "Shorts"),
-        ("3", "Shirt"),
-    ))
-)
-
 
 class StuShopForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
@@ -26,7 +13,3 @@ class StuShopForm(forms.ModelForm):
     class Meta:
         model = Transaction
         exclude = ['Direction', 'TransactionTime', 'NewBalance', 'Customer', 'Method', 'Payee']
-
-
-class TransactionForm(forms.Form):
-    Transactions = forms.ChoiceField(choices=TRANSACTION_CHOICES)
