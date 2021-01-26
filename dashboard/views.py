@@ -3,7 +3,6 @@ import io
 import random
 import csv
 import collections
-import matplotlib.pyplot as plotter
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -1156,6 +1155,14 @@ def expenditure_overview(request):
         Purpose: To display a series of charts outlining a customers transaction history, habits and predictions about
         their future spending
     """
+    customer_id = "1"
+    total = 0
+    eveningspend = 0
+    afternoonspend = 0
+    morningspend = 0
+    lastmonth = datetime.datetime.today().replace(day=1) - datetime.timedelta(days=1)
+    monthlycategories = collections.Counter()
+    categories = collections.Counter()
 
     transactions = Transaction.objects.filter(Customer_id=request.user.pk)
 
@@ -1173,12 +1180,33 @@ def expenditure_overview(request):
     out_in_labels = ['Outgoing', 'Income']
     out_in_data = [0, 0]
 
+    # Pie chart
+    piechart_labels = []
+    piechart_data = []
+
     # Correctly formatting the transaction data for use in Chart.js
     for transaction in transactions:
         if transaction.Direction == 'Out':
             category_dict[transaction.Category] = category_dict.get(transaction.Category, 0) + float(transaction.Amount)
             termini_dict[transaction.Termini] = termini_dict.get(transaction.Termini, 0) + float(transaction.Amount)
             out_in_data[0] += float(transaction.Amount)
+
+            categories[transaction.Category] += 1
+            newtime = str(transaction.TransactionTime)
+            updated_newtime = newtime[:19]
+            newtime = datetime.datetime.strptime(updated_newtime, "%Y-%m-%d %H:%M:%S")
+
+            if newtime > lastmonth:
+                monthlycategories[transaction.Category] += 1
+                total += float(transaction.Amount)
+                if newtime.time() > datetime.datetime.strptime("17:00:00.000000", "%H:%M:%S.%f").time():
+                    eveningspend += 1
+                elif datetime.datetime.strptime("12:00:00.000000", "%H:%M:%S.%f").time() < newtime.time() < \
+                        datetime.datetime.strptime("17:00:00.000000", "%H:%M:%S.%f").time():
+                    afternoonspend += 1
+                else:
+                    morningspend += 1
+
         else:
             out_in_data[1] += float(transaction.Amount)
 
@@ -1190,42 +1218,14 @@ def expenditure_overview(request):
         termini_name.append(key)
         termini_amount.append(value)
 
-        customer_id = request.user.id
-        total = 0
-        eveningspend = 0
-        afternoonspend = 0
-        morningspend = 0
-        lastmonth = datetime.datetime.today().replace(day=1) - datetime.timedelta(days=1)
-        monthlycategories = collections.Counter()
-        categories = collections.Counter()
+    for key, value in monthlycategories.items():
+        piechart_data.append(key)
+        piechart_labels.append(value)
 
-        with open('data.txt', mode='r') as csv_file:
-            csv_reader = csv.DictReader(csv_file)
-            for i in csv_reader:
-                if i["direction"] == "Out":
-                    categories[i["category"]] += 1
-                    newtime = i["transactiontime"]
-                    newtime = datetime.datetime.strptime(newtime, "%Y-%m-%d %H:%M:%S.%f")
-                    if newtime > lastmonth and i["customer_id"] == customer_id:
-                        monthlycategories[i["category"]] += 1
-                        total += float(i["amount"])
-                        if newtime.time() > datetime.datetime.strptime("17:00:00.000000", "%H:%M:%S.%f").time():
-                            eveningspend += 1
-                        elif datetime.datetime.strptime("12:00:00.000000", "%H:%M:%S.%f").time() < newtime.time() < \
-                                datetime.datetime.strptime("17:00:00.000000", "%H:%M:%S.%f").time():
-                            afternoonspend += 1
-                        else:
-                            morningspend += 1
-
-        figureObject, axesObject = plotter.subplots()
-        axesObject.pie(monthlycategories.values(),
-                       labels=monthlycategories.keys(),
-                       autopct=("%1.2f"),
-                       startangle=90)
-        axesObject.axis("equal")
-        plotter.title("Spending category distribution since " + str(lastmonth)[:-16],
-                      bbox={'facecolor': '0.8', 'pad': 5})
-        plotter.show()
+    print(piechart_labels)
+    print(piechart_data)
+    print(category_name)
+    print(category_amount)
 
     # Return all correctly formatted data to be transformed into bar charts
     return render(request, 'dashboard/customer/expenditure_overview.html', {
@@ -1235,13 +1235,7 @@ def expenditure_overview(request):
         'termini_data': termini_amount,
         'out_in_labels': out_in_labels,
         'out_in_data': out_in_data,
-        'piechart_labels': monthlycategories.keys(),
-        'piechart_data': monthlycategories.values()
-
-
-
-
+        'piechart_labels': piechart_labels,
+        'piechart_data': piechart_data
 
     })
-
-
