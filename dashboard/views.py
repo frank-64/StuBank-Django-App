@@ -1217,6 +1217,16 @@ def expenditure_overview(request):
                         else:
                             morningspend += 1
 
+        figureObject, axesObject = plotter.subplots()
+        axesObject.pie(monthlycategories.values(),
+                       labels=monthlycategories.keys(),
+                       autopct=("%1.2f"),
+                       startangle=90)
+        axesObject.axis("equal")
+        plotter.title("Spending category distribution since " + str(lastmonth)[:-16],
+                      bbox={'facecolor': '0.8', 'pad': 5})
+        plotter.show()
+
     # Return all correctly formatted data to be transformed into bar charts
     return render(request, 'dashboard/customer/expenditure_overview.html', {
         'category_labels': category_name,
