@@ -2,8 +2,6 @@ from django.http import *
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views import View
-from FakeTransactions.forms import *
-from FakeTransactions.models import Category, Product
 from dashboard.models import *
 from decimal import Decimal
 import json
