@@ -9,9 +9,10 @@ from decimal import Decimal
 import json
 from dashboard.views import *
 
-
 # Create your views here.
 
+
+# Runs results from the StuShop page to the transaction method
 @csrf_exempt
 def AddNewTransaction(request):
     if request.method == "POST":
@@ -51,7 +52,7 @@ def AddNewTransaction(request):
             return HttpResponse('Error')
 
 
-
+# Renders page
 def StuShopRender(request):
     return render(request, 'FakeTransactions/transactionPage.html')
 
