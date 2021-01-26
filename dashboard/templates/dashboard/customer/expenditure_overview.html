@@ -31,12 +31,18 @@
             <h3>Spending Overview</h3>
             <canvas id="bar-chart-spending"></canvas>
         </div>
+
+        <div id="container-pie">
+            <h3>Category Overview</h3>
+            <canvas id="pie-chart-categories"></canvas>
+        </div>
 </div>
 
 <script>
     var c = document.getElementById("container-categories");
     var t = document.getElementById("container-termini");
     var s = document.getElementById("container-spending");
+    var p = document.getElementById("container-pie");
 
     function showCategories() {
         c.style.display = "block";
@@ -58,6 +64,8 @@
         s.style.display = "block";
 
     }
+
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 <script>
@@ -163,6 +171,23 @@ xAxes: [{
   }
 };
 
+var pie_config = {
+      type: 'pie',
+      data: {
+        datasets: [{
+          data: {{ piechart_data|safe }},
+          backgroundColor: [
+            '#696969', '#808080', '#A9A9A9', '#C0C0C0', '#D3D3D3'
+          ],
+          label: 'Population'
+        }],
+        labels: {{ piechart_labels|safe }}
+      },
+      options: {
+        responsive: true
+      }
+    };
+
 
 window.onload = function() {
     var bar_categories = document.getElementById('bar-chart-categories').getContext('2d');
@@ -173,6 +198,9 @@ window.onload = function() {
 
     var bar_spending = document.getElementById('bar-chart-spending').getContext('2d');
     window.myBar = new Chart(bar_spending, spending_config);
+
+    var pie_categories = document.getElementById('pie-chart-categories').getContext('2d');
+    window.myPie = new Chart(pie_categories, pie_config);
 
     showCategories();
 };
