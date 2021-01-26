@@ -2,19 +2,18 @@
 
 Newcastle University 2020/21 Software Engineering Team Project
 
-## Local Installation
+## Local Installation and execution
 <strong>We recommend using the website rather than installing the project locally</strong>
+
 Clone the project to your machine.
+
+Create a virtual environment using python virtualenv in the root directory.
 
 Install all packages outlined in the requirements.txt file like so
 ```commandline
 pip install -r requirements.txt
 ```
 
-
-## Local execution
-<strong>We recommend using the website rather than installing the project</strong>
-## Usage
 To run the web application locally, navigate to the project directory within the pycharm terminal and type:
 ```commandline
 py manage.py runserver
@@ -62,6 +61,9 @@ The accounts CVC number is: <b>434</b> and expiry date is: <b>19/01/2026</b>
 
 These will be of particular use going through the process of adding a new payee.
 
+<b>We encourage you to create an account test out the registration and 2FA set-up process, 
+especially if this example account fails to work.</b>
+
 ## Example Helper Account
 We have also created a helper account as this must be done manually through the built in Django admin interface, this is
 how we intended to make the accounts as users should not be able to make themselves a helper.
@@ -80,6 +82,7 @@ Password: <b>zzQu1d9!</b>
 
 Follow this link to retrieve the QR code if the above image isn't loading:
 https://imgur.com/a/JNVszye
+
 
 ## Testing
 We have created a series of unit tests which can be run to check the functionality of the different pages 
