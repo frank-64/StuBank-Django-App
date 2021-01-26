@@ -176,13 +176,12 @@ var pie_config = {
       type: 'pie',
       data: {
         datasets: [{
-          data: {{ piechart_data|safe }},
+          data: {{ piechart_labels|safe }},
           backgroundColor: [
             '#696969', '#808080', '#A9A9A9', '#C0C0C0', '#D3D3D3'
           ],
-          label: 'Population'
         }],
-        labels: {{ piechart_labels|safe }}
+        labels: {{ piechart_data|safe }}
       },
       options: {
         responsive: true
@@ -201,7 +200,7 @@ window.onload = function() {
     window.myBar = new Chart(bar_spending, spending_config);
 
     var pie_categories = document.getElementById('pie-chart-categories').getContext('2d');
-    window.myPie = new Chart(pie_categories, pie_config);
+    window.myBar = new Chart(pie_categories, pie_config);
 
     showCategories();
 };
