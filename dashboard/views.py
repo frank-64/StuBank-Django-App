@@ -1,6 +1,9 @@
 import datetime
 import io
 import random
+import csv
+import collections
+import matplotlib.pyplot as plotter
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -1149,8 +1152,9 @@ EXPENDITURE OVERVIEW STUFF ᶘᵒᴥᵒᶅ
 @login_required
 def expenditure_overview(request):
     """
-        Written by: Ed
-        Purpose: To display a series of bar charts outlining a customers transaction history and habits
+        Written by: Ed + Fin
+        Purpose: To display a series of charts outlining a customers transaction history, habits and predictions about
+        their future spending
     """
 
     transactions = Transaction.objects.filter(Customer_id=request.user.pk)
@@ -1186,6 +1190,33 @@ def expenditure_overview(request):
         termini_name.append(key)
         termini_amount.append(value)
 
+        customer_id = "1"
+        total = 0
+        eveningspend = 0
+        afternoonspend = 0
+        morningspend = 0
+        lastmonth = datetime.datetime.today().replace(day=1) - datetime.timedelta(days=1)
+        monthlycategories = collections.Counter()
+        categories = collections.Counter()
+
+        with open('data.txt', mode='r') as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            for i in csv_reader:
+                if i["direction"] == "Out":
+                    categories[i["category"]] += 1
+                    newtime = i["transactiontime"]
+                    newtime = datetime.datetime.strptime(newtime, "%Y-%m-%d %H:%M:%S.%f")
+                    if newtime > lastmonth and i["customer_id"] == customer_id:
+                        monthlycategories[i["category"]] += 1
+                        total += float(i["amount"])
+                        if newtime.time() > datetime.datetime.strptime("17:00:00.000000", "%H:%M:%S.%f").time():
+                            eveningspend += 1
+                        elif datetime.datetime.strptime("12:00:00.000000", "%H:%M:%S.%f").time() < newtime.time() < \
+                                datetime.datetime.strptime("17:00:00.000000", "%H:%M:%S.%f").time():
+                            afternoonspend += 1
+                        else:
+                            morningspend += 1
+
     # Return all correctly formatted data to be transformed into bar charts
     return render(request, 'dashboard/customer/expenditure_overview.html', {
         'category_labels': category_name,
@@ -1194,4 +1225,11 @@ def expenditure_overview(request):
         'termini_data': termini_amount,
         'out_in_labels': out_in_labels,
         'out_in_data': out_in_data,
+
+
+
+
+
     })
+
+
