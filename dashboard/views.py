@@ -1222,10 +1222,7 @@ def expenditure_overview(request):
         piechart_data.append(key)
         piechart_labels.append(value)
 
-    print(piechart_labels)
-    print(piechart_data)
-    print(category_name)
-    print(category_amount)
+
 
     # Return all correctly formatted data to be transformed into bar charts
     return render(request, 'dashboard/customer/expenditure_overview.html', {
