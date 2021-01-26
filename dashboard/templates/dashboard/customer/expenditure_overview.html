@@ -12,9 +12,10 @@
         <div class="text-center">
             <div class="btn-group" role="group" id="buttonGroup">
                 <button type="button" class="btn btn-outline-primary" onclick="showCategories()">Category</button>
+                <button type="button" class="btn btn-outline-primary" onclick="showMonthly()">Monthly Categories</button>
                 <button type="button" class="btn btn-outline-primary" onclick="showTermini()">Termini</button>
                 <button type="button" class="btn btn-outline-primary" onclick="showSpending()">Spending</button>
-                <button type="button" class="btn btn-outline-primary" onclick="showMonthly()">Monthly Categories</button>
+
             </div>
         </div>
 
@@ -34,7 +35,7 @@
         </div>
 
         <div id="container-pie">
-            <h3>Category Overview</h3>
+            <h3>Monthly Category Transactions</h3>
             <canvas id="pie-chart-categories"></canvas>
         </div>
 </div>
@@ -49,6 +50,7 @@
         c.style.display = "block";
         t.style.display = "none";
         s.style.display = "none";
+        p.style.display = "none";
 
     }
 
@@ -56,6 +58,7 @@
         c.style.display = "none";
         t.style.display = "block";
         s.style.display = "none";
+        p.style.display = "none";
 
     }
 
@@ -63,6 +66,15 @@
         c.style.display = "none";
         t.style.display = "none";
         s.style.display = "block";
+        p.style.display = "none";
+
+    }
+
+    function showMonthly() {
+        c.style.display = "none";
+        t.style.display = "none";
+        s.style.display = "none";
+        p.style.display = "block";
 
     }
 
@@ -89,7 +101,9 @@ var categories_config = {
   data: {
     datasets: [{
       data: {{ category_data|safe }}.map(function(e){return (Math.round(e*100)/100)}),
-      backgroundColor: purple_fade,
+      backgroundColor: [
+            '#D7DEDC', '#C3C3C1', '#9A879D', '#7A3B69', '#684E60', '#566057', '#558B6E', '#416165', '#0B3948'
+          ],
       borderColor: purple,
       borderWidth: 1,
       label: 'Transactions'
@@ -117,7 +131,9 @@ var termini_config = {
   data: {
     datasets: [{
       data: {{ termini_data|safe }}.map(function(e){return (Math.round(e*100)/100)}),
-      backgroundColor: orange_fade,
+      backgroundColor: [
+            '#D7DEDC', '#C3C3C1', '#9A879D', '#7A3B69', '#684E60', '#566057', '#558B6E', '#416165', '#0B3948'
+          ],
       borderColor: orange,
       borderWidth: 1,
       label: 'Transactions'
@@ -178,7 +194,7 @@ var pie_config = {
         datasets: [{
           data: {{ piechart_labels|safe }},
           backgroundColor: [
-            '#696969', '#808080', '#A9A9A9', '#C0C0C0', '#D3D3D3'
+            '#D7DEDC', '#C3C3C1', '#9A879D', '#7A3B69', '#684E60', '#566057', '#558B6E', '#416165', '#0B3948'
           ],
         }],
         labels: {{ piechart_data|safe }}
