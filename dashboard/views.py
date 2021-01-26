@@ -1190,7 +1190,7 @@ def expenditure_overview(request):
         termini_name.append(key)
         termini_amount.append(value)
 
-        customer_id = "1"
+        customer_id = request.user.id
         total = 0
         eveningspend = 0
         afternoonspend = 0
