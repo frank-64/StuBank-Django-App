@@ -1235,6 +1235,8 @@ def expenditure_overview(request):
         'termini_data': termini_amount,
         'out_in_labels': out_in_labels,
         'out_in_data': out_in_data,
+        'piechart_labels': monthlycategories.keys(),
+        'piechart_data': monthlycategories.values()
 
 
 
