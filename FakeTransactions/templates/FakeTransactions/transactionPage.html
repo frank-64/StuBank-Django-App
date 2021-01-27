@@ -174,7 +174,7 @@ function spoofTransaction(){
                 if(xhttp.response === 'Complete'){
                     //what to do if successful
                     document.getElementById('new_balance').innerText = '£' + {{ user.customer.available_balance }}
-                    location.reload()
+                    window.location.replace({% url 'dashboard_home' %});
                 }else{
                     alert("Unsuccessful")
                     //what to when when unsuccessful
