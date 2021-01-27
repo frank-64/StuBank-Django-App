@@ -15,3 +15,7 @@
 venv
 
 users
+
+.idea
+
+/public/

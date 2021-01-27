@@ -55,10 +55,6 @@ class CustomTOTPLoginView(auth_views.LoginView):
     form_class = CustomAuthenticationForm
 
 
-class InfoView(auth_views.LoginView):
-    template_name = 'accounts/info.html'
-
-
 class RegisterView(CreateView):
     """
         Written by: Ed

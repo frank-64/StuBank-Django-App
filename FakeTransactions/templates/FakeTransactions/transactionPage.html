@@ -10,40 +10,38 @@
 <script>
 const available_balance = {{ user.customer.available_balance }}
 
+// Checks if the page is loaded to ensure buttons are loaded
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', ready)
 } else {
     ready()
-
 }
+
 function ready() {
-    //Put all buttons here to ensure they are loaded and work
     var stuAdd = document.getElementsByClassName('StuAdd')
     for (let i = 0; i < stuAdd.length; i++) {
         let button = stuAdd[i];
         button.addEventListener('click',addButton) //function of the button
     }
-
     var stuRemove = document.getElementsByClassName('StuDelete')
     for (let i = 0; i < stuRemove.length; i++) {
         let button = stuRemove[i];
         button.addEventListener("click", remove) //function of the button
     }
-
 }
 
-function addButton(press){
+function addButton(press) {
     let pressed = press.target;
     let StuItem = pressed.parentElement.parentElement;
     var StuTitleAdd = StuItem.getElementsByClassName('StuTitle')[0].innerText;
     var StuPriceAdd = StuItem.getElementsByClassName('StuPrice')[0].innerText;
-    var StuStuff = {price:StuPriceAdd, title:StuTitleAdd}
+    var StuStuff = {price: StuPriceAdd, title: StuTitleAdd}
     addToCart(StuStuff)
     totalFunction()
 
+}
 
-
-
+// Ensures that input button cannot go below 1
 function inputChange(changes){
     let changed = changes.target;
     if (changed.value <= 0){
@@ -52,6 +50,7 @@ function inputChange(changes){
     totalFunction()
 }
 
+// Creates cart table and adds it to HTML page
 function addToCart(StuStuff){
     var row = document.createElement('div')
     row.classList.add('StuCart')
@@ -78,8 +77,9 @@ function addToCart(StuStuff){
 
 }
 
-}
 
+
+// Adds up prices in the cart
 function totalFunction() {
     var stuCartTable = document.getElementsByClassName('StuTable')[0]
     var stuRows = stuCartTable.getElementsByClassName('StuCartItems')
@@ -103,12 +103,14 @@ function totalFunction() {
 
 }
 
+// Removes item from cart
 function remove(press){
     let pressed = press.target;
     pressed.parentElement.parentElement.remove()
     totalFunction()
 }
 
+// Adds categories to certain products
 function categories() {
     var stuCartTable = document.getElementsByClassName('StuTable')[0]
     var stuRows = stuCartTable.getElementsByClassName('StuCartItems')
@@ -139,11 +141,9 @@ function categories() {
     var finalCategories = sortedCategories.join()
     console.log(finalCategories)
     return finalCategories
-
-
-    //console.log(sortedCategories)
-
 }
+
+// Ensures that you cant over spend or try purchase with nothing in the cart
 function buy(){
     var stuTable = document.getElementsByClassName('StuTable')[0]
     categories()
@@ -162,12 +162,12 @@ while(stuTable.hasChildNodes()){
     }
 }
 
-
+// Sends total, and category to transaction view
 function spoofTransaction(){
         var transactionTotal = document.getElementsByClassName('StuFinalPrice')[0].innerText.replace('£','');
         var category = categories()
-        var comment='test'
-        var termini = "StuShop"; //should be stushop
+        var comment='StuShop'
+        var termini = "StuShop";
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
@@ -192,10 +192,12 @@ function spoofTransaction(){
         xhttp.send(JSON.stringify(json_transaction));
     }
 
+// Activates modal
 function modal_start(){
         $("#cardDetails").modal()
     }
 
+// Verifies the card details of user
 function verify_card_details(){
     var expiry_date = document.getElementById('expDate').value;
     var CVC = document.getElementById('CVC').value;
@@ -229,9 +231,7 @@ function verify_card_details(){
 
 </script>
 {% endblock javascript %}
-
 {% block content %}
-
 
 <body>
 
@@ -248,20 +248,20 @@ function verify_card_details(){
                         <div class="StuItem">
                             <b><span class="StuTitle">Groceries</span></b>
                             <span class="StuPrice">£20.16</span>
-                                <button class="StuAdd btn" type="button">Add</button>
+                                <button class="StuAdd btn btn-info" type="button">Add</button>
                         </div>
                     <div class="StuItems">
                         <div class="StuItem">
                             <b><span class="StuTitle">FastFood</span></b>
                             <span class="StuPrice">£10.72</span>
-                                <button class="StuAdd btn bt" type="button">Add</button>
+                                <button class="StuAdd btn btn-info" type="button" >Add</button>
                         </div>
                     </div>
                     <div class="StuItems">
                         <div class="StuItem">
                             <b><span class="StuTitle">Snack</span></b>
                             <span class="StuPrice">£5.31</span>
-                                <button class="StuAdd btn" type="button">Add</button>
+                                <button class="StuAdd btn btn-info" type="button">Add</button>
                         </div>
                     </div>
                     </div>
@@ -276,21 +276,21 @@ function verify_card_details(){
                     <div class="StuItem">
                         <b><span class="StuTitle">Jeans</span></b>
                             <span class="StuPrice">£13.54</span>
-                            <button class="StuAdd btn" type="button">Add</button>
+                            <button class="StuAdd btn btn-info" type="button">Add</button>
                         </div>
                     </div>
                     <div class="StuItems">
                     <div class="StuItem">
                         <b><span class="StuTitle">Shorts</span></b>
                             <span class="StuPrice">£12.06</span>
-                            <button class="StuAdd btn" type="button">Add</button>
+                            <button class="StuAdd btn btn-info" type="button">Add</button>
                         </div>
                     </div>
                     <div class="StuItems">
                     <div class="StuItem">
                         <b><span class="StuTitle">Shirts</span></b>
                             <span class="StuPrice">£10.01</span>
-                            <button class="StuAdd btn" type="button">Add</button>
+                            <button class="StuAdd btn btn-info" type="button">Add</button>
                         </div>
                     </div>
 
@@ -305,21 +305,21 @@ function verify_card_details(){
                     <div class="StuItem">
                         <b><span class="StuTitle">Paracetamol</span></b>
                             <span class="StuPrice">£1.03</span>
-                            <button class="StuAdd btn" type="button">Add</button>
+                            <button class="StuAdd btn btn-info" type="button">Add</button>
                         </div>
                     </div>
                     <div class="StuItems">
                     <div class="StuItem">
                         <b><span class="StuTitle">Bandages</span></b>
                             <span class="StuPrice">£3.26</span>
-                            <button class="StuAdd btn" type="button">Add</button>
+                            <button class="StuAdd btn btn-info" type="button">Add</button>
                         </div>
                     </div>
                     <div class="StuItems">
                     <div class="StuItem">
                         <b><span class="StuTitle">Lemsip (Cold and Flu relief)</span></b>
                             <span class="StuPrice">£4.75</span>
-                            <button class="StuAdd btn" type="button">Add</button>
+                            <button class="StuAdd btn btn-info" type="button">Add</button>
                         </div>
                     </div>
 
@@ -334,20 +334,20 @@ function verify_card_details(){
                         <div class="StuItem">
                             <b><span class="StuTitle">Ram 8GB</span></b>
                             <span class="StuPrice">£36.64</span>
-                                <button class="StuAdd btn" type="button">Add</button>
+                                <button class="StuAdd btn btn-info" type="button">Add</button>
                         </div>
                     <div class="StuItems">
                         <div class="StuItem">
                             <b><span class="StuTitle">StuPhone</span></b>
                             <span class="StuPrice">£342.69</span>
-                                <button class="StuAdd btn" type="button">Add</button>
+                                <button class="StuAdd btn btn-info" type="button">Add</button>
                         </div>
                     </div>
                     <div class="StuItems">
                         <div class="StuItem">
                             <b><span class="StuTitle">StuPhone Charger</span></b>
                             <span class="StuPrice">£7.31</span>
-                                <button class="StuAdd btn" type="button">Add</button>
+                                <button class="StuAdd btn btn-info" type="button">Add</button>
                         </div>
                     </div>
                     </div>
@@ -362,20 +362,20 @@ function verify_card_details(){
                         <div class="StuItem">
                             <b><span class="StuTitle">Netflix</span></b>
                             <span class="StuPrice">£9.99</span>
-                                <button class="StuAdd btn" type="button">Add</button>
+                                <button class="StuAdd btn btn-info" type="button">Add</button>
                         </div>
                     <div class="StuItems">
                         <div class="StuItem">
                             <b><span class="StuTitle">Disney+</span></b>
                             <span class="StuPrice">£5.99</span>
-                                <button class="StuAdd btn" type="button">Add</button>
+                                <button class="StuAdd btn btn-info" type="button">Add</button>
                         </div>
                     </div>
                     <div class="StuItems">
                         <div class="StuItem">
                             <b><span class="StuTitle">StuVideo</span></b>
                             <span class="StuPrice">£4.99</span>
-                                <button class="StuAdd btn" type="button">Add</button>
+                                <button class="StuAdd btn btn-info" type="button">Add</button>
                         </div>
                     </div>
                     </div>
