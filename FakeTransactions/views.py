@@ -54,6 +54,3 @@ def AddNewTransaction(request):
 def StuShopRender(request):
     return render(request, 'FakeTransactions/transactionPage.html')
 
-
-
-    ##Create a form for the CardTransactions. look at dashboard forms.py for help
