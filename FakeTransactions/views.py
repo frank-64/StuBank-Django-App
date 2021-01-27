@@ -16,27 +16,27 @@ def AddNewTransaction(request):
     if request.method == "POST":
 
         transaction_variables = request.body.decode('UTF-8')
-
+        # Loads as json Object
         json_details = json.loads(transaction_variables)
-
+        # Gets customer ID
         customer_id = request.user.pk
-
+        # Gets Card details
         card = get_object_or_404(Card, Customer_id=request.user.pk)
 
         transaction_time = timezone.now()
+        # Gets variables from json
+        comment = json_details['comment']
 
-        comment = json_details['comment']  ##get from json
+        amount = Decimal(json_details['amount'])
 
-        amount = Decimal(json_details['amount'])  ##get from json
+        termini = json_details['termini']
 
-        termini = json_details['termini']  ##get from json
-
-        category = json_details['category']  ##get from json
+        category = json_details['category']
 
         new_balance = get_new_balances(customer_id, -1, amount)
 
         method = 'Card Transaction'
-
+        # Sends data to transaction method
         card_transaction_object = Transaction(Card_id=card.pk, Customer_id=customer_id,
                                               Amount=amount,
                                               Direction='Out', TransactionTime=transaction_time, Comment=comment,
@@ -55,5 +55,3 @@ def StuShopRender(request):
     return render(request, 'FakeTransactions/transactionPage.html')
 
 
-
-    ##Create a form for the CardTransactions. look at dashboard forms.py for help
