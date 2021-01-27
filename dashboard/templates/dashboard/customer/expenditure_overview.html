@@ -9,7 +9,21 @@
 
 <div class="container" id="main">
 
+        <div id="Spending-stats">
+            <h3>Spending stats</h3><br>
+            <h5>
+                - In the last month you have spent £{{monthlytotal}}.<br><br>
+                - You most often spend in the {{timespend}}.<br><br>
+                - This month you spent {{categoryperc}}% of your most common overall category: {{mostcommoncat}}.<br><br>
+                -Based on your rolling monthly average spending, you spent {{monthlydifference}}% more this month
+                compared to last month..<br><br>
+                -Based on your previous months spending, you are likely to spend £{{nextmonthspending}} next month.
+            </h5>
+            <canvas id="spending-stats-info"></canvas>
+
+        </div>
         <div class="text-center">
+            <h3>Spending Breakdown</h3><br>
             <div class="btn-group" role="group" id="buttonGroup">
                 <button type="button" class="btn btn-outline-primary" onclick="showCategories()">Category</button>
                 <button type="button" class="btn btn-outline-primary" onclick="showMonthly()">Monthly Categories</button>
@@ -20,7 +34,7 @@
         </div>
 
         <div id="container-categories">
-            <h3>Category Overview</h3>
+            <h3>All Time Category Spending</h3>
             <canvas id="bar-chart-categories"></canvas>
         </div>
 
@@ -106,7 +120,7 @@ var categories_config = {
           ],
       borderColor: purple,
       borderWidth: 1,
-      label: 'Transactions'
+      label: 'Spent'
     }],
     labels: {{ category_labels|safe }}
   },
@@ -130,9 +144,9 @@ var termini_config = {
   type: 'bar',
   data: {
     datasets: [{
-      data: {{ termini_data|safe }}.map(function(e){return (Math.round(e*100)/100)}),
+      data: {{ termini_data}}.map(function(e){return (Math.round(e*100)/100)}),
       backgroundColor: [
-            '#D7DEDC', '#C3C3C1', '#9A879D', '#7A3B69', '#684E60', '#566057', '#558B6E', '#416165', '#0B3948'
+            '#D7DEDC', '#9A879D', '#7A3B69', '#684E60', '#566057', '#558B6E', '#416165', '#0B3948'
           ],
       borderColor: orange,
       borderWidth: 1,
