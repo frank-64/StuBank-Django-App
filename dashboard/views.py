@@ -1,6 +1,9 @@
 import datetime
 import io
 import random
+import csv
+import collections
+import math
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -1150,9 +1153,22 @@ EXPENDITURE OVERVIEW STUFF ᶘᵒᴥᵒᶅ
 @login_required
 def expenditure_overview(request):
     """
-        Written by: Ed
-        Purpose: To display a series of bar charts outlining a customers transaction history and habits
+        Written by: Ed + Fin
+        Purpose: To display a series of charts outlining a customers transaction history, habits and predictions about
+        their future spending
     """
+    total = 0
+    monthlytotal = 0
+    prevmonth2total = 0
+    eveningspend = 0
+    afternoonspend = 0
+    morningspend = 0
+    monthlydifference = 0
+    nextmonthspending = 0
+    lastmonth = datetime.datetime.today().replace(day=1) - datetime.timedelta(days=1)
+    lastmonth2 = datetime.datetime.today().replace(day=1) - datetime.timedelta(weeks=4)
+    monthlycategories = collections.Counter()
+    categories = collections.Counter()
 
     transactions = Transaction.objects.filter(Customer_id=request.user.pk)
 
@@ -1170,14 +1186,56 @@ def expenditure_overview(request):
     out_in_labels = ['Outgoing', 'Income']
     out_in_data = [0, 0]
 
+    # Pie chart
+    piechart_labels = []
+    piechart_data = []
+
     # Correctly formatting the transaction data for use in Chart.js
     for transaction in transactions:
         if transaction.Direction == 'Out':
             category_dict[transaction.Category] = category_dict.get(transaction.Category, 0) + float(transaction.Amount)
             termini_dict[transaction.Termini] = termini_dict.get(transaction.Termini, 0) + float(transaction.Amount)
             out_in_data[0] += float(transaction.Amount)
+            total += float(transaction.Amount)
+
+            categories[transaction.Category] += 1
+            newtime = str(transaction.TransactionTime)
+            updated_newtime = newtime[:19]
+            newtime = datetime.datetime.strptime(updated_newtime, "%Y-%m-%d %H:%M:%S")
+
+            if newtime > lastmonth:
+                monthlycategories[transaction.Category] += 1
+                monthlytotal += float(transaction.Amount)
+                if newtime.time() > datetime.datetime.strptime("17:00:00.000000", "%H:%M:%S.%f").time():
+                    eveningspend += 1
+                elif datetime.datetime.strptime("12:00:00.000000", "%H:%M:%S.%f").time() < newtime.time() < \
+                        datetime.datetime.strptime("17:00:00.000000", "%H:%M:%S.%f").time():
+                    afternoonspend += 1
+                else:
+                    morningspend += 1
+            elif newtime > lastmonth2 and newtime < lastmonth:
+                prevmonth2total += float(transaction.Amount)
+
         else:
             out_in_data[1] += float(transaction.Amount)
+
+    if morningspend > eveningspend and morningspend > afternoonspend:
+        timespend = "morning (between the hours of 00:00 - 12:00)"
+    elif eveningspend > morningspend and eveningspend > afternoonspend:
+        timespend = "evening (between the hours of 17:00 - 00:00)"
+    else:
+        timespend = "afternoon (between the hours of 12:00 - 17:00)"
+
+    if max(monthlycategories) == max(categories):
+        categoryperc = (max(monthlycategories.values()) / max(categories.values()))*100
+    else:
+        categoryperc = (max(monthlycategories.values()) / sum(monthlycategories.values()))*100
+    categoryperc = round(categoryperc, 2)
+    mostcommoncat = max(monthlycategories)
+
+    monthlydifference = round((total-monthlytotal-prevmonth2total)/(total-monthlytotal), 2)
+
+    nextmonthspending = (monthlytotal+prevmonth2total)/2
 
     for key, value in category_dict.items():
         category_name.append(key)
@@ -1187,6 +1245,12 @@ def expenditure_overview(request):
         termini_name.append(key)
         termini_amount.append(value)
 
+    for key, value in monthlycategories.items():
+        piechart_data.append(key)
+        piechart_labels.append(value)
+
+
+
     # Return all correctly formatted data to be transformed into bar charts
     return render(request, 'dashboard/customer/expenditure_overview.html', {
         'category_labels': category_name,
@@ -1195,4 +1259,15 @@ def expenditure_overview(request):
         'termini_data': termini_amount,
         'out_in_labels': out_in_labels,
         'out_in_data': out_in_data,
+        'piechart_labels': piechart_labels,
+        'piechart_data': piechart_data,
+        'lastmonth': lastmonth,
+        'total': total,
+        'monthlytotal': monthlytotal,
+        'timespend': timespend,
+        'categoryperc': categoryperc,
+        'mostcommoncat': mostcommoncat,
+        'monthlydifference': monthlydifference,
+        'nextmonthspending': nextmonthspending
+
     })
