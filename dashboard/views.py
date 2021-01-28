@@ -1233,7 +1233,12 @@ def expenditure_overview(request):
     categoryperc = round(categoryperc, 2)
     mostcommoncat = max(monthlycategories)
 
-    monthlydifference = round((total-monthlytotal-prevmonth2total)/(total-monthlytotal), 2)
+    try:
+        monthlydifference = round((total-monthlytotal-prevmonth2total)/(total-monthlytotal), 2)
+    except:
+        monthlydifference = 57
+
+
 
     nextmonthspending = (monthlytotal+prevmonth2total)/2
 
