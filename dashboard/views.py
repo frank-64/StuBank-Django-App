@@ -1,14 +1,15 @@
+import collections
 import datetime
 import io
+import json
 import random
-import csv
-import collections
-import math
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.humanize.templatetags.humanize import naturaltime
+from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse
+from django.http.response import JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
@@ -17,16 +18,14 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, ListView, CreateView, DeleteView, UpdateView, FormView
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
-from .decorators import valid_helper
-from .forms import *
-from dashboard.models import *
-from dashboard.card_gen import credit_card_number
-from django.http.response import JsonResponse
-from django.db.models import Q
-import json
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Frame, PageTemplate, FrameBreak, \
     Image
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+
+from dashboard.card_gen import credit_card_number
+from dashboard.models import *
+from .decorators import valid_helper
+from .forms import *
 
 """
 Request is not a visible parameter with Class-based views because as_view() on the .urls file makes the view callable
@@ -628,9 +627,14 @@ def livechat(request, pk):
         return render(request, 'dashboard/customer/customer_livechat.html',
                       {"other_user": other_user, "messages": messages, "livechat": livechat})
     elif not other_user.is_helper and livechat.exists():
-        card = get_object_or_404(Card, Customer_id=other_user.pk)
-        return render(request, 'dashboard/helper/helper_livechat.html',
-                      {"card": card, "other_user": other_user, "messages": messages, "livechat": livechat})
+        card = None
+        try:
+            card = get_object_or_404(Card, Customer_id=other_user.pk)
+            return render(request, 'dashboard/helper/helper_livechat.html',
+                          {"card": card, "other_user": other_user, "messages": messages, "livechat": livechat})
+        except:
+            return render(request, 'dashboard/helper/helper_livechat.html',
+                          {"other_user": other_user, "messages": messages, "livechat": livechat})
     else:
         error = "The Livechat could not be accessed."
         resolution = "Have you requested assistance and clicked the link on the Help page?"
