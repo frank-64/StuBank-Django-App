@@ -590,8 +590,9 @@ def card_transaction(request):
 @login_required
 def livechat(request, pk):
     """
-    Written by: Frankie This method returns all the message objects between two users and renders them on
-    customer_livechat.html with the relevant context
+        Written by: Frankie
+        This method returns all the message objects between two users and renders them on
+        customer_livechat.html with the relevant context
 
         :param request: HttpRequest object containing metadata and current user attributes
         :param pk: the primary key of the other user in the livechat

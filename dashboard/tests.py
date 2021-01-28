@@ -367,8 +367,3 @@ class LiveChatTestCase(TestCase):
         response = self.client.get(reverse('help'))
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_freeze_account_before_perms(self):
-        self.client.login(username='Helper-Jacob', password='password')
-        response = self.client.get(reverse('freeze_card', kwargs={'pk': self.user.pk}))
-        print(response)
-        self.assertEqual(self.user.is_active, False)

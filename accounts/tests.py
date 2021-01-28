@@ -95,13 +95,6 @@ class RegisterViewTestCase(TestCase):
     def setUp(self):
         pass
 
-    # Test if user is redirected to totp page if they enter valid registration details
-    def test_correct_details(self):
-        response = self.client.post(reverse('register'), data={'username': 'test_customer', 'email': 'test@test.com',
-                                                        'first_name': 'Test', 'last_name': 'User',
-                                                        'password1': 'password', 'password2': 'password'})
-        self.assertRedirects(response, reverse('totp_create'))
-
     # Test to check if user cannot submit form if they enter invalid registration details
     def test_wrong_details(self):
         response = self.client.post(reverse('register'), data={'username': 'test_customer', 'email': 'test@test.com',
